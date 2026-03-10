@@ -1,9 +1,9 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
-import { protectedRoute } from "@/lib/protected-route"
 import type { RouterContext } from "@/routes/__root"
+import { adminRoute } from "@/lib/admin-route"
 
-export const Route = createFileRoute("/_protected")<RouterContext>({
-	loader: async () => await protectedRoute(),
+export const Route = createFileRoute("/_admin")<RouterContext>({
+	loader: async () => await adminRoute(),
 	component: RouteComponent,
 })
 

@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
+import type { RouterContext } from "@/routes/__root"
 import SectionContainer from "@/components/layout/section-container"
 
-export const Route = createFileRoute("/_protected/")({
+export const Route = createFileRoute("/_protected/")<RouterContext>({
 	component: App,
 })
 
