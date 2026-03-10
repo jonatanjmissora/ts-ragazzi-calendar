@@ -20,8 +20,8 @@
 5️⃣ ejecutamos el push a neon:
                   npx drizzle-kit push
 
-6️⃣ ejecutamos el servidor:
-                  pnpm dev
+6️⃣ creamos el db/drizzle.ts y el db/pagos/create-pago.tsx
+
 
 
 

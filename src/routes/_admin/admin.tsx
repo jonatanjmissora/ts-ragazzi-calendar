@@ -1,5 +1,5 @@
 import SectionContainer from "@/components/layout/section-container"
-import PagosForm from "@/components/pagos/pagos-form"
+import PagosForm from "@/components/pagos/pagos-create"
 import PagosList from "@/components/pagos/pagos-list"
 import { createFileRoute } from "@tanstack/react-router"
 
