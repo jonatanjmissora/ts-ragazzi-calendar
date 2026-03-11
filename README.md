@@ -20,7 +20,29 @@
 5️⃣ ejecutamos el push a neon:
                   npx drizzle-kit push
 
-6️⃣ creamos el db/drizzle.ts y el db/pagos/create-pago.tsx
+
+CREAMOS EL QUERYCLIENT
+==================
+
+1️⃣ creamos el queries/query-client.ts con la funcion getQueryClient()
+
+2️⃣ actualizamos el router.tsx y el __root.tsx para usar el getQueryClient()
+
+
+CREATE PAGO
+==========
+
+1️⃣ creamos el db/drizzle.ts y borramos el db.ts
+
+2️⃣ anexamos a db/schema.ts la tabla de db/pagos/schema.ts
+
+3️⃣ creamos el db/pagos/pago-validation.ts
+
+4️⃣ creamos el /components/pagos/create-pago.tsx
+
+
+
+
 
 
 

@@ -8,7 +8,7 @@ export async function createPagoDB(newPago: PagoType) {
 		return await db.insert(pagos).values(newPago).returning()
 	} catch (error) {
 		console.error(
-			"ERROR obteniendo pago:",
+			"ERROR insertando pago:",
 			error instanceof Error ? error.message : error
 		)
 	}
