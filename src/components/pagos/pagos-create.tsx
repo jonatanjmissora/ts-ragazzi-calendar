@@ -62,7 +62,7 @@ export default function PagosCreate({
 				<Button
 					variant="ghost"
 					className="cursor-pointer"
-					onClick={() => router.navigate({ to: "/items" })}
+					onClick={() => router.navigate({ to: "/admin" })}
 				>
 					<X size={20} />
 				</Button>
@@ -84,7 +84,7 @@ export default function PagosCreate({
 								field.state.meta.isTouched && !field.state.meta.isValid
 							return (
 								<Field data-invalid={isInvalid} className="gap-1">
-									<FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
+									<FieldLabel htmlFor={field.name}>periodo</FieldLabel>
 									<Input
 										id={field.name}
 										name={field.name}
@@ -107,7 +107,7 @@ export default function PagosCreate({
 								field.state.meta.isTouched && !field.state.meta.isValid
 							return (
 								<Field data-invalid={isInvalid} className="gap-1">
-									<FieldLabel htmlFor={field.name}>Telefono</FieldLabel>
+									<FieldLabel htmlFor={field.name}>rubro</FieldLabel>
 									<Input
 										id={field.name}
 										name={field.name}
@@ -183,7 +183,7 @@ export default function PagosCreate({
 								field.state.meta.isTouched && !field.state.meta.isValid
 							return (
 								<Field data-invalid={isInvalid} className="gap-1">
-									<FieldLabel htmlFor={field.name}>Fecha</FieldLabel>
+									<FieldLabel htmlFor={field.name}>monto</FieldLabel>
 									<Input
 										id={field.name}
 										name={field.name}
@@ -206,7 +206,7 @@ export default function PagosCreate({
 								field.state.meta.isTouched && !field.state.meta.isValid
 							return (
 								<Field data-invalid={isInvalid} className="gap-1">
-									<FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
+									<FieldLabel htmlFor={field.name}>pagado</FieldLabel>
 									<Input
 										id={field.name}
 										name={field.name}
