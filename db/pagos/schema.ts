@@ -27,7 +27,7 @@ export const rubros = pgTable("rubros", {
 
 	nombre: text("nombre").notNull(),
 
-	sectores: text("sectores").array().notNull(),
+	sectores: text("sectores").notNull(),
 })
 
 export type RubroType = typeof rubros.$inferSelect

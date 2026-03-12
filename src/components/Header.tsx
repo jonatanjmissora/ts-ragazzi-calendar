@@ -43,6 +43,8 @@ export default function Header() {
 					Logo
 				</Link>
 
+				<Link to="/admin">Admin</Link>
+
 				{session ? (
 					<DropdownMenuDemo
 						name={session.user?.name}
