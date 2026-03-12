@@ -12,10 +12,7 @@ export const pagoFormValidator = z.object({
 
 	monto: z.number().min(1, "El monto es requerido"),
 
-	pagado: z
-		.number()
-		.min(20260000, "El periodo debe ser mayor o igual a 20260000")
-		.max(20500000, "El periodo no puede exceder el año 2050"),
+	pagado: z.number(),
 })
 
 export type PagoFormType = z.infer<typeof pagoFormValidator>

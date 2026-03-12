@@ -41,7 +41,7 @@ export default function RubrosCreate({
 	return (
 		<div
 			className={cn(
-				"min-w-1/3 flex flex-col gap-6 border rounded-lg py-8 px-12 relative",
+				"w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative",
 				className
 			)}
 			{...props}

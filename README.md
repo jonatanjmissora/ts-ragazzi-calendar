@@ -21,24 +21,38 @@
                   npx drizzle-kit push
 
 
-CREAMOS EL QUERYCLIENT
-==================
-
-1️⃣ creamos el queries/query-client.ts con la funcion getQueryClient()
-
-2️⃣ actualizamos el router.tsx y el __root.tsx para usar el getQueryClient()
-
-
-CREATE PAGO
-==========
+CREATE RUBROS
+===========
 
 1️⃣ creamos el db/drizzle.ts y borramos el db.ts
 
-2️⃣ anexamos a db/schema.ts la tabla de db/pagos/schema.ts
+2️⃣ anexamos a db/schema.ts la tabla de db/rubros/schema.ts
 
-3️⃣ creamos el db/pagos/pago-validation.ts
+3️⃣ creamos el db/rubros/rubro-validation.ts y db/rubros/create-rubro-db.ts
 
-4️⃣ creamos el /components/pagos/create-pago.tsx
+4️⃣ creamos el server/rubros/create-rubro-server.ts
+
+5️⃣ creamos el queries/rubros/use-create-rubro.ts
+
+6️⃣ creamos el component/rubros/rubros-create.tsx
+
+7️⃣ creamos la routes/admin/create-rubro/index.tsx
+
+LIST RUBROS
+===========
+
+1️⃣ creamos el db/rubros/get-rubros-db.ts
+
+2️⃣ creamos el server/rubros/get-rubros-server.ts
+
+3️⃣ creamos el queries/rubros/rubros-query.ts
+
+4️⃣ creamos el routes/admin/route.tsx colocamos en el loader un ensureQueryData(rubrosQueryOptions)
+
+5️⃣ creamos la routes/admin/index.tsx hacemos el suspense/skelton para cargar RubrosList con el 
+
+6️⃣ creamos el component/rubros/rubros-list.tsx usamos el useSuspenseQuery(rubrosQueryOptions)
+
 
 
 

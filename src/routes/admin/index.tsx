@@ -23,7 +23,7 @@ function RouteComponent() {
 					Rubro
 				</Link>
 			</div>
-			<Suspense fallback={<RubrosSkelton />}>
+			<Suspense fallback={<AdminSkelton />}>
 				<RubrosList />
 			</Suspense>
 			<div className="flex items-center justify-between gap-8 border-b-2 pb-2">
@@ -41,7 +41,7 @@ function RouteComponent() {
 	)
 }
 
-const RubrosSkelton = () => {
+const AdminSkelton = () => {
 	return (
 		<div className="flex flex-col gap-3 w-3/4">
 			{[1, 2].map(item => (
