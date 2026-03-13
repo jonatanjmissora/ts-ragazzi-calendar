@@ -1,15 +1,15 @@
 import SectionContainer from "@/components/layout/section-container"
-import RubrosCreate from "@/components/rubros/rubros-create"
+import PagosCreate from "@/components/pagos/pagos-create"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/admin/create-rubro/")({
+export const Route = createFileRoute("/admin/_pagos/create-pago")({
 	component: RouteComponent,
 })
 
 function RouteComponent() {
 	return (
 		<SectionContainer>
-			<RubrosCreate />
+			<PagosCreate />
 		</SectionContainer>
 	)
 }

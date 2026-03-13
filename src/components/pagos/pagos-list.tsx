@@ -80,7 +80,7 @@ const DropdownMenuComponent = ({ item }: { item: PagoType }) => {
 				align="end"
 			>
 				<DropdownMenuGroup>
-					<Link to={`/admin/edit-rubro`} search={{ id: item.id }}>
+					<Link to={`/admin/edit-pago`} search={{ id: item.id }}>
 						<Button variant="ghost">
 							<Pencil size={14} />
 							Editar
