@@ -45,7 +45,7 @@ export default function PagosList() {
 		<div className="flex flex-col gap-3 w-3/4">
 			{items.map(item => (
 				<Card
-					className="flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base"
+					className="flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base bg-accent"
 					key={item.id}
 				>
 					<div className="absolute top-1/2 -translate-y-1/2 right-2">

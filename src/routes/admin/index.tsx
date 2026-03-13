@@ -36,7 +36,9 @@ function RouteComponent() {
 					Pago
 				</Link>
 			</div>
-			<PagosList />
+			<Suspense fallback={<AdminSkelton />}>
+				<PagosList />
+			</Suspense>
 		</SectionContainer>
 	)
 }
