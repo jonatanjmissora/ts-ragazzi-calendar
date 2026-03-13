@@ -20,6 +20,7 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { RubroType } from "db/schema"
+import DeleteForm from "./rubros-delete"
 
 export default function PagosList() {
 	const { data: items } = useSuspenseQuery(rubrosQueryOptions)
@@ -108,8 +109,7 @@ export function DeleteItemAlertDialog({
 			<AlertDialogContent>
 				<AlertDialogTitle></AlertDialogTitle>
 				<AlertDialogDescription></AlertDialogDescription>
-				{/* <DeleteForm item={item} setIsMenuOpen={setIsMenuOpen} /> */}
-				Delete
+				<DeleteForm item={item} setIsMenuOpen={setIsMenuOpen} />
 			</AlertDialogContent>
 		</AlertDialog>
 	)

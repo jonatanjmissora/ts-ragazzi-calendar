@@ -20,6 +20,7 @@ import {
 	AlertDialogTrigger,
 } from "../ui/alert-dialog"
 import { PagoType } from "db/pagos/schema"
+import DeleteForm from "./pagos-delete"
 
 export default function PagosList() {
 	const { data: items } = useSuspenseQuery(pagosQueryOptions)
@@ -111,8 +112,7 @@ export function DeleteItemAlertDialog({
 			<AlertDialogContent>
 				<AlertDialogTitle></AlertDialogTitle>
 				<AlertDialogDescription></AlertDialogDescription>
-				{/* <DeleteForm item={item} setIsMenuOpen={setIsMenuOpen} /> */}
-				Delete
+				<DeleteForm item={item} setIsMenuOpen={setIsMenuOpen} />
 			</AlertDialogContent>
 		</AlertDialog>
 	)
