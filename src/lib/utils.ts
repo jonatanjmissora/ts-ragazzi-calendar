@@ -12,5 +12,9 @@ export async function delay() {
 export function sortByPeriodo<T extends { periodo: number | bigint }>(
 	pagos: T[]
 ) {
-	return [...pagos].sort((a, b) => Number(a.periodo) - Number(b.periodo))
+	return [...pagos].sort((a, b) => Number(b.periodo) - Number(a.periodo))
+}
+
+export function sortByName<T extends { nombre: string }>(pagos: T[]) {
+	return [...pagos].sort((a, b) => b.nombre.localeCompare(a.nombre))
 }

@@ -1,4 +1,3 @@
-import { sortByPeriodo } from "@/lib/utils"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { PagoType } from "db/pagos/schema"
 import { updatePagoServer } from "server/pagos/update-pago-server"
@@ -14,8 +13,8 @@ export function useUpdatePago() {
 				if (!oldPagos) return oldPagos
 				const oldPago = oldPagos.find(oldPago => oldPago.id === data.id)
 				if (!oldPago) return oldPagos
-				return sortByPeriodo(
-					oldPagos.map(oldPago => (oldPago.id === data.id ? data : oldPago))
+				return oldPagos.map(oldPago =>
+					oldPago.id === data.id ? data : oldPago
 				)
 			})
 			queryClient.setQueryData<PagoType>(["pago", data.id], data)

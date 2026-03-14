@@ -21,6 +21,7 @@ import {
 } from "../ui/alert-dialog"
 import { PagoType } from "db/pagos/schema"
 import DeleteForm from "./pagos-delete"
+import { sortByPeriodo } from "@/lib/utils"
 
 export default function PagosList() {
 	const { data: items } = useSuspenseQuery(pagosQueryOptions)
@@ -41,10 +42,11 @@ export default function PagosList() {
 			</div>
 		)
 	}
+	const sortedItems = sortByPeriodo(items)
 
 	return (
 		<div className="flex flex-col gap-3 w-3/4">
-			{items.map(item => (
+			{sortedItems.map(item => (
 				<Card
 					className="flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base bg-accent"
 					key={item.id}

@@ -20,9 +20,10 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { RubroType } from "db/schema"
+import { sortByName } from "@/lib/utils"
 import DeleteForm from "./rubros-delete"
 
-export default function PagosList() {
+export default function RubrosList() {
 	const { data: items } = useSuspenseQuery(rubrosQueryOptions)
 
 	if (!items || items.length === 0) {
@@ -42,9 +43,13 @@ export default function PagosList() {
 		)
 	}
 
+	const sortedItems = sortByName(items)
+
+	console.log("sorted", sortedItems)
+
 	return (
 		<div className="flex flex-col gap-3 w-3/4">
-			{items.map(item => (
+			{sortedItems.map(item => (
 				<Card
 					className="flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base bg-accent"
 					key={item.id}
