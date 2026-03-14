@@ -45,8 +45,6 @@ export default function RubrosList() {
 
 	const sortedItems = sortByName(items)
 
-	console.log("sorted", sortedItems)
-
 	return (
 		<div className="flex flex-col gap-3 w-3/4">
 			{sortedItems.map(item => (
