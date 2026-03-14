@@ -349,7 +349,7 @@ export default function EditForm({
 			</form>
 
 			{!isLoading && !item && (
-				<p className="text-red-700 text-center">⚠ Item no encontrado</p>
+				<p className="text-red-700 text-center">⚠ Pago no encontrado</p>
 			)}
 		</div>
 	)
