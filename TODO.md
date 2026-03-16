@@ -15,4 +15,4 @@ transiciones
 
 filtro para los pagos
 
-cuando agrego un pago o rubro, no lo pone en orden
+se me pone el search antes de que ponga filtro

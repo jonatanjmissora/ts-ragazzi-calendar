@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { Link } from "@tanstack/react-router"
+import { Link, useSearch } from "@tanstack/react-router"
 import { pagosQueryOptions } from "queries/pagos/pagos-query"
 import { Button } from "../ui/button"
 import { Card, CardContent, CardTitle } from "../ui/card"
@@ -22,9 +22,15 @@ import {
 import { PagoType } from "db/pagos/schema"
 import DeleteForm from "./pagos-delete"
 import { sortByPeriodo } from "@/lib/utils"
+import { filteredItems } from "@/lib/utils"
 
 export default function PagosList() {
 	const { data: items } = useSuspenseQuery(pagosQueryOptions)
+	const {
+		"periodo-desde": periodoDesde,
+		"periodo-desde-simbolo": periodoDesdeSimbolo,
+		"periodo-hasta": periodoHasta,
+	} = useSearch({ from: "/admin/" })
 
 	if (!items || items.length === 0) {
 		return (
@@ -42,7 +48,9 @@ export default function PagosList() {
 			</div>
 		)
 	}
-	const sortedItems = sortByPeriodo(items)
+	const sortedItems = sortByPeriodo(
+		filteredItems(items, periodoDesde, periodoDesdeSimbolo, periodoHasta)
+	)
 
 	return (
 		<div className="flex flex-col gap-3 w-3/4">

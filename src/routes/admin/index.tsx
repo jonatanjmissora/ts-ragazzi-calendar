@@ -1,5 +1,5 @@
 import SectionContainer from "@/components/layout/section-container"
-import PagosFilter from "@/components/pagos/pagos-filter"
+import PagosFilter from "@/components/pagos/pagos-filter/pagos-filter"
 import PagosList from "@/components/pagos/pagos-list"
 import RubrosList from "@/components/rubros/rubros-list"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
@@ -13,7 +13,6 @@ export const Route = createFileRoute("/admin/")({
 		"periodo-desde": z.string().optional(),
 		"periodo-desde-simbolo": z.enum(["<", ">", "="]).optional(),
 		"periodo-hasta": z.string().optional(),
-		"periodo-hasta-simbolo": z.enum([">", "<", "="]).optional(),
 	}),
 	component: RouteComponent,
 })
