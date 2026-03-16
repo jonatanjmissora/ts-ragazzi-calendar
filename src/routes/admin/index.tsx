@@ -11,7 +11,6 @@ import z from "zod"
 export const Route = createFileRoute("/admin/")({
 	validateSearch: z.object({
 		"periodo-desde": z.string().optional(),
-		"periodo-desde-simbolo": z.enum(["<", ">", "="]).optional(),
 		"periodo-hasta": z.string().optional(),
 	}),
 	component: RouteComponent,

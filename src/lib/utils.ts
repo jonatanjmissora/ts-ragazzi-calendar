@@ -38,28 +38,30 @@ export function useDebouncedValue<T>(value: T, delay: number) {
 export function filteredItems(
 	pagos: PagoType[],
 	periodoDesde: string | undefined,
-	periodoDesdeSimbolo: ">" | "<" | "=" | undefined,
 	periodoHasta: string | undefined
 ) {
 	const result = pagos.filter(item => {
 		const periodo = Number(item.periodo)
-		const desde =
-			Number(periodoDesde) < 20200000 ? 20200000 : Number(periodoDesde)
-		const hasta =
-			Number(periodoHasta) < desde ? undefined : Number(periodoHasta)
+		const desde = periodoDesde ? Number(periodoDesde) : undefined
+		const hasta = periodoHasta ? Number(periodoHasta) : undefined
 
-		if (periodoDesdeSimbolo === "=") {
-			return periodo === desde
-		} else if (periodoDesdeSimbolo === "<") {
-			return periodo <= desde
-		} else if (periodoDesdeSimbolo === ">") {
-			if (hasta) {
-				return periodo >= desde && periodo <= hasta
-			}
-			return periodo >= desde
-		} else {
-			return true
+		// Si tengo desde y hasta
+		if (desde !== undefined && hasta !== undefined && desde <= hasta) {
+			return periodo >= desde && periodo <= hasta
 		}
+
+		// Si solo tengo desde
+		if (desde !== undefined) {
+			return periodo >= desde
+		}
+
+		// Si solo tengo hasta
+		if (hasta !== undefined) {
+			return periodo <= hasta
+		}
+
+		// Si no tengo ni desde ni hasta, retorno todos
+		return true
 	})
 	return result
 }

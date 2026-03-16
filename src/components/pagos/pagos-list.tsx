@@ -26,11 +26,8 @@ import { filteredItems } from "@/lib/utils"
 
 export default function PagosList() {
 	const { data: items } = useSuspenseQuery(pagosQueryOptions)
-	const {
-		"periodo-desde": periodoDesde,
-		"periodo-desde-simbolo": periodoDesdeSimbolo,
-		"periodo-hasta": periodoHasta,
-	} = useSearch({ from: "/admin/" })
+	const { "periodo-desde": periodoDesde, "periodo-hasta": periodoHasta } =
+		useSearch({ from: "/admin/" })
 
 	if (!items || items.length === 0) {
 		return (
@@ -49,7 +46,7 @@ export default function PagosList() {
 		)
 	}
 	const sortedItems = sortByPeriodo(
-		filteredItems(items, periodoDesde, periodoDesdeSimbolo, periodoHasta)
+		filteredItems(items, periodoDesde, periodoHasta)
 	)
 
 	return (
