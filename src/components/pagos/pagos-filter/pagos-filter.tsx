@@ -38,6 +38,8 @@ export default function PagosFilter() {
 
 	return (
 		<article className="flex items-center gap-20">
+			<span>(22)</span>
+
 			<PagosFilterPeriodo />
 
 			<div className="flex items-center justify-center gap-3">

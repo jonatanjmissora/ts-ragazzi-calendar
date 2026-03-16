@@ -13,6 +13,4 @@ update-rubro✅					 	use-update-rubro✅			   update-rubro-server	✅				     u
 
 transiciones
 
-filtro para los pagos
-
-se me pone el search antes de que ponga filtro
+implementar cantidad de pagos filtrados en admin

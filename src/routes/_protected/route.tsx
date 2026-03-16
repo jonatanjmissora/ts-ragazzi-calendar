@@ -1,9 +1,13 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { protectedRoute } from "@/lib/protected-route"
-import type { RouterContext } from "@/routes/__root"
+import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 
-export const Route = createFileRoute("/_protected")<RouterContext>({
-	loader: async () => await protectedRoute(),
+export const Route = createFileRoute("/_protected")({
+	loader: async ({ context }) => {
+		await protectedRoute()
+		context.queryClient.ensureQueryData(rubrosQueryOptions)
+		context.queryClient.ensureQueryData(rubrosQueryOptions)
+	},
 	component: RouteComponent,
 })
 

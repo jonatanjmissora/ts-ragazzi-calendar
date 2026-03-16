@@ -38,8 +38,10 @@ function RouteComponent() {
 			</article>
 			<article className="flex flex-col gap-8">
 				<div className="flex items-center justify-between gap-8 border-b-2 pb-2">
-					<h2 className="text-2xl font-bold">PAGOS</h2>
-					<PagosFilter />
+					<div className="flex items-center gap-4">
+						<h2 className="text-2xl font-bold">PAGOS</h2>
+						<PagosFilter />
+					</div>
 					<Link
 						className="border px-2 py-1 rounded-lg bg-accent flex items-center gap-2"
 						to="/admin/create-pago"
