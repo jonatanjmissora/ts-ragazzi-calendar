@@ -12,6 +12,8 @@ export const Route = createFileRoute("/admin/")({
 	validateSearch: z.object({
 		"periodo-desde": z.string().optional(),
 		"periodo-hasta": z.string().optional(),
+		rubro: z.string().optional(),
+		sector: z.string().optional(),
 	}),
 	component: RouteComponent,
 })

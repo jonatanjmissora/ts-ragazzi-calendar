@@ -38,9 +38,11 @@ export function useDebouncedValue<T>(value: T, delay: number) {
 export function filteredItems(
 	pagos: PagoType[],
 	periodoDesde: string | undefined,
-	periodoHasta: string | undefined
+	periodoHasta: string | undefined,
+	rubro: string | undefined,
+	sector: string | undefined
 ) {
-	const result = pagos.filter(item => {
+	let filteredResult = pagos.filter(item => {
 		const periodo = Number(item.periodo)
 		const desde = periodoDesde ? Number(periodoDesde) : undefined
 		const hasta = periodoHasta ? Number(periodoHasta) : undefined
@@ -63,5 +65,14 @@ export function filteredItems(
 		// Si no tengo ni desde ni hasta, retorno todos
 		return true
 	})
-	return result
+
+	if (rubro) {
+		filteredResult = filteredResult.filter(item => item.rubro === rubro)
+	}
+
+	if (sector) {
+		filteredResult = filteredResult.filter(item => item.sector === sector)
+	}
+
+	return filteredResult
 }

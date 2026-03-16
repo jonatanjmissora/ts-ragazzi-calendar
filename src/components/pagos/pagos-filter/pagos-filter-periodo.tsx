@@ -14,13 +14,13 @@ export default function PagosFilterPeriodo() {
 	const navigate = useNavigate({ from: "/admin" })
 
 	const periodoValido = (value: string) =>
-		value === "" || (Number(value) >= MIN_PERIODO && Number(value) <= 29999999)
+		Number(value) >= MIN_PERIODO && Number(value) <= 29999999
 
 	return (
 		<article>
 			<Input
 				id="periodo-desde"
-				className={`w-24  text-center ${!periodoValido(periodoDesdeValue) && "dark:bg-red-500/30 bg-red-500/30"}`}
+				className={`w-24  text-center ${periodoDesdeValue !== "" && !periodoValido(periodoDesdeValue) && "dark:bg-red-500/30 bg-red-500/30"}`}
 				name="periodo-desde"
 				defaultValue={periodoDesdeValue}
 				onChange={e => {
@@ -46,7 +46,7 @@ export default function PagosFilterPeriodo() {
 
 			<Input
 				id="periodo-hasta"
-				className={`w-24  text-center ${!periodoValido(periodoHastaValue) && "dark:bg-red-500/30 bg-red-500/30"}`}
+				className={`w-24  text-center ${periodoHastaValue !== "" && !periodoValido(periodoHastaValue) && "dark:bg-red-500/30 bg-red-500/30"}`}
 				name="periodo-hasta"
 				defaultValue={periodoHastaValue}
 				onChange={e => {
