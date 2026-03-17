@@ -76,3 +76,19 @@ export function filteredItems(
 
 	return filteredResult
 }
+
+export const localeDateToPeriodo = (date: Date) => {
+	const periodo = Number(
+		date
+			.toLocaleDateString("es-ES", {
+				year: "numeric",
+				month: "2-digit",
+				day: "2-digit",
+			})
+			.split("/")
+			.reverse()
+			.join("")
+	)
+	console.log("PERIODO", periodo)
+	return periodo
+}

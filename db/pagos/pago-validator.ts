@@ -10,9 +10,9 @@ export const pagoFormValidator = z.object({
 
 	sector: z.string().min(1, "El sector es requerido"),
 
-	monto: z.number().min(1, "El monto es requerido"),
+	monto: z.number().catch(0),
 
-	pagado: z.number(),
+	pagado: z.number().catch(0),
 })
 
 export type PagoFormType = z.infer<typeof pagoFormValidator>

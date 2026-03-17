@@ -20,7 +20,7 @@ export const Route = createFileRoute("/admin/")({
 
 function RouteComponent() {
 	return (
-		<SectionContainer className="gap-20">
+		<SectionContainer className="gap-20 sm:max-w-[75dvw] mt-10 mx-auto">
 			<article className="flex flex-col gap-8">
 				<div className="flex items-center justify-between gap-8 border-b-2 pb-2">
 					<h2 className="text-2xl font-bold">RUBROS</h2>

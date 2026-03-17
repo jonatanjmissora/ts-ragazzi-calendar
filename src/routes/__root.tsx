@@ -6,7 +6,6 @@ import {
 	Scripts,
 } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import Header from "../components/Header"
 
 import appCss from "../styles.css?url"
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools"
@@ -62,7 +61,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body className="w-screen overflow-x-hidden flex flex-col min-h-screen">
-				<Header />
 				{children}
 				<Toaster />
 				<TanStackDevtools
