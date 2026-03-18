@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
-import { PagoType } from "db/schema"
+import { PagoType, RubroType } from "db/schema"
 import { useEffect, useState } from "react"
 import { twMerge } from "tailwind-merge"
 
@@ -89,6 +89,48 @@ export const localeDateToPeriodo = (date: Date) => {
 			.reverse()
 			.join("")
 	)
-	console.log("PERIODO", periodo)
 	return periodo
+}
+
+export function arrayIntersection<T>(arr1: T[], arr2: T[]) {
+	const set1 = new Set(arr1)
+	const set2 = new Set(arr2)
+	return [...set1].filter(item => set2.has(item))
+}
+
+export function getRubrosFromPagosFromPeriodo(pagos: PagoType[]) {
+	const rubrosResult = [
+		{ nombre: "ragazzi", sectores: [] as string[] },
+		{ nombre: "patricios", sectores: [] as string[] },
+		{ nombre: "palihue", sectores: [] as string[] },
+		{ nombre: "jmolina", sectores: [] as string[] },
+	]
+	pagos.forEach(pago => {
+		const rubro = rubrosResult.find(r => r.nombre === pago.rubro)
+		console.log("pago", pago)
+		if (rubro) {
+			rubro.sectores.push(pago.sector)
+		}
+	})
+	return rubrosResult
+}
+
+export function getUnusedSectoresFromPeriodo(
+	pagosFromPeriodo: PagoType[],
+	rubros: RubroType[]
+) {
+	const rubrosFromPeriodo = getRubrosFromPagosFromPeriodo(pagosFromPeriodo)
+	const unusedSectores = [
+		{ nombre: "ragazzi", sectores: [] as string[] },
+		{ nombre: "patricios", sectores: [] as string[] },
+		{ nombre: "palihue", sectores: [] as string[] },
+		{ nombre: "jmolina", sectores: [] as string[] },
+	]
+	unusedSectores.forEach((rubro, i) => {
+		rubro.sectores = rubros[i].sectores
+			.split(" ")
+			.filter(sector => !rubrosFromPeriodo[i].sectores.includes(sector))
+	})
+
+	return unusedSectores
 }

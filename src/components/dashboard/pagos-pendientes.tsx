@@ -1,9 +1,11 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { pagosQueryOptions } from "queries/pagos/pagos-query"
+import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
 import { Suspense } from "react"
 import { Card, CardContent, CardTitle } from "../ui/card"
 import { Check, Ellipsis } from "lucide-react"
 import { Button } from "../ui/button"
+import { rubrosQueryOptions } from "queries/rubros/rubros-query"
+import { getUnusedSectoresFromPeriodo } from "@/lib/utils"
 
 export default function DashboardPagosPendientes() {
 	return (
@@ -23,9 +25,20 @@ export default function DashboardPagosPendientes() {
 }
 
 function PagosPendientesList() {
-	const { data: items } = useSuspenseQuery(pagosQueryOptions)
+	const { data: pagosFromPeriodo } = useSuspenseQuery(
+		pagosByPeriodoQueryOptions
+	)
+	const { data: rubros } = useSuspenseQuery(rubrosQueryOptions)
 
-	const pagosPendientes = items?.filter(item => item.pagado === 0)
+	if (!pagosFromPeriodo || !rubros) {
+		return <div>Cargando...</div>
+	}
+
+	const pagosPendientes = pagosFromPeriodo?.filter(item => item.pagado === 0)
+	const unusedSectoresFromPeriodo = getUnusedSectoresFromPeriodo(
+		pagosFromPeriodo,
+		rubros
+	)
 
 	return (
 		<div className="flex flex-col gap-2">

@@ -16,3 +16,5 @@ transiciones
 implementar cantidad de pagos filtrados en admin
 
 cuando agrego un pago en "/", no esta ordenado
+
+hacer un zustand para guardar los unusedSectoresFromPeriodo

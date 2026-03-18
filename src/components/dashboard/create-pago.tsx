@@ -53,10 +53,12 @@ export default function DashboardCreatePago() {
 							</Suspense>
 						</AccordionTrigger>
 						<AccordionContent>
-							<PagosCreate
-								rubro={rubro}
-								setAccordionValue={setAccordionValue}
-							/>
+							<Suspense>
+								<PagosCreate
+									rubro={rubro}
+									setAccordionValue={setAccordionValue}
+								/>
+							</Suspense>
 						</AccordionContent>
 					</AccordionItem>
 				))}
