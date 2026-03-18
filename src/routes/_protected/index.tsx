@@ -14,7 +14,7 @@ function App() {
 			<SectionContainer>
 				<div className="w-full flex">
 					<aside className="w-[20dvw] h-screen py-10 px-6 flex flex-col justify-between gap-20 border shadow bg-accent">
-						<h2>RAGAZZI</h2>
+						<Logo />
 						<DashboardCreatePago />
 						<h3>Menú</h3>
 					</aside>
@@ -24,5 +24,25 @@ function App() {
 				</div>
 			</SectionContainer>
 		</div>
+	)
+}
+
+const Logo = () => {
+	return (
+		<article className="flex items-center">
+			<div className="w-5/9">
+				<img
+					className="object-contain h-auto opacity-20"
+					src="/logo-light.svg"
+					alt="Logo"
+				/>
+			</div>
+			<div className="w-full text-center flex flex-col gap-2 relative text-foreground/20">
+				<h1 className="text-6xl font-bold tracking-wider">ragazzi</h1>
+				<h3 className="absolute right-5 -bottom-1/2 font-semibold text-xl">
+					vaqueria
+				</h3>
+			</div>
+		</article>
 	)
 }
