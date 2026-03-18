@@ -26,10 +26,12 @@ import { toast } from "sonner"
 import { pagoFormValidator } from "db/pagos/pago-validator"
 import { Field, FieldError, FieldGroup } from "../ui/field"
 import { useCreatePago } from "queries/pagos/use-create-pago"
-import { localeDateToPeriodo } from "@/lib/utils"
+import { getUnusedSectoresFromPeriodo, localeDateToPeriodo } from "@/lib/utils"
+import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
+
+const RUBROS = ["ragazzi", "patricio", "palihue", "jmolina"]
 
 export default function DashboardCreatePago() {
-	const RUBROS = ["ragazzi", "patricio", "palihue", "jmolina"]
 	const [accordionValue, setAccordionValue] = useState("")
 
 	return (
@@ -49,17 +51,17 @@ export default function DashboardCreatePago() {
 						<AccordionTrigger className="flex items-center justify-between px-4 m-0">
 							<span className="m-0 tracking-widest">{rubro.toUpperCase()}</span>
 							<Suspense>
-								<SectoresByRubro rubro={rubro} />
+								<UnusedSectoresFromRubroComponent rubro={rubro} />
 							</Suspense>
 						</AccordionTrigger>
-						<AccordionContent>
-							<Suspense>
+						<Suspense>
+							<AccordionContent>
 								<PagosCreate
 									rubro={rubro}
 									setAccordionValue={setAccordionValue}
 								/>
-							</Suspense>
-						</AccordionContent>
+							</AccordionContent>
+						</Suspense>
 					</AccordionItem>
 				))}
 			</Accordion>
@@ -67,14 +69,22 @@ export default function DashboardCreatePago() {
 	)
 }
 
-const SectoresByRubro = ({ rubro }: { rubro: string }) => {
-	const { data: items } = useSuspenseQuery(rubrosQueryOptions)
-	const rubroItem = items?.find(item => item.nombre === rubro)
-	return rubroItem?.sectores.length !== 0 ? (
+const UnusedSectoresFromRubroComponent = ({ rubro }: { rubro: string }) => {
+	const { data: rubros } = useSuspenseQuery(rubrosQueryOptions)
+	const { data: pagosFromPeriodo } = useSuspenseQuery(
+		pagosByPeriodoQueryOptions
+	)
+
+	// obtengo los sectores que no estan utilizados del periodo
+	const unusedSectoresObj = getUnusedSectoresFromPeriodo(
+		pagosFromPeriodo || [],
+		rubros || []
+	)
+	return (
 		<span className="text-foreground/30">
-			({rubroItem?.sectores.split(" ").length})
+			( {getUnusedSectoresFromRubroArray(rubro, unusedSectoresObj).length} )
 		</span>
-	) : null
+	)
 }
 
 const PagosCreate = ({
@@ -84,10 +94,22 @@ const PagosCreate = ({
 	rubro: string
 	setAccordionValue: (value: string) => void
 }) => {
-	const { data: items } = useSuspenseQuery(rubrosQueryOptions)
-	const sectoresArray = items
-		?.find(item => item.nombre === rubro)
-		?.sectores.split(" ")
+	const { data: rubros } = useSuspenseQuery(rubrosQueryOptions)
+	const { data: pagosFromPeriodo } = useSuspenseQuery(
+		pagosByPeriodoQueryOptions
+	)
+
+	// obtengo los sectores que no estan utilizados del periodo
+	const unusedSectoresObj = getUnusedSectoresFromPeriodo(
+		pagosFromPeriodo || [],
+		rubros || []
+	)
+
+	const unusedSectoresFromRubroArray = getUnusedSectoresFromRubroArray(
+		rubro,
+		unusedSectoresObj
+	)
+
 	const { mutateAsync: createItemMutation, isPending, error } = useCreatePago()
 
 	const form = useForm({
@@ -114,6 +136,10 @@ const PagosCreate = ({
 			}
 		},
 	})
+
+	if (unusedSectoresFromRubroArray.length === 0) {
+		return
+	}
 
 	return (
 		<div className="w-full  flex flex-col gap-6 relative">
@@ -145,7 +171,7 @@ const PagosCreate = ({
 
 										<SelectContent>
 											<SelectGroup>
-												{sectoresArray?.map(sector => (
+												{unusedSectoresFromRubroArray?.map(sector => (
 													<SelectItem key={sector} value={sector}>
 														{sector.toUpperCase()}
 													</SelectItem>
@@ -250,4 +276,16 @@ const CalendarDate = ({ form }: { form: unknown }) => {
 			</PopoverContent>
 		</Popover>
 	)
+}
+
+type UnusedSectoresType = {
+	nombre: string
+	sectores: string[]
+}
+// obtengo los sectores que no estan utilizados para un rubro
+function getUnusedSectoresFromRubroArray(
+	rubro: string,
+	unusedSectoresObj: UnusedSectoresType[]
+) {
+	return unusedSectoresObj.find(r => r.nombre === rubro)?.sectores || []
 }
