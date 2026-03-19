@@ -142,7 +142,7 @@ const PagosCreate = ({
 	}
 
 	return (
-		<div className="w-full  flex flex-col gap-6 relative">
+		<div className="w-full  flex flex-col gap-6 relative bg-accent">
 			<form
 				id="create-form"
 				onSubmit={e => {
@@ -249,7 +249,7 @@ const CalendarDate = ({ form }: { form: unknown }) => {
 
 	return (
 		<Popover open={openDate} onOpenChange={setOpenDate}>
-			<PopoverTrigger asChild className="w-full dark:bg-accent">
+			<PopoverTrigger asChild className="w-full dark:bg-background">
 				<Button
 					variant={"outline"}
 					className={!date ? "text-muted-foreground" : ""}

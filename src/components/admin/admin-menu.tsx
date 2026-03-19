@@ -21,7 +21,7 @@ import {
 	AlertDialogDescription,
 	AlertDialogTitle,
 	AlertDialogTrigger,
-} from "./ui/alert-dialog"
+} from "../ui/alert-dialog"
 import { setThemeServerFn } from "server/theme"
 
 export default function DashboardMenu() {

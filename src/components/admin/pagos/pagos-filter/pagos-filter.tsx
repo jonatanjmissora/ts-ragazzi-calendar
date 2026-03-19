@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Label } from "../../ui/label"
+import { Label } from "../../../ui/label"
 import {
 	Select,
 	SelectTrigger,
@@ -7,17 +7,17 @@ import {
 	SelectContent,
 	SelectGroup,
 	SelectItem,
-} from "../../ui/select"
+} from "../../../ui/select"
 import { useQuery } from "@tanstack/react-query"
 import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 import PagosFilterPeriodo from "./pagos-filter-periodo"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 
 export default function PagosFilter() {
-	const { rubro, sector } = useSearch({ from: "/admin/" })
+	const { rubro, sector } = useSearch({ from: "/admin/pagos/" })
 	const [rubroValue, setRubroValue] = useState(rubro || "")
 	const [sectorValue, setSectorValue] = useState(sector || "")
-	const navigate = useNavigate({ from: "/admin" })
+	const navigate = useNavigate({ from: "/admin/pagos/" })
 
 	const { data: rubros } = useQuery(rubrosQueryOptions)
 	const rubrosNombreArray = [
@@ -37,7 +37,7 @@ export default function PagosFilter() {
 	const sectoresDisponibles = ["todos", ...getSectoresFromRubro()]
 
 	return (
-		<article className="flex items-center gap-20">
+		<article className="flex items-center gap-14">
 			<span>(22)</span>
 
 			<PagosFilterPeriodo />

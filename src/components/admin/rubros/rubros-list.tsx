@@ -1,37 +1,30 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { Link, useSearch } from "@tanstack/react-router"
-import { pagosQueryOptions } from "queries/pagos/pagos-query"
-import { Button } from "../ui/button"
-import { Card, CardContent, CardTitle } from "../ui/card"
+import { rubrosQueryOptions } from "queries/rubros/rubros-query"
+import { Link } from "@tanstack/react-router"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuGroup,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
-import { useState } from "react"
+} from "@/components/ui/dropdown-menu"
 import { Ellipsis, Pencil, Trash2 } from "lucide-react"
+import { useState } from "react"
 import {
 	AlertDialog,
 	AlertDialogContent,
 	AlertDialogDescription,
 	AlertDialogTitle,
 	AlertDialogTrigger,
-} from "../ui/alert-dialog"
-import { PagoType } from "db/pagos/schema"
-import DeleteForm from "./pagos-delete"
-import { sortByPeriodo } from "@/lib/utils"
-import { filteredItems } from "@/lib/utils"
+} from "@/components/ui/alert-dialog"
+import { RubroType } from "db/schema"
+import { sortByName } from "@/lib/utils"
+import DeleteForm from "./rubros-delete"
 
-export default function PagosList() {
-	const { data: items } = useSuspenseQuery(pagosQueryOptions)
-	const {
-		"periodo-desde": periodoDesde,
-		"periodo-hasta": periodoHasta,
-		rubro,
-		sector,
-	} = useSearch({ from: "/admin/" })
+export default function RubrosList() {
+	const { data: items } = useSuspenseQuery(rubrosQueryOptions)
 
 	if (!items || items.length === 0) {
 		return (
@@ -40,24 +33,23 @@ export default function PagosList() {
 
 				<div className="flex items-center gap-2">
 					<span>Por favor agregue un</span>
-					<Link to="/admin/create-pago">
+					<Link to="/admin/create-rubro">
 						<Button variant="link" className="text-base">
-							nuevo pago
+							nuevo rubro
 						</Button>
 					</Link>
 				</div>
 			</div>
 		)
 	}
-	const sortedItems = sortByPeriodo(
-		filteredItems(items, periodoDesde, periodoHasta, rubro, sector)
-	)
+
+	const sortedItems = sortByName(items)
 
 	return (
-		<div className="flex flex-col gap-3 w-3/4">
+		<div className="flex flex-col gap-3 w-full">
 			{sortedItems.map(item => (
 				<Card
-					className="flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base bg-accent"
+					className="flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base bg-background"
 					key={item.id}
 				>
 					<div className="absolute top-1/2 -translate-y-1/2 right-2">
@@ -65,11 +57,8 @@ export default function PagosList() {
 					</div>
 					<CardTitle></CardTitle>
 					<CardContent className="flex gap-6 items-center">
-						<span>Periodo: {item.periodo}</span>
-						<span>Rubro: {item.rubro.toUpperCase()}</span>
-						<span>Sector: {item.sector.toUpperCase()}</span>
-						<span>Monto: {item.monto}</span>
-						<span>Pagado: {item.pagado ? item.pagado : "No"}</span>
+						<span>Nombre: {item.nombre.toUpperCase()}</span>
+						<span>Sectores: {item.sectores.toUpperCase()}</span>
 					</CardContent>
 				</Card>
 			))}
@@ -77,7 +66,7 @@ export default function PagosList() {
 	)
 }
 
-const DropdownMenuComponent = ({ item }: { item: PagoType }) => {
+const DropdownMenuComponent = ({ item }: { item: RubroType }) => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
 	return (
 		<DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -91,7 +80,7 @@ const DropdownMenuComponent = ({ item }: { item: PagoType }) => {
 				align="end"
 			>
 				<DropdownMenuGroup>
-					<Link to={`/admin/edit-pago`} search={{ id: item.id }}>
+					<Link to={`/admin/edit-rubro`} search={{ id: item.id }}>
 						<Button variant="ghost">
 							<Pencil size={14} />
 							Editar
@@ -109,7 +98,7 @@ export function DeleteItemAlertDialog({
 	item,
 	setIsMenuOpen,
 }: {
-	item: PagoType
+	item: RubroType
 	setIsMenuOpen: (open: boolean) => void
 }) {
 	return (

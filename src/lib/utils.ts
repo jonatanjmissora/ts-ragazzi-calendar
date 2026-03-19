@@ -107,7 +107,6 @@ export function getRubrosFromPagosFromPeriodo(pagos: PagoType[]) {
 	]
 	pagos.forEach(pago => {
 		const rubro = rubrosResult.find(r => r.nombre === pago.rubro)
-		console.log("pago", pago)
 		if (rubro) {
 			rubro.sectores.push(pago.sector)
 		}

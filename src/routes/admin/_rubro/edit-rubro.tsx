@@ -1,5 +1,5 @@
 import SectionContainer from "@/components/layout/section-container"
-import RubrosEdit from "@/components/rubros/rubros-edit"
+import RubrosEdit from "@/components/admin/rubros/rubros-edit"
 import { createFileRoute } from "@tanstack/react-router"
 import { z } from "zod"
 

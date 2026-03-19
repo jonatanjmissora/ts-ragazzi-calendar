@@ -6,13 +6,13 @@ import { pagoFormValidator } from "db/pagos/pago-validator"
 import { pagoQueryOptions } from "queries/pagos/pagos-query"
 import { useUpdatePago } from "queries/pagos/use-update-pago"
 import { toast } from "sonner"
-import { Button } from "../ui/button"
+import { Button } from "../../ui/button"
 import { X } from "lucide-react"
-import { FieldError, FieldGroup } from "../ui/field"
-import { Field } from "../ui/field"
-import { FieldLabel } from "../ui/field"
+import { FieldError, FieldGroup } from "../../ui/field"
+import { Field } from "../../ui/field"
+import { FieldLabel } from "../../ui/field"
 import { Loader } from "lucide-react"
-import { Input } from "../ui/input"
+import { Input } from "../../ui/input"
 import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 import {
 	Select,
@@ -22,7 +22,7 @@ import {
 	SelectLabel,
 	SelectTrigger,
 	SelectValue,
-} from "../ui/select"
+} from "../../ui/select"
 import { useEffect } from "react"
 
 export default function EditForm({

@@ -1,24 +1,24 @@
 import { useForm } from "@tanstack/react-form"
 import { useRouter } from "@tanstack/react-router"
-import { RubroType } from "db/pagos/schema"
+import { pagoIdValidator } from "db/pagos/pago-validator"
+import { PagoType } from "db/pagos/schema"
+import { useDeletePago } from "queries/pagos/use-delete-pago"
 import { toast } from "sonner"
-import { Button } from "../ui/button"
+import { Button } from "../../ui/button"
 import { Loader } from "lucide-react"
-import { useDeleteRubro } from "queries/rubros/use-delete-rubro"
-import { rubroIdValidator } from "db/rubros/rubro-validator"
 
 export default function DeleteForm({
 	item,
 	setIsMenuOpen,
 }: {
-	item: RubroType
+	item: PagoType
 	setIsMenuOpen: (open: boolean) => void
 }) {
 	const {
 		mutateAsync: deleteItemMutation,
 		error,
 		isPending,
-	} = useDeleteRubro(item.id)
+	} = useDeletePago(item.id)
 	const router = useRouter()
 
 	const form = useForm({
@@ -26,16 +26,16 @@ export default function DeleteForm({
 			id: item.id,
 		},
 		validators: {
-			onSubmit: rubroIdValidator,
+			onSubmit: pagoIdValidator,
 		},
 		onSubmit: async ({ value }) => {
 			const result = await deleteItemMutation({ data: { id: value.id } })
 
 			if (!result) {
-				console.error("Error al eliminar el rubro", error)
-				toast.error("Error al eliminar el rubro")
+				console.error("Error al eliminar el pago", error)
+				toast.error("Error al eliminar el pago")
 			}
-			toast.success("Rubro eliminado exitosamente")
+			toast.success("Pago eliminado exitosamente")
 			router.invalidate()
 		},
 	})
@@ -50,7 +50,7 @@ export default function DeleteForm({
 			}}
 		>
 			<p className="text-xl font-semibold text-center">
-				¿Estás seguro de borrar el rubro?
+				¿Estás seguro de borrar el pago?
 			</p>
 
 			<p className="text-center opacity-50 text-xs balance">
@@ -77,7 +77,7 @@ export default function DeleteForm({
 				</Button>
 			</div>
 			{error && (
-				<p className="text-red-500 text-xs">Error al eliminar el rubro</p>
+				<p className="text-red-500 text-xs">Error al eliminar el pago</p>
 			)}
 		</form>
 	)

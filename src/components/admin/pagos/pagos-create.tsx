@@ -1,6 +1,6 @@
-import { Field, FieldGroup } from "../ui/field"
-import { FieldLabel } from "../ui/field"
-import { FieldError } from "../ui/field"
+import { Field, FieldGroup } from "../../ui/field"
+import { FieldLabel } from "../../ui/field"
+import { FieldError } from "../../ui/field"
 import { useRouter } from "@tanstack/react-router"
 import { cn } from "@/lib/utils"
 import { useForm, useStore } from "@tanstack/react-form"
@@ -13,10 +13,10 @@ import {
 	SelectLabel,
 	SelectTrigger,
 	SelectValue,
-} from "../ui/select"
+} from "../../ui/select"
 import { Loader, X } from "lucide-react"
-import { Button } from "../ui/button"
-import { Input } from "../ui/input"
+import { Button } from "../../ui/button"
+import { Input } from "../../ui/input"
 import { pagoFormValidator } from "db/pagos/pago-validator"
 import { useCreatePago } from "queries/pagos/use-create-pago"
 import { useQuery } from "@tanstack/react-query"
