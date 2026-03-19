@@ -4,7 +4,7 @@ import {
 	useRouteContext,
 	useRouter,
 } from "@tanstack/react-router"
-import { LogOut, Monitor, Moon, Sun } from "lucide-react"
+import { LogOut, Menu, Monitor, Moon, Sun, User } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -24,7 +24,7 @@ import {
 } from "./ui/alert-dialog"
 import { setThemeServerFn } from "server/theme"
 
-export default function Header() {
+export default function DashboardMenu() {
 	const { theme, session } = useRouteContext({ from: "__root__" })
 	const router = useRouter()
 
@@ -37,44 +37,39 @@ export default function Header() {
 	}
 
 	return (
-		<header className="py-8 w-[90%] 2xl:w-[80%] mx-auto">
-			<nav className="flex items-center justify-between">
-				<Link to="/" className="text-xl font-semibold">
-					Logo
-				</Link>
-
-				<Link to="/admin">Admin</Link>
-
-				{session ? (
-					<DropdownMenuDemo
-						name={session.user?.name}
-						theme={theme}
-						toggleTheme={toggleTheme}
-					/>
-				) : (
-					<div className="flex items-center gap-4">
-						<button className="cursor-pointer" onClick={toggleTheme}>
-							{theme === "dark" ? (
-								<Moon size={20} />
-							) : theme === "light" ? (
-								<Sun size={20} />
-							) : (
-								<Monitor size={20} />
-							)}
-						</button>
-					</div>
-				)}
-			</nav>
+		<header className="flex justify-end">
+			{session ? (
+				<DropdownMenuDemo
+					name={session.user?.name}
+					email={session.user?.email}
+					theme={theme}
+					toggleTheme={toggleTheme}
+				/>
+			) : (
+				<div className="flex items-center gap-4">
+					<button className="cursor-pointer" onClick={toggleTheme}>
+						{theme === "dark" ? (
+							<Moon size={20} />
+						) : theme === "light" ? (
+							<Sun size={20} />
+						) : (
+							<Monitor size={20} />
+						)}
+					</button>
+				</div>
+			)}
 		</header>
 	)
 }
 
 export function DropdownMenuDemo({
 	name,
+	email,
 	theme,
 	toggleTheme,
 }: {
 	name: string
+	email?: string
 	theme: "light" | "dark" | "auto"
 	toggleTheme: () => void
 }) {
@@ -84,17 +79,32 @@ export function DropdownMenuDemo({
 		<DropdownMenu open={isUserMenuOpen} onOpenChange={setIsUserMenuOpen}>
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" className="cursor-pointer">
-					Bienvenido {name}
+					<Menu className="size-6" />
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="w-40 p-4" align="end">
+			<DropdownMenuContent className="w-80" align="end">
 				<DropdownMenuGroup>
-					<LogoutAlertDialog setUserMenuOpen={setIsUserMenuOpen} />
+					<div className="flex flex-col items-center gap-1  py-10 bg-accent">
+						<p className="font-semibold text-center tracking-widest flex items-center gap-2">
+							<span className="p-2 px-3 rounded-full bg-background">
+								{name.charAt(0).toUpperCase()}
+							</span>
+							Bienvenido {name}
+						</p>
+						<p className="flex justify-center text-xs text-muted-foreground">
+							{email}
+						</p>
+					</div>
+					<Link
+						to="/admin"
+						className="m-4 hover:bg-accent flex justify-end p-2 px-6 rounded-sm cursor-pointer text-sm items-center gap-2"
+					>
+						Admin <User size={14} className="text-muted-foreground" />
+					</Link>
 					<DropdownMenuSeparator />
-
 					<button
 						onClick={toggleTheme}
-						className="w-[75%] m-4 hover:bg-accent p-2 rounded-sm flex items-center justify-end gap-2 text-sm cursor-pointer"
+						className="w-[90%] m-4 hover:bg-accent p-2 px-6 rounded-sm flex items-center justify-end gap-2 text-sm cursor-pointer"
 					>
 						Aspecto{" "}
 						{theme === "dark" ? (
@@ -105,6 +115,8 @@ export function DropdownMenuDemo({
 							<Monitor size={14} className="text-muted-foreground" />
 						)}
 					</button>
+					<DropdownMenuSeparator />
+					<LogoutAlertDialog setUserMenuOpen={setIsUserMenuOpen} />
 				</DropdownMenuGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>
@@ -132,8 +144,8 @@ export function LogoutAlertDialog({
 
 	return (
 		<AlertDialog open={open} onOpenChange={setOpen}>
-			<AlertDialogTrigger asChild className="w-[75%] m-4 hover:bg-accent">
-				<span className="flex justify-end p-2 rounded-sm cursor-pointer text-sm items-center gap-2">
+			<AlertDialogTrigger asChild className="m-4 hover:bg-accent">
+				<span className="flex justify-end p-2 px-6 rounded-sm cursor-pointer text-sm items-center gap-2">
 					Salir <LogOut size={14} className="text-muted-foreground" />
 				</span>
 			</AlertDialogTrigger>
