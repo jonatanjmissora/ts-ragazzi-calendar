@@ -24,7 +24,7 @@ import {
 } from "../ui/alert-dialog"
 import { setThemeServerFn } from "server/theme"
 
-export default function DashboardMenu() {
+export default function UserMenu() {
 	const { theme, session } = useRouteContext({ from: "__root__" })
 	const router = useRouter()
 

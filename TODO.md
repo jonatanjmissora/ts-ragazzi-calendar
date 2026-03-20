@@ -13,17 +13,15 @@ update-rubro✅					 	use-update-rubro✅			   update-rubro-server	✅				     u
 
 transiciones
 
-implementar cantidad de pagos filtrados en admin
-
 cuando agrego un pago en "/", no esta ordenado
-
-hacer un zustand para guardar los unusedSectoresFromPeriodo
 
 cargando en el login
 
 titulos de las tablas
 
 ajustar casilleros tabla
+
+calculadora
 
 menu de cada pago en dashboard
 

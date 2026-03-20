@@ -37,7 +37,7 @@ export default function DashboardMenu() {
 	}
 
 	return (
-		<header className="flex justify-end">
+		<header className="flex justify-start">
 			{session ? (
 				<DropdownMenuDemo
 					name={session.user?.name}
@@ -82,7 +82,7 @@ export function DropdownMenuDemo({
 					<Ellipsis className="size-6" />
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="sm:w-70 2xl:w-80" align="end">
+			<DropdownMenuContent className="sm:w-70 2xl:w-98" align="start">
 				<DropdownMenuGroup>
 					<div className="flex flex-col items-center gap-1  py-10 bg-accent">
 						<p className="font-semibold text-center tracking-widest flex items-center gap-2">
