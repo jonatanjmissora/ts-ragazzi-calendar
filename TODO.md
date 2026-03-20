@@ -23,5 +23,9 @@ calculadora
 
 formato de los montos
 
+tabla de historial
+
+conexion a google
+
 
 
