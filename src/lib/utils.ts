@@ -77,7 +77,7 @@ export function filteredItems(
 	return filteredResult
 }
 
-export const localeDateToPeriodo = (date: Date) => {
+export const localeDateToPeriodo = (date: Date = new Date()) => {
 	const periodo = Number(
 		date
 			.toLocaleDateString("es-ES", {

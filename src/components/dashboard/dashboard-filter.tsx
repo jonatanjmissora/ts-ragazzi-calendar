@@ -68,12 +68,9 @@ export default function DashboardFilter({
 					}}
 				>
 					<SelectTrigger
-						className={`w-30 ${BG_RUBROS[rubroValue as keyof typeof BG_RUBROS]}`}
+						className={`w-30 ${BG_RUBROS[rubroValue as keyof typeof BG_RUBROS] || "bg-background"}`}
 					>
-						<SelectValue
-							placeholder={rubroValue || "todos"}
-							className="bg-cyan-500"
-						/>
+						<SelectValue placeholder={rubroValue || "todos"} />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>

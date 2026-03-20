@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
 import { Suspense } from "react"
-import { Check, Ellipsis } from "lucide-react"
+import { Ellipsis } from "lucide-react"
 import { Button } from "../ui/button"
 import { filteredItems, periodoConvert } from "@/lib/utils"
 import DashboardFilter from "./dashboard-filter"
@@ -26,6 +26,7 @@ import {
 } from "../ui/alert-dialog"
 import { PagoType } from "db/pagos/schema"
 import DeletePagoForm from "../layout/pagos-delete"
+import CheckPagoForm from "./check-pago-form"
 
 export default function DashboardPagosPendientes() {
 	const { rubro, sector } = useSearch({ from: "/_protected/" }) as {
@@ -86,9 +87,7 @@ function PagosPendientesList({
 					<span>{item.sector.toUpperCase()}</span>
 					<span>{item.monto}</span>
 					<div className="flex justify-between gap-2">
-						<Button variant="outline">
-							<Check size={16} />
-						</Button>
+						<CheckPagoForm itemId={item.id} />
 						<DropdownMenuComponent item={item} />
 					</div>
 				</GridContainer6>
@@ -173,12 +172,11 @@ const PagosSkelton = () => {
 		1: "bg-(--palihue)/50",
 		2: "bg-(--patricios)/35",
 		3: "bg-(--jmolina)/20",
-		4: "bg-(--palihue)/5",
 	} as const
 
 	return (
 		<div className="flex flex-col gap-2">
-			{Array.from({ length: 5 }).map((_, index) => (
+			{Array.from({ length: 4 }).map((_, index) => (
 				<div
 					key={Math.random()}
 					className={`my-1 py-1 rounded-xl shadow h-11 ${backgrounds[index as keyof typeof backgrounds]}`}

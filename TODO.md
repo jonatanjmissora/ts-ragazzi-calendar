@@ -14,13 +14,12 @@ update-rubro✅					 	use-update-rubro✅			   update-rubro-server	✅				     u
 transiciones
 
 cuando agrego un pago en "/", no esta ordenado, ni siquiera lo lista, hasta que refresco, controlar filtros
+lo mismo si edito un pago, no aparece actualizado hasta que refresco
+lo mismo si pago un pago, no desaparece de pagos pendientes
 
 cargando en el login
 
 calculadora
-
-ok de pagado en el dashboard
-menu de cada pago en dashboard
 
 formato de los montos
 
