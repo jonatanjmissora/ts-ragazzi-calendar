@@ -21,12 +21,15 @@ import { pagoFormValidator } from "db/pagos/pago-validator"
 import { useCreatePago } from "queries/pagos/use-create-pago"
 import { useQuery } from "@tanstack/react-query"
 import { rubrosQueryOptions } from "queries/rubros/rubros-query"
+import { useState } from "react"
+import { BG_RUBROS } from "@/_constants"
 
 export default function PagosCreate({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
 	const router = useRouter()
+	const [actualRubro, setActualRubro] = useState<string>("ragazzi")
 	const { data: rubros, isLoading } = useQuery(rubrosQueryOptions)
 	const { mutateAsync: createItemMutation, isPending, error } = useCreatePago()
 
@@ -70,7 +73,7 @@ export default function PagosCreate({
 	return (
 		<div
 			className={cn(
-				"w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative bg-accent",
+				`w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative ${BG_RUBROS[(rubroValue || actualRubro) as keyof typeof BG_RUBROS]}`,
 				className
 			)}
 			{...props}
@@ -143,6 +146,7 @@ export default function PagosCreate({
 											value={field.state.value}
 											onValueChange={value => {
 												field.handleChange(value)
+												setActualRubro(value)
 												form.setFieldValue("sector", "")
 											}}
 										>

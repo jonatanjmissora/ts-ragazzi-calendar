@@ -23,7 +23,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../../ui/select"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { BG_RUBROS } from "@/_constants"
 
 export default function EditForm({
 	itemId,
@@ -34,14 +35,15 @@ export default function EditForm({
 	const { data: rubros } = useQuery(rubrosQueryOptions)
 	const { data: item, isLoading } = useQuery(pagoQueryOptions(itemId))
 	const { mutateAsync: updateItemMutation, isPending, error } = useUpdatePago()
+	const [actualRubro, setActualRubro] = useState<string>("")
 
 	const form = useForm({
 		defaultValues: {
-			periodo: 0,
-			rubro: "",
-			sector: "",
-			monto: 0,
-			pagado: 0,
+			periodo: item?.periodo || 0,
+			rubro: item?.rubro || "",
+			sector: item?.sector || "",
+			monto: item?.monto || 0,
+			pagado: item?.pagado || 0,
 		},
 		validators: {
 			onSubmit: pagoFormValidator,
@@ -65,9 +67,16 @@ export default function EditForm({
 	// Update form values when item data loads
 	useEffect(() => {
 		if (item) {
-			form.setFieldValue("periodo", item.periodo)
-			form.setFieldValue("monto", item.monto)
-			form.setFieldValue("pagado", item.pagado)
+			setTimeout(() => {
+				form.reset({
+					periodo: item.periodo,
+					rubro: item.rubro,
+					sector: item.sector,
+					monto: item.monto,
+					pagado: item.pagado,
+				})
+				setActualRubro(item.rubro)
+			}, 0)
 		}
 	}, [item, form])
 
@@ -87,7 +96,7 @@ export default function EditForm({
 	return (
 		<div
 			className={cn(
-				"w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative bg-accent",
+				`w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative ${BG_RUBROS[(rubroValue || actualRubro) as keyof typeof BG_RUBROS]}`,
 				className
 			)}
 			{...props}
@@ -152,10 +161,6 @@ export default function EditForm({
 						children={field => {
 							const isInvalid =
 								field.state.meta.isTouched && !field.state.meta.isValid
-							if (!field.state.value && rubros?.length) {
-								field.handleChange(rubros[0].nombre)
-							}
-
 							return (
 								<Field data-invalid={isInvalid} className="gap-1">
 									<FieldLabel htmlFor={field.name}>Rubro</FieldLabel>
@@ -167,12 +172,13 @@ export default function EditForm({
 											Cargando... <Loader size={14} className="animate-spin" />
 										</div>
 									) : (
-										!isLoading &&
 										item && (
 											<Select
+												key={item.id}
 												value={field.state.value}
 												onValueChange={value => {
 													field.handleChange(value)
+													setActualRubro(value)
 													form.setFieldValue("sector", "")
 												}}
 											>
@@ -209,10 +215,6 @@ export default function EditForm({
 						children={field => {
 							const isInvalid =
 								field.state.meta.isTouched && !field.state.meta.isValid
-							if (!field.state.value && rubros?.[0]?.sectores) {
-								field.handleChange(sectoresDisponibles[0])
-							}
-
 							return (
 								<Field data-invalid={isInvalid} className="gap-1">
 									<FieldLabel htmlFor={field.name}>Sector</FieldLabel>
@@ -227,7 +229,8 @@ export default function EditForm({
 										!isLoading &&
 										item && (
 											<Select
-												value={field.state.value ?? ""}
+												key={`${item.id}-${rubroValue}`}
+												value={field.state.value}
 												onValueChange={value => {
 													field.handleChange(value)
 												}}

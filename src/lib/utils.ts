@@ -133,3 +133,10 @@ export function getUnusedSectoresFromPeriodo(
 
 	return unusedSectores
 }
+
+export function periodoConvert(periodo: number) {
+	const periodoString = periodo.toString()
+	const month = periodoString.slice(4, 6)
+	const day = periodoString.slice(6, 8)
+	return `${day}-${month}`
+}

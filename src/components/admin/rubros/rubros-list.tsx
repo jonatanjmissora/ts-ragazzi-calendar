@@ -22,6 +22,7 @@ import {
 import { RubroType } from "db/schema"
 import { sortByName } from "@/lib/utils"
 import DeleteForm from "./rubros-delete"
+import { BG_RUBROS } from "@/_constants"
 
 export default function RubrosList() {
 	const { data: items } = useSuspenseQuery(rubrosQueryOptions)
@@ -49,7 +50,7 @@ export default function RubrosList() {
 		<div className="flex flex-col gap-3 w-full">
 			{sortedItems.map(item => (
 				<Card
-					className="flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base bg-background"
+					className={`flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base ${BG_RUBROS[item.nombre as keyof typeof BG_RUBROS]}`}
 					key={item.id}
 				>
 					<div className="absolute top-1/2 -translate-y-1/2 right-2">

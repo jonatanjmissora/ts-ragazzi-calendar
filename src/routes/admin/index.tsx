@@ -1,5 +1,4 @@
 import RubrosList from "@/components/admin/rubros/rubros-list"
-import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { Plus } from "lucide-react"
 import { Suspense } from "react"
@@ -21,21 +20,28 @@ function RouteComponent() {
 					Rubro
 				</Link>
 			</div>
-			<Suspense fallback={<AdminSkelton />}>
+			<Suspense fallback={<RubrosSkelton />}>
 				<RubrosList />
 			</Suspense>
 		</article>
 	)
 }
 
-const AdminSkelton = () => {
+const RubrosSkelton = () => {
+	const backgrounds = {
+		0: "bg-(--ragazzi)/65",
+		1: "bg-(--patricios)/35",
+		2: "bg-(--palihue)/50",
+		3: "bg-(--jmolina)/20",
+	} as const
+
 	return (
-		<div className="flex flex-col gap-3 w-3/4">
-			{[1, 2].map(item => (
-				<Card className="w-full h-14 bg-muted animate-pulse" key={item}>
-					<CardTitle></CardTitle>
-					<CardContent></CardContent>
-				</Card>
+		<div className="flex flex-col gap-2">
+			{Array.from({ length: 4 }).map((_, index) => (
+				<div
+					key={Math.random()}
+					className={`my-1 py-1 rounded-xl shadow h-14 ${backgrounds[index as keyof typeof backgrounds]}`}
+				></div>
 			))}
 		</div>
 	)

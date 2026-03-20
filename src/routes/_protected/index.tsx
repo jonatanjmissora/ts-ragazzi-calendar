@@ -4,8 +4,13 @@ import SectionContainer from "@/components/layout/section-container"
 import DashboardCreatePago from "@/components/dashboard/create-pago"
 import DashboardPagosPendientes from "@/components/dashboard/pagos-pendientes"
 import { Aside } from "@/components/layout/aside"
+import { z } from "zod"
 
 export const Route = createFileRoute("/_protected/")<RouterContext>({
+	validateSearch: z.object({
+		rubro: z.string().optional(),
+		sector: z.string().optional(),
+	}),
 	component: App,
 })
 

@@ -13,16 +13,16 @@ update-rubro✅					 	use-update-rubro✅			   update-rubro-server	✅				     u
 
 transiciones
 
-cuando agrego un pago en "/", no esta ordenado
+cuando agrego un pago en "/", no esta ordenado, ni siquiera lo lista, hasta que refresco, controlar filtros
 
 cargando en el login
 
-titulos de las tablas
-
-ajustar casilleros tabla
-
 calculadora
 
+ok de pagado en el dashboard
 menu de cada pago en dashboard
+
+formato de los montos
+
 
 

@@ -22,6 +22,10 @@
   --color-black: oklch(0.141 0.005 285.823);
   --color-dark-bg: oklch(23.29% 0.00957 285.602);
   --color-dark-popover: oklch(24.235% 0.01328 285.346);
+  --palihue: oklch(60.761% 0.10914 331.44 / 0.5);
+  --ragazzi: oklch(67.506% 0.10072 97.237 / 0.5);
+  --patricios: oklch(60.047% 0.14373 145.183 / 0.5);
+  --jmolina: oklch(57.174% 0.08715 245.128 / 0.5);
 
   /* Gray scale */
   --gray-50: oklch(0.985 0 0);

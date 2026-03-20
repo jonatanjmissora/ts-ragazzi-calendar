@@ -23,6 +23,7 @@ import { PagoType } from "db/pagos/schema"
 import DeleteForm from "./pagos-delete"
 import { sortByPeriodo } from "@/lib/utils"
 import { filteredItems } from "@/lib/utils"
+import { BG_RUBROS } from "@/_constants"
 
 export default function PagosList() {
 	const { data: items } = useSuspenseQuery(pagosQueryOptions)
@@ -57,7 +58,7 @@ export default function PagosList() {
 		<div className="flex flex-col gap-3 w-full">
 			{sortedItems.map(item => (
 				<Card
-					className="flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base bg-background"
+					className={`flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base ${BG_RUBROS[item.rubro as keyof typeof BG_RUBROS]}`}
 					key={item.id}
 				>
 					<div className="absolute top-1/2 -translate-y-1/2 right-2">

@@ -28,12 +28,10 @@ import { Field, FieldError, FieldGroup } from "../ui/field"
 import { useCreatePago } from "queries/pagos/use-create-pago"
 import { getUnusedSectoresFromPeriodo, localeDateToPeriodo } from "@/lib/utils"
 import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
-
-const RUBROS = ["ragazzi", "patricio", "palihue", "jmolina"]
+import { BG_RUBROS, RUBROS } from "@/_constants"
 
 export default function DashboardCreatePago() {
 	const [accordionValue, setAccordionValue] = useState("")
-
 	return (
 		<article className="">
 			<Accordion
@@ -46,9 +44,9 @@ export default function DashboardCreatePago() {
 					<AccordionItem
 						key={rubro}
 						value={rubro}
-						className="hover:bg-background/60 bg-background my-3 p-2 rounded-lg shadow "
+						className={`${BG_RUBROS[rubro as keyof typeof BG_RUBROS]} my-3 p-2 rounded-lg`}
 					>
-						<AccordionTrigger className="flex items-center justify-between px-4 m-0">
+						<AccordionTrigger className="flex items-center justify-between px-4 m-0 cursor-pointer">
 							<span className="m-0 tracking-widest">{rubro.toUpperCase()}</span>
 							<Suspense>
 								<UnusedSectoresFromRubroComponent rubro={rubro} />
@@ -142,7 +140,7 @@ const PagosCreate = ({
 	}
 
 	return (
-		<div className="w-full  flex flex-col gap-6 relative bg-accent">
+		<div className={`w-full  flex flex-col gap-6 relative`}>
 			<form
 				id="create-form"
 				onSubmit={e => {
