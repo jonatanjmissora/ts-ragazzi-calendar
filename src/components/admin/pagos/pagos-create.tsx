@@ -49,7 +49,7 @@ export default function PagosCreate({
 				toast.error("Error al crear el pago")
 			} else {
 				toast.success("Pago creado exitosamente")
-				router.navigate({ to: "/admin" })
+				router.navigate({ to: "/admin/pagos" })
 			}
 		},
 	})
@@ -70,7 +70,7 @@ export default function PagosCreate({
 	return (
 		<div
 			className={cn(
-				"w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative",
+				"w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative bg-accent",
 				className
 			)}
 			{...props}
@@ -79,7 +79,7 @@ export default function PagosCreate({
 				<Button
 					variant="ghost"
 					className="cursor-pointer"
-					onClick={() => router.navigate({ to: "/admin" })}
+					onClick={() => router.navigate({ to: "/admin/pagos" })}
 				>
 					<X size={20} />
 				</Button>

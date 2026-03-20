@@ -14,8 +14,10 @@ export const Logo = () => {
 				/>
 			</div>
 			<div className="w-full text-center flex flex-col gap-2 relative text-foreground/20">
-				<h1 className="text-6xl font-bold tracking-wider">ragazzi</h1>
-				<h3 className="absolute right-5 -bottom-1/3 font-semibold text-xl">
+				<h1 className="sm:text-5xl 2xl:text-6xl text-4xl font-bold tracking-wider">
+					ragazzi
+				</h1>
+				<h3 className="absolute right-5 -bottom-1/3 font-semibold sm:text-base 2xl:text-xl">
 					vaqueria
 				</h3>
 			</div>

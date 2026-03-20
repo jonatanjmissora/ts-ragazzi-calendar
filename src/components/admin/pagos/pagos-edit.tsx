@@ -58,7 +58,7 @@ export default function EditForm({
 				toast.error("Error al editar el pago")
 			}
 			toast.success("Pago editado exitosamente")
-			router.navigate({ to: "/admin" })
+			router.navigate({ to: "/admin/pagos" })
 		},
 	})
 
@@ -87,7 +87,7 @@ export default function EditForm({
 	return (
 		<div
 			className={cn(
-				"w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative",
+				"w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative bg-accent",
 				className
 			)}
 			{...props}
@@ -96,7 +96,7 @@ export default function EditForm({
 				<Button
 					variant="ghost"
 					className="cursor-pointer"
-					onClick={() => router.navigate({ to: "/admin" })}
+					onClick={() => router.navigate({ to: "/admin/pagos" })}
 				>
 					<X size={20} />
 				</Button>

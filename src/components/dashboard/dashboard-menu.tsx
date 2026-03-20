@@ -4,7 +4,7 @@ import {
 	useRouteContext,
 	useRouter,
 } from "@tanstack/react-router"
-import { LogOut, Menu, Monitor, Moon, Sun, User } from "lucide-react"
+import { Ellipsis, LogOut, Monitor, Moon, Sun, User } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -79,10 +79,10 @@ export function DropdownMenuDemo({
 		<DropdownMenu open={isUserMenuOpen} onOpenChange={setIsUserMenuOpen}>
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" className="cursor-pointer">
-					<Menu className="size-6" />
+					<Ellipsis className="size-6" />
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="w-80" align="end">
+			<DropdownMenuContent className="sm:w-70 2xl:w-80" align="end">
 				<DropdownMenuGroup>
 					<div className="flex flex-col items-center gap-1  py-10 bg-accent">
 						<p className="font-semibold text-center tracking-widest flex items-center gap-2">

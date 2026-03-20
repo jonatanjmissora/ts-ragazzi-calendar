@@ -20,3 +20,11 @@ cuando agrego un pago en "/", no esta ordenado
 hacer un zustand para guardar los unusedSectoresFromPeriodo
 
 cargando en el login
+
+titulos de las tablas
+
+ajustar casilleros tabla
+
+menu de cada pago en dashboard
+
+

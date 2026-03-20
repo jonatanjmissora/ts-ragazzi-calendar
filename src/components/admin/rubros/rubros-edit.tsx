@@ -59,7 +59,7 @@ export default function EditForm({
 	return (
 		<div
 			className={cn(
-				"w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative",
+				"w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative bg-accent",
 				className
 			)}
 			{...props}

@@ -41,7 +41,7 @@ export default function RubrosCreate({
 	return (
 		<div
 			className={cn(
-				"w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative",
+				"w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative bg-accent",
 				className
 			)}
 			{...props}
@@ -63,7 +63,7 @@ export default function RubrosCreate({
 				}}
 			>
 				<FieldGroup className="gap-5">
-					<h2 className="text-2xl font-bold">Crear pago</h2>
+					<h2 className="text-2xl font-bold">Crear rubro</h2>
 
 					<form.Field
 						name="nombre"

@@ -37,79 +37,81 @@ export default function PagosFilter() {
 	const sectoresDisponibles = ["todos", ...getSectoresFromRubro()]
 
 	return (
-		<article className="flex items-center gap-14">
+		<article className="flex items-center flex-col 2xl:flex-row gap-2 2xl:gap-14">
 			<PagosFilterPeriodo />
 
-			<div className="flex items-center justify-center gap-3">
-				<Label htmlFor="rubro">Rubro</Label>
+			<div className="flex items-center gap-14">
+				<div className="flex items-center justify-center gap-3">
+					<Label htmlFor="rubro">Rubro</Label>
 
-				<Select
-					defaultValue="todos"
-					value={rubroValue}
-					onValueChange={value => {
-						setRubroValue(value)
-						setSectorValue("todos")
-						navigate({
-							search: prev => {
-								const search = {
-									...prev,
-									rubro: value === "todos" ? undefined : value,
-									sector: undefined,
-								}
-								return search
-							},
-							replace: true, // no ensucia el history
-						})
-					}}
-				>
-					<SelectTrigger className="w-30">
-						<SelectValue placeholder={rubroValue || "todos"} />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectGroup>
-							{rubrosNombreArray.map(rubro => (
-								<SelectItem key={rubro} value={rubro}>
-									{rubro}
-								</SelectItem>
-							))}
-						</SelectGroup>
-					</SelectContent>
-				</Select>
-			</div>
+					<Select
+						defaultValue="todos"
+						value={rubroValue}
+						onValueChange={value => {
+							setRubroValue(value)
+							setSectorValue("todos")
+							navigate({
+								search: prev => {
+									const search = {
+										...prev,
+										rubro: value === "todos" ? undefined : value,
+										sector: undefined,
+									}
+									return search
+								},
+								replace: true, // no ensucia el history
+							})
+						}}
+					>
+						<SelectTrigger className="w-30">
+							<SelectValue placeholder={rubroValue || "todos"} />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{rubrosNombreArray.map(rubro => (
+									<SelectItem key={rubro} value={rubro}>
+										{rubro}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+				</div>
 
-			<div className="flex items-center justify-center gap-3">
-				<Label htmlFor="sector">Sector</Label>
+				<div className="flex items-center justify-center gap-3">
+					<Label htmlFor="sector">Sector</Label>
 
-				<Select
-					defaultValue="todos"
-					value={sectorValue}
-					onValueChange={value => {
-						setSectorValue(value)
-						navigate({
-							search: prev => {
-								const search = {
-									...prev,
-									sector: value === "todos" ? undefined : value,
-								}
-								return search
-							},
-							replace: true, // no ensucia el history
-						})
-					}}
-				>
-					<SelectTrigger className="w-30">
-						<SelectValue placeholder={sectorValue || "todos"} />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectGroup>
-							{sectoresDisponibles.map(sector => (
-								<SelectItem key={sector} value={sector}>
-									{sector}
-								</SelectItem>
-							))}
-						</SelectGroup>
-					</SelectContent>
-				</Select>
+					<Select
+						defaultValue="todos"
+						value={sectorValue}
+						onValueChange={value => {
+							setSectorValue(value)
+							navigate({
+								search: prev => {
+									const search = {
+										...prev,
+										sector: value === "todos" ? undefined : value,
+									}
+									return search
+								},
+								replace: true, // no ensucia el history
+							})
+						}}
+					>
+						<SelectTrigger className="w-30">
+							<SelectValue placeholder={sectorValue || "todos"} />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{sectoresDisponibles.map(sector => (
+									<SelectItem key={sector} value={sector}>
+										{sector}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+				</div>
 			</div>
 		</article>
 	)

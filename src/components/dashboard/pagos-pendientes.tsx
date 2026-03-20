@@ -8,7 +8,7 @@ import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 
 export default function DashboardPagosPendientes() {
 	return (
-		<article className="w-2/3 mx-auto flex flex-col gap-4 p-6 border rounded-lg shadow bg-accent">
+		<article className="sm:w-3/4 2xl:w-2/3 mx-auto flex flex-col gap-4 p-6 border rounded-lg shadow bg-accent">
 			<h2 className="flex justify-around items-center gap-6 text-lg font-semibold">
 				<span>vencimiento</span>
 				<span>rubro</span>

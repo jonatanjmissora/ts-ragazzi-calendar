@@ -21,7 +21,7 @@ export const Route = createFileRoute("/admin/pagos/")({
 
 function RouteComponent() {
 	return (
-		<article className="w-2/3 mx-auto flex flex-col gap-4 p-6 border rounded-lg shadow bg-accent">
+		<article className="sm:w-3/4 2xl:w-2/3 mx-auto flex flex-col gap-4 p-6 border rounded-lg shadow bg-accent">
 			<div className="flex items-center justify-between gap-8 border-b-2 pb-2">
 				<div className="flex items-center justify-between gap-6 w-full">
 					<div className="flex items-center gap-2">
