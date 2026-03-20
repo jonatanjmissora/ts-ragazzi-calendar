@@ -7,7 +7,7 @@ import { Loader } from "lucide-react"
 import { useDeleteRubro } from "queries/rubros/use-delete-rubro"
 import { rubroIdValidator } from "db/rubros/rubro-validator"
 
-export default function DeleteForm({
+export default function DeleteRubroForm({
 	item,
 	setIsMenuOpen,
 }: {

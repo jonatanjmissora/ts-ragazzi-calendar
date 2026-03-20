@@ -4,10 +4,10 @@ import { pagoIdValidator } from "db/pagos/pago-validator"
 import { PagoType } from "db/pagos/schema"
 import { useDeletePago } from "queries/pagos/use-delete-pago"
 import { toast } from "sonner"
-import { Button } from "../../ui/button"
+import { Button } from "../ui/button"
 import { Loader } from "lucide-react"
 
-export default function DeleteForm({
+export default function DeletePagoForm({
 	item,
 	setIsMenuOpen,
 }: {
@@ -50,7 +50,7 @@ export default function DeleteForm({
 			}}
 		>
 			<p className="text-xl font-semibold text-center">
-				¿Estás seguro de borrar el pago?
+				¿Estás seguro de borrar {item.rubro}-{item.sector}?
 			</p>
 
 			<p className="text-center opacity-50 text-xs balance">

@@ -5,9 +5,27 @@ import { Check, Ellipsis } from "lucide-react"
 import { Button } from "../ui/button"
 import { filteredItems, periodoConvert } from "@/lib/utils"
 import DashboardFilter from "./dashboard-filter"
-import { useSearch } from "@tanstack/react-router"
+import { Link, useSearch } from "@tanstack/react-router"
 import { Switch } from "../ui/switch"
 import { BG_RUBROS } from "@/_constants"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuGroup,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu"
+import { Pencil, Trash2 } from "lucide-react"
+import { useState } from "react"
+import {
+	AlertDialog,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "../ui/alert-dialog"
+import { PagoType } from "db/pagos/schema"
+import DeletePagoForm from "../layout/pagos-delete"
 
 export default function DashboardPagosPendientes() {
 	const { rubro, sector } = useSearch({ from: "/_protected/" }) as {
@@ -71,13 +89,63 @@ function PagosPendientesList({
 						<Button variant="outline">
 							<Check size={16} />
 						</Button>
-						<Button variant="outline">
-							<Ellipsis size={16} />
-						</Button>
+						<DropdownMenuComponent item={item} />
 					</div>
 				</GridContainer6>
 			))}
 		</div>
+	)
+}
+
+const DropdownMenuComponent = ({ item }: { item: PagoType }) => {
+	const [isMenuOpen, setIsMenuOpen] = useState(false)
+	return (
+		<DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+			<DropdownMenuTrigger asChild>
+				<Button variant="ghost" className="cursor-pointer">
+					<Ellipsis size={14} />
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent
+				className="w-28 2xl:w-40 p-4 text-xs 2xl:text-base"
+				align="end"
+			>
+				<DropdownMenuGroup>
+					<Link to="/pagos/edit-pago" search={{ id: item.id }}>
+						<Button variant="ghost">
+							<Pencil size={14} />
+							Editar
+						</Button>
+					</Link>
+					<DropdownMenuSeparator />
+					<DeleteItemAlertDialog item={item} setIsMenuOpen={setIsMenuOpen} />
+				</DropdownMenuGroup>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	)
+}
+
+export function DeleteItemAlertDialog({
+	item,
+	setIsMenuOpen,
+}: {
+	item: PagoType
+	setIsMenuOpen: (open: boolean) => void
+}) {
+	return (
+		<AlertDialog>
+			<AlertDialogTrigger asChild>
+				<Button variant="ghost">
+					<Trash2 size={14} />
+					Borrar
+				</Button>
+			</AlertDialogTrigger>
+			<AlertDialogContent>
+				<AlertDialogTitle></AlertDialogTitle>
+				<AlertDialogDescription></AlertDialogDescription>
+				<DeletePagoForm item={item} setIsMenuOpen={setIsMenuOpen} />
+			</AlertDialogContent>
+		</AlertDialog>
 	)
 }
 

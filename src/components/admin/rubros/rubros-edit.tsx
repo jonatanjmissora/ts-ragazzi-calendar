@@ -15,7 +15,7 @@ import { useEffect } from "react"
 import { useUpdateRubro } from "queries/rubros/use-update-rubro"
 import { rubroFormValidator } from "db/rubros/rubro-validator"
 
-export default function EditForm({
+export default function EditRubroForm({
 	itemId,
 	className,
 	...props

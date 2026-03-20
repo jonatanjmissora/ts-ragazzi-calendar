@@ -6,7 +6,7 @@ const SearchSchema = z.object({
 	id: z.coerce.string(),
 })
 
-export const Route = createFileRoute("/admin/pagos/edit-pago")({
+export const Route = createFileRoute("/_protected/pagos/edit-pago")({
 	component: RouteComponent,
 	validateSearch: search => SearchSchema.parse(search),
 })

@@ -6,13 +6,8 @@ import { pagoFormValidator } from "db/pagos/pago-validator"
 import { pagoQueryOptions } from "queries/pagos/pagos-query"
 import { useUpdatePago } from "queries/pagos/use-update-pago"
 import { toast } from "sonner"
-import { Button } from "../../ui/button"
 import { X } from "lucide-react"
-import { FieldError, FieldGroup } from "../../ui/field"
-import { Field } from "../../ui/field"
-import { FieldLabel } from "../../ui/field"
 import { Loader } from "lucide-react"
-import { Input } from "../../ui/input"
 import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 import {
 	Select,
@@ -22,16 +17,21 @@ import {
 	SelectLabel,
 	SelectTrigger,
 	SelectValue,
-} from "../../ui/select"
+} from "../../components/ui/select"
 import { useEffect, useState } from "react"
 import { BG_RUBROS } from "@/_constants"
+import { Button } from "../ui/button"
+import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field"
+import { Input } from "../ui/input"
 
-export default function EditForm({
+export default function EditPagoForm({
 	itemId,
 	className,
 	...props
 }: React.ComponentProps<"div"> & { itemId: string }) {
 	const router = useRouter()
+	const originPath = router.state.location.pathname.split("/")[1]
+	const returnedPath = originPath === "pagos" ? "/" : "/admin/pagos"
 	const { data: rubros } = useQuery(rubrosQueryOptions)
 	const { data: item, isLoading } = useQuery(pagoQueryOptions(itemId))
 	const { mutateAsync: updateItemMutation, isPending, error } = useUpdatePago()
@@ -60,7 +60,7 @@ export default function EditForm({
 				toast.error("Error al editar el pago")
 			}
 			toast.success("Pago editado exitosamente")
-			router.navigate({ to: "/admin/pagos" })
+			router.navigate({ to: returnedPath })
 		},
 	})
 
@@ -105,7 +105,7 @@ export default function EditForm({
 				<Button
 					variant="ghost"
 					className="cursor-pointer"
-					onClick={() => router.navigate({ to: "/admin/pagos" })}
+					onClick={() => router.navigate({ to: returnedPath })}
 				>
 					<X size={20} />
 				</Button>
