@@ -56,11 +56,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	const { theme } = Route.useRouteContext()
 
 	return (
-		<html lang="en" className={theme}>
+		<html
+			lang="en"
+			className={`${theme} w-screen overflow-x-hidden min-h-screen`}
+		>
 			<head>
 				<HeadContent />
 			</head>
-			<body className="w-screen overflow-x-hidden flex flex-col min-h-screen">
+			<body className="w-full h-full flex flex-col">
 				{children}
 				<Toaster />
 				<TanStackDevtools

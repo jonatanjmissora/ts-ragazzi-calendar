@@ -31,6 +31,9 @@
 			},
 			"complexity": {
 				"noFlatMapIdentity": "off"
+			},
+			"suspicious": {
+				"noArrayIndexKey": "off"
 			}
 		}
 	},
