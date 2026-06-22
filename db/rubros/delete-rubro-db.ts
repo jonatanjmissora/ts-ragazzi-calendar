@@ -5,7 +5,7 @@ import { db } from "db/drizzle"
 
 export async function deleteRubroDB(rubroId: string) {
 	try {
-		await delay()
+		// await delay()
 		return await db
 			.delete(rubros)
 			.where(and(eq(rubros.id, rubroId)))

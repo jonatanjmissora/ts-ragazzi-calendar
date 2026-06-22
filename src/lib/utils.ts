@@ -140,3 +140,22 @@ export function periodoConvert(periodo: number) {
 	const day = periodoString.slice(6, 8)
 	return `${day}-${month}`
 }
+
+export function getPeriodo(mes: number | undefined, anio: number | undefined) {
+	let start = 0
+	let end = 0
+
+	if (mes && anio) {
+		start = anio * 10000 + (mes + 1) * 100 + 1
+		end = anio * 10000 + (mes + 2) * 100 + 1
+	} else {
+		const now = new Date()
+		start = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + 1
+		end = now.getFullYear() * 10000 + (now.getMonth() + 2) * 100 + 1
+	}
+
+	return [start, end]
+}
+
+export const montoFormat = (number: number) =>
+  new Intl.NumberFormat("de-DE", { minimumFractionDigits: 0 }).format(number)

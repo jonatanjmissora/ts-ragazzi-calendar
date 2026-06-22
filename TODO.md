@@ -19,10 +19,6 @@ lo mismo si pago un pago, no desaparece de pagos pendientes
 
 cargando en el login
 
-calculadora
-
-formato de los montos
-
 tabla de historial
 
 conexion a google

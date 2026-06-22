@@ -4,7 +4,7 @@ import { getRequest } from "@tanstack/react-start/server"
 import { getPagoByIdDB } from "db/pagos/get-pago-by-id-db"
 import { pagoIdValidator } from "db/pagos/pago-validator"
 
-export const getPagoByIdServer = createServerFn()
+export const getPagoByIdServer = createServerFn({ method: "GET" })
 	.inputValidator(pagoIdValidator)
 	.handler(async ({ data }) => {
 		const request = getRequest()

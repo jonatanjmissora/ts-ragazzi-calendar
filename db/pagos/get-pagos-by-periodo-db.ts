@@ -3,22 +3,22 @@ import { db } from "db/drizzle"
 import { pagos } from "db/schema"
 import { desc, and, gte, lt } from "drizzle-orm"
 
-const now = new Date()
+// const now = new Date()
 
-const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
-const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+// const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+// const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
 
-const format = (d: Date) =>
-	Number(
-		`${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`
-	)
+// const format = (d: Date) =>
+// 	Number(
+// 		`${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`
+// 	)
 
-const start = format(startDate)
-const end = format(nextMonth)
+// const start = format(startDate)
+// const end = format(nextMonth)
 
-export async function getPagosByPeriodoDB() {
+export async function getPagosByPeriodoDB(start: number, end: number) {
 	try {
-		await delay()
+		// await delay()
 		return await db
 			.select()
 			.from(pagos)

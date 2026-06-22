@@ -6,8 +6,6 @@ export const Route = createFileRoute("/_protected/")({
 	validateSearch: z.object({
 		rubro: z.string().optional(),
 		sector: z.string().optional(),
-		mes: z.coerce.number().int().min(0).max(11).optional(),
-		anio: z.coerce.number().int().optional(),
 	}),
 	component: App,
 })

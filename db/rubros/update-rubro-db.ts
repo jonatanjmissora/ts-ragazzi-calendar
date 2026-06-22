@@ -6,7 +6,7 @@ import { rubros } from "db/pagos/schema"
 
 export async function updateRubroDB(updatedItem: UpdateRubroType) {
 	try {
-		await delay()
+		// await delay()
 		const result = await db
 			.update(rubros)
 			.set({

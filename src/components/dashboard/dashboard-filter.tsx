@@ -12,7 +12,6 @@ import { useNavigate } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 import { BG_RUBROS } from "@/_constants"
-import { Calculator } from "lucide-react"
 import Periodo from "./periodo"
 
 interface DashboardFilterProps {
@@ -47,8 +46,7 @@ export default function DashboardFilter({
 
 	return (
 		<div className="flex items-center justify-between gap-14">
-			<div>
-				<Calculator />
+			<div className="flex-1">
 			</div>
 			<Periodo />
 			<div className="flex items-center gap-10">

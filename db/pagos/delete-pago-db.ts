@@ -5,7 +5,7 @@ import { and, eq } from "drizzle-orm"
 
 export async function deletePagoDB(pagoId: string) {
 	try {
-		await delay()
+		// await delay()
 		return await db
 			.delete(pagos)
 			.where(and(eq(pagos.id, pagoId)))

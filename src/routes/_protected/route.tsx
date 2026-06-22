@@ -5,12 +5,16 @@ import { pagosQueryOptions } from "queries/pagos/pagos-query"
 import SectionContainer from "../../components/layout/section-container"
 import { Aside } from "@/components/layout/aside"
 import DashboardCreatePago from "@/components/dashboard/create-pago"
+import { z } from "zod"
 
 export const Route = createFileRoute("/_protected")({
+	validateSearch: z.object({
+		mes: z.coerce.number().int().min(0).max(11).optional(),
+		anio: z.coerce.number().int().optional(),
+	}),
 	loader: async ({ context }) => {
 		await protectedRoute()
 		context.queryClient.ensureQueryData(rubrosQueryOptions)
-		context.queryClient.ensureQueryData(pagosQueryOptions)
 	},
 	component: RouteComponent,
 })

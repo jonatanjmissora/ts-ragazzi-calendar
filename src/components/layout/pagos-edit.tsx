@@ -1,9 +1,9 @@
-import { cn } from "@/lib/utils"
+import { cn, getPeriodo } from "@/lib/utils"
 import { useForm, useStore } from "@tanstack/react-form"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
 import { pagoFormValidator } from "db/pagos/pago-validator"
-import { pagoQueryOptions } from "queries/pagos/pagos-query"
+import { pagoQueryOptions, pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
 import { useUpdatePago } from "queries/pagos/use-update-pago"
 import { toast } from "sonner"
 import { X } from "lucide-react"
@@ -33,7 +33,12 @@ export default function EditPagoForm({
 	const originPath = router.state.location.pathname.split("/")[1]
 	const returnedPath = originPath === "pagos" ? "/" : "/admin/pagos"
 	const { data: rubros } = useQuery(rubrosQueryOptions)
-	const { data: item, isLoading } = useQuery(pagoQueryOptions(itemId))
+	// const { data: item, isLoading } = useQuery(pagoQueryOptions(itemId))
+	const [start, end] = getPeriodo(undefined, undefined)
+	const { data: pagosFromPeriodo, isLoading } = useSuspenseQuery(
+		pagosByPeriodoQueryOptions(start, end)
+	)
+	const item = pagosFromPeriodo?.find(pago => pago.id === itemId)
 	const { mutateAsync: updateItemMutation, isPending, error } = useUpdatePago()
 	const [actualRubro, setActualRubro] = useState<string>("")
 
@@ -88,7 +93,15 @@ export default function EditPagoForm({
 		const selectedRubro = rubros.find(r => r.nombre === rubroName)
 		if (!selectedRubro || !selectedRubro.sectores) return []
 
-		return selectedRubro.sectores.split(" ")
+		const sectoresArray = selectedRubro.sectores.split(" ")
+		const sectoresDisponibles = pagosFromPeriodo?.map(pago => {
+			if (pago.rubro === rubroName) {
+				//TODO: quitar el sector de sectoresArray
+				const index = sectoresArray.findIndex(sector => sector === pago.sector)
+				return sectoresArray.toS
+			}
+		})
+		return sectoresDisponibles?.flat() || [""]
 	}
 
 	const sectoresDisponibles = getSectoresFromRubro(rubroValue)
@@ -209,7 +222,7 @@ export default function EditPagoForm({
 							)
 						}}
 					/>
-
+{JSON.stringify(sectoresDisponibles)}
 					<form.Field
 						name="sector"
 						children={field => {
@@ -243,11 +256,11 @@ export default function EditPagoForm({
 													<SelectGroup>
 														<SelectLabel>Sector</SelectLabel>
 
-														{sectoresDisponibles.map(sector => (
-															<SelectItem key={sector} value={sector}>
-																{sector.toUpperCase()}
+														{/* {sectoresDisponibles.map(sector => 
+															<SelectItem key={sector} value={sector ?? ""}>
+																{sector?.toUpperCase()}
 															</SelectItem>
-														))}
+														)} */}
 													</SelectGroup>
 												</SelectContent>
 											</Select>

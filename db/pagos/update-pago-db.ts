@@ -6,7 +6,7 @@ import { UpdatePagoType } from "./pago-validator"
 
 export async function updatePagoDB(updatedItem: UpdatePagoType) {
 	try {
-		await delay()
+		// await delay()
 		const result = await db
 			.update(pagos)
 			.set({

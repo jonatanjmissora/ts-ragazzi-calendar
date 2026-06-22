@@ -24,8 +24,9 @@ export const pagoQueryOptions = (itemId: string) => {
 	})
 }
 
-export const pagosByPeriodoQueryOptions = queryOptions({
-	queryKey: ["pagos-by-periodo"],
-	queryFn: () => getPagosByPeriodoServer(),
-	refetchInterval: 60 * 1000, // refrescar cada 60 segundos
-})
+export const pagosByPeriodoQueryOptions = (start: number, end: number) =>
+	queryOptions({
+		queryKey: ["pagos-by-periodo", start, end],
+		queryFn: () => getPagosByPeriodoServer({ data: { start, end } }),
+		// refetchInterval: 60 * 1000, // refrescar cada 60 segundos
+	})

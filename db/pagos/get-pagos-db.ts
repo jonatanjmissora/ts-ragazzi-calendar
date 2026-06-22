@@ -5,7 +5,7 @@ import { desc } from "drizzle-orm"
 
 export async function getPagosDB() {
 	try {
-		await delay()
+		// await delay()
 		return await db.select().from(pagos).orderBy(desc(pagos.periodo))
 	} catch (error) {
 		console.error(

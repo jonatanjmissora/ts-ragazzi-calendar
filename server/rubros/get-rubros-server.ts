@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { getRequest } from "@tanstack/react-start/server"
 import { getRubrosDB } from "db/rubros/get-rubros-db"
 
-export const getRubrosServer = createServerFn().handler(async () => {
+export const getRubrosServer = createServerFn({ method: "GET" }).handler(async () => {
 	const request = getRequest()
 	await protectedServerFn(request)
 

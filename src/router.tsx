@@ -17,7 +17,10 @@ export const getRouter = () => {
 			theme: "auto",
 		},
 
+		defaultPendingMs: 0,
 		defaultPreload: "intent",
+		defaultPreloadStaleTime: 0,
+		scrollRestoration: true,
 	})
 
 	setupRouterSsrQueryIntegration({ router, queryClient: rqContext.queryClient })

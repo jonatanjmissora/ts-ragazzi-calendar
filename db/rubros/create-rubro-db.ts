@@ -4,7 +4,7 @@ import { rubros, RubroType } from "db/pagos/schema"
 
 export async function createRubroDB(newRubro: RubroType) {
 	try {
-		await delay()
+		// await delay()
 		return await db.insert(rubros).values(newRubro).returning()
 	} catch (error) {
 		console.error(

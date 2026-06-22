@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm"
 
 export async function getRubroByIdDB(itemId: string) {
 	try {
-		await delay()
+		// await delay()
 		const result = await db.select().from(rubros).where(eq(rubros.id, itemId))
 		return result[0] // Return the first (and only) result
 	} catch (error) {

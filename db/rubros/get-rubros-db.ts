@@ -5,7 +5,7 @@ import { desc } from "drizzle-orm"
 
 export async function getRubrosDB() {
 	try {
-		await delay()
+		// await delay()
 		return await db.select().from(rubros).orderBy(desc(rubros.nombre))
 	} catch (error) {
 		console.error(

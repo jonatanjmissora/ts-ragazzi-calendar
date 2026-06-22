@@ -26,11 +26,17 @@ import { toast } from "sonner"
 import { pagoFormValidator } from "db/pagos/pago-validator"
 import { Field, FieldError, FieldGroup } from "../ui/field"
 import { useCreatePago } from "queries/pagos/use-create-pago"
-import { getUnusedSectoresFromPeriodo, localeDateToPeriodo } from "@/lib/utils"
+import {
+	getPeriodo,
+	getUnusedSectoresFromPeriodo,
+	localeDateToPeriodo,
+} from "@/lib/utils"
 import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
 import { BG_RUBROS, RUBROS } from "@/_constants"
+import { useSearch } from "@tanstack/react-router"
 
 export default function DashboardCreatePago() {
+	const { mes: mesUrl, anio: anioUrl } = useSearch({ from: "/_protected" })
 	const [accordionValue, setAccordionValue] = useState("")
 	return (
 		<article className="">
@@ -48,9 +54,13 @@ export default function DashboardCreatePago() {
 					>
 						<AccordionTrigger className="flex items-center justify-between px-4 m-0 cursor-pointer">
 							<span className="m-0 tracking-widest">{rubro.toUpperCase()}</span>
-							<Suspense>
-								<UnusedSectoresFromRubroComponent rubro={rubro} />
-							</Suspense>
+							{
+								!(mesUrl && anioUrl) && (
+									<Suspense>
+										<UnusedSectoresFromRubroComponent rubro={rubro} />
+									</Suspense>
+								)
+							}
 						</AccordionTrigger>
 						<Suspense>
 							<AccordionContent>
@@ -68,9 +78,11 @@ export default function DashboardCreatePago() {
 }
 
 const UnusedSectoresFromRubroComponent = ({ rubro }: { rubro: string }) => {
+	const { mes: mesUrl, anio: anioUrl } = useSearch({ from: "/_protected" })
+	const [start, end] = getPeriodo(mesUrl, anioUrl)
 	const { data: rubros } = useSuspenseQuery(rubrosQueryOptions)
 	const { data: pagosFromPeriodo } = useSuspenseQuery(
-		pagosByPeriodoQueryOptions
+		pagosByPeriodoQueryOptions(start, end)
 	)
 
 	// obtengo los sectores que no estan utilizados del periodo
@@ -92,9 +104,11 @@ const PagosCreate = ({
 	rubro: string
 	setAccordionValue: (value: string) => void
 }) => {
+	const { mes: mesUrl, anio: anioUrl } = useSearch({ from: "/_protected" })
+	const [start, end] = getPeriodo(mesUrl, anioUrl)
 	const { data: rubros } = useSuspenseQuery(rubrosQueryOptions)
 	const { data: pagosFromPeriodo } = useSuspenseQuery(
-		pagosByPeriodoQueryOptions
+		pagosByPeriodoQueryOptions(start, end)
 	)
 
 	// obtengo los sectores que no estan utilizados del periodo

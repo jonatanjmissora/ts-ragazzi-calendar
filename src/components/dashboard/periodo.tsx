@@ -18,12 +18,12 @@ const MESES = [
 ]
 
 export default function Periodo() {
-  const ahora = new Date()
-  const mesActual = ahora.getMonth()
-  const anioActual = ahora.getFullYear()
+	const ahora = new Date()
+	const mesActual = Number(ahora.getMonth().toLocaleString())
+	const anioActual = Number(ahora.getFullYear().toLocaleString())
 
-  const { mes: mesUrl, anio: anioUrl } = useSearch({ from: "/_protected/" })
-  const navigate = useNavigate({ from: "/" })
+	const { mes: mesUrl, anio: anioUrl } = useSearch({ from: "/_protected/" })
+	const navigate = useNavigate({ from: "/" })
 
 	const mes = mesUrl ?? mesActual
 	const anio = anioUrl ?? anioActual
@@ -51,15 +51,15 @@ export default function Periodo() {
 	}
 
 	return (
-		<div className="flex items-center gap-2">
-			<Button variant="ghost" size="icon-xs" onClick={prev}>
-				<ChevronLeft />
+		<div className="flex items-center gap-2 w-54 justify-between">
+			<Button variant="ghost" onClick={prev}>
+				<ChevronLeft className="size-6" />
 			</Button>
 			<span className="text-sm font-semibold text-center select-none">
 				{MESES[mes]} {String(anio).slice(2)}
 			</span>
-			<Button variant="ghost" size="icon-xs" onClick={next}>
-				<ChevronRight />
+			<Button variant="ghost" onClick={next}>
+				<ChevronRight className="size-6" />
 			</Button>
 		</div>
 	)

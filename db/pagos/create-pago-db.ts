@@ -4,7 +4,7 @@ import { db } from "db/drizzle"
 
 export async function createPagoDB(newPago: PagoType) {
 	try {
-		await delay()
+		// await delay()
 		return await db.insert(pagos).values(newPago).returning()
 	} catch (error) {
 		console.error(

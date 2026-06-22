@@ -3,7 +3,7 @@ import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
 import { Suspense } from "react"
 import { Ellipsis } from "lucide-react"
 import { Button } from "../ui/button"
-import { filteredItems, periodoConvert } from "@/lib/utils"
+import { filteredItems, getPeriodo, montoFormat, periodoConvert } from "@/lib/utils"
 import DashboardFilter from "./dashboard-filter"
 import { Link, useSearch } from "@tanstack/react-router"
 import { Switch } from "../ui/switch"
@@ -33,13 +33,12 @@ export default function DashboardPagosPendientes() {
 		rubro?: string
 		sector?: string
 	}
-
 	return (
-		<article className="sm:w-3/4 2xl:w-2/3 mx-auto flex flex-col gap-4 p-6 border rounded-lg shadow bg-accent">
+		<article className="sm:w-3/4 2xl:w-2/3 mx-auto flex flex-col gap-4 p-6 border rounded-lg shadow bg-accent relative">
 			<Suspense fallback={<div>...</div>}>
-				<DashboardFilter rubro={rubro} sector={sector} />
+				<DashboardFilter rubro={rubro} sector={sector}/>
 			</Suspense>
-			<GridContainer6 className=" text-lg font-semibold">
+			<GridContainer6 className=" text-lg font-semibold mt-10">
 				<span></span>
 				<span>vencimiento</span>
 				<span>rubro</span>
@@ -61,8 +60,12 @@ function PagosPendientesList({
 	rubro?: string
 	sector?: string
 }) {
+	const { mes: mesUrl, anio: anioUrl } = useSearch({ from: "/_protected/" })
+	const [pagoCheckedArray, setPagoCheckedArray] = useState<PagoType[]>([])
+	const [start, end] = getPeriodo(mesUrl, anioUrl)
+
 	const { data: pagosFromPeriodo } = useSuspenseQuery(
-		pagosByPeriodoQueryOptions
+		pagosByPeriodoQueryOptions(start, end)
 	)
 
 	const pagosPendientes = filteredItems(
@@ -73,23 +76,41 @@ function PagosPendientesList({
 		sector
 	).filter(item => item.pagado === 0)
 
+	const reduceItem = (item: PagoType) => {
+		if (pagoCheckedArray.includes(item)) {
+			setPagoCheckedArray(pagoCheckedArray.filter(pago => pago.id !== item.id))
+
+		} else {
+			setPagoCheckedArray([...pagoCheckedArray, item])
+		}
+	}
+
 	return (
 		<div className="flex flex-col gap-2">
+			{
+				pagoCheckedArray.length !== 0 && (
+				<span className="absolute top-7 left-16 font-semibold text-2xl">
+				$ {montoFormat(pagoCheckedArray?.reduce((acc, item) => {
+					return acc + item.monto
+				}, 0))}
+			</span>
+			)
+			}
 			{pagosPendientes?.reverse().map(item => (
 				<GridContainer6
 					key={item.id}
 					rubro={item.rubro}
-					className="my-1 py-1 rounded-lg shadow"
+					className="my-1 py-1 rounded-lg shadow h-12"
 				>
-					<Switch id="check" size="sm" className="mx-2" />
+					<Switch id="check" size="sm" className="mx-2" onCheckedChange={() => reduceItem(item)}/>
 					<span>{periodoConvert(item.periodo)}</span>
 					<span>{item.rubro.toUpperCase()}</span>
 					<span>{item.sector.toUpperCase()}</span>
-					<span>{item.monto}</span>
-					<div className="flex justify-between gap-2">
+					<span>{montoFormat(item.monto)}</span>
+					{!(mesUrl && anioUrl) && (<div className="flex justify-between gap-2">
 						<CheckPagoForm itemId={item.id} />
 						<DropdownMenuComponent item={item} />
-					</div>
+					</div>)}
 				</GridContainer6>
 			))}
 		</div>
