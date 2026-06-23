@@ -7,8 +7,12 @@ import { rubroIdValidator } from "db/rubros/rubro-validator"
 export const getRubroByIdServer = createServerFn({ method: "GET" })
 	.inputValidator(rubroIdValidator)
 	.handler(async ({ data }) => {
-		const request = getRequest()
-		await protectedServerFn(request)
-		const itemId = data.id
-		return await getRubroByIdDB(itemId)
+		try {
+			const request = getRequest()
+			await protectedServerFn(request)
+			return await getRubroByIdDB(data.id)
+		} catch (error) {
+			console.error("ERROR en getRubroByIdServer:", error instanceof Error ? error.message : error)
+			return null
+		}
 	})

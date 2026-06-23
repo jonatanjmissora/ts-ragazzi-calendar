@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { queryKeys } from "queries/query-keys"
 import { RubroFormType } from "db/rubros/rubro-validator"
 import { createRubroServer } from "server/rubros/create-rubro-server"
 
@@ -8,11 +9,11 @@ export function useCreateRubro() {
 	return useMutation({
 		mutationFn: createRubroServer,
 		onSuccess: async data => {
-			queryClient.setQueryData<RubroFormType[]>(["rubros"], oldRubros => {
+			queryClient.setQueryData<RubroFormType[]>(queryKeys.rubros.all, oldRubros => {
 				if (!oldRubros) return oldRubros
-				const newRubros = [data, ...oldRubros]
-				return newRubros
+				return [data, ...oldRubros]
 			})
+			queryClient.invalidateQueries({ queryKey: queryKeys.rubros.all, refetchType: "active" })
 		},
 	})
 }

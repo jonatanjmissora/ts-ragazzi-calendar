@@ -24,7 +24,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "../ui/alert-dialog"
-import { PagoType } from "db/pagos/schema"
+import { PagoType } from "db/schema"
 import DeletePagoForm from "../layout/pagos-delete"
 import CheckPagoForm from "./check-pago-form"
 
@@ -199,7 +199,7 @@ const PagosSkelton = () => {
 		<div className="flex flex-col gap-2">
 			{Array.from({ length: 4 }).map((_, index) => (
 				<div
-					key={Math.random()}
+					key={index}
 					className={`my-1 py-1 rounded-xl shadow h-11 ${backgrounds[index as keyof typeof backgrounds]}`}
 				></div>
 			))}

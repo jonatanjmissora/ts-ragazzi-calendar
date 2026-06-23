@@ -7,8 +7,12 @@ import { pagoIdValidator } from "db/pagos/pago-validator"
 export const getPagoByIdServer = createServerFn({ method: "GET" })
 	.inputValidator(pagoIdValidator)
 	.handler(async ({ data }) => {
-		const request = getRequest()
-		await protectedServerFn(request)
-		const itemId = data.id
-		return await getPagoByIdDB(itemId)
+		try {
+			const request = getRequest()
+			await protectedServerFn(request)
+			return await getPagoByIdDB(data.id)
+		} catch (error) {
+			console.error("ERROR en getPagoByIdServer:", error instanceof Error ? error.message : error)
+			return null
+		}
 	})

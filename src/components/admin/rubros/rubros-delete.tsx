@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form"
 import { useRouter } from "@tanstack/react-router"
-import { RubroType } from "db/pagos/schema"
+import { RubroType } from "db/schema"
 import { toast } from "sonner"
 import { Button } from "../../ui/button"
 import { Loader } from "lucide-react"

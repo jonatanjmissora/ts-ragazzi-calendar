@@ -14,7 +14,8 @@ export const Route = createFileRoute("/_protected")({
 	}),
 	loader: async ({ context }) => {
 		await protectedRoute()
-		context.queryClient.ensureQueryData(rubrosQueryOptions)
+		context.queryClient.prefetchQuery(rubrosQueryOptions)
+		context.queryClient.prefetchQuery(pagosQueryOptions)
 	},
 	component: RouteComponent,
 })

@@ -13,5 +13,8 @@ export const getThemeServerFn = createServerFn({ method: "GET" }).handler(() => 
 export const setThemeServerFn = createServerFn({ method: "POST" })
 	.inputValidator(setThemeValidator)
 	.handler(({ data }) => {
-		setCookie(storageKey, data)
+		setCookie(storageKey, data, {
+			sameSite: "lax",
+			secure: process.env.NODE_ENV === "production",
+		})
 	})

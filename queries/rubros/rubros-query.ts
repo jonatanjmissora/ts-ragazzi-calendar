@@ -1,24 +1,17 @@
-import { queryOptions, useQueryClient } from "@tanstack/react-query"
-import { RubroType } from "db/pagos/schema"
+import { queryOptions } from "@tanstack/react-query"
+import { queryKeys } from "queries/query-keys"
 import { getRubroByIdServer } from "server/rubros/get-rubro-by-id-server"
 import { getRubrosServer } from "server/rubros/get-rubros-server"
 
 export const rubrosQueryOptions = queryOptions({
-	queryKey: ["rubros"],
+	queryKey: queryKeys.rubros.all,
 	queryFn: () => getRubrosServer(),
-	refetchInterval: 60 * 1000, // refrescar cada 60 segundos
+	staleTime: 60 * 1000,
+	refetchInterval: 60 * 1000,
 })
 
-export const rubroQueryOptions = (itemId: string) => {
-	const queryClient = useQueryClient()
-	return queryOptions({
-		queryKey: ["item", itemId],
-
+export const rubroQueryOptions = (itemId: string) =>
+	queryOptions({
+		queryKey: queryKeys.rubros.byId(itemId),
 		queryFn: () => getRubroByIdServer({ data: { id: itemId } }),
-
-		initialData: () => {
-			const items = queryClient.getQueryData<RubroType[]>(["rubros"])
-			return items?.find(item => item.id === itemId)
-		},
 	})
-}

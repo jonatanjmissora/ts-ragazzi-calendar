@@ -7,8 +7,13 @@ import { updatePagoDB } from "db/pagos/update-pago-db"
 export const updatePagoServer = createServerFn({ method: "POST" })
 	.inputValidator(updatePagoValidator)
 	.handler(async ({ data }) => {
-		const request = getRequest()
-		await protectedServerFn(request)
+		try {
+			const request = getRequest()
+			await protectedServerFn(request)
 
-		return await updatePagoDB(data)
+			return await updatePagoDB(data)
+		} catch (error) {
+			console.error("ERROR en updatePagoServer:", error instanceof Error ? error.message : error)
+			throw new Error("No se pudo actualizar el pago")
+		}
 	})

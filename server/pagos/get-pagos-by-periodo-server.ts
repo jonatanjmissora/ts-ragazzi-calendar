@@ -6,7 +6,12 @@ import { getPagosByPeriodoDB } from "db/pagos/get-pagos-by-periodo-db"
 export const getPagosByPeriodoServer = createServerFn({ method: "GET" })
 	.inputValidator((data: { start: number; end: number }) => data)
 	.handler(async ({ data }) => {
-		const request = getRequest()
-		await protectedServerFn(request)
-		return await getPagosByPeriodoDB(data.start, data.end)
+		try {
+			const request = getRequest()
+			await protectedServerFn(request)
+			return await getPagosByPeriodoDB(data.start, data.end)
+		} catch (error) {
+			console.error("ERROR en getPagosByPeriodoServer:", error instanceof Error ? error.message : error)
+			return []
+		}
 	})

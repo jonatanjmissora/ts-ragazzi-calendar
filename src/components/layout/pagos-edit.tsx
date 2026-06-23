@@ -1,12 +1,9 @@
-import { cn, getPeriodo } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import { useForm, useStore } from "@tanstack/react-form"
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
 import { pagoFormValidator } from "db/pagos/pago-validator"
-import {
-	pagoQueryOptions,
-	pagosByPeriodoQueryOptions,
-} from "queries/pagos/pagos-query"
+import { pagoQueryOptions } from "queries/pagos/pagos-query"
 import { useUpdatePago } from "queries/pagos/use-update-pago"
 import { toast } from "sonner"
 import { X } from "lucide-react"
@@ -36,12 +33,7 @@ export default function EditPagoForm({
 	const originPath = router.state.location.pathname.split("/")[1]
 	const returnedPath = originPath === "pagos" ? "/" : "/admin/pagos"
 	const { data: rubros } = useQuery(rubrosQueryOptions)
-	// const { data: item, isLoading } = useQuery(pagoQueryOptions(itemId))
-	const [start, end] = getPeriodo(undefined, undefined)
-	const { data: pagosFromPeriodo, isLoading } = useSuspenseQuery(
-		pagosByPeriodoQueryOptions(start, end)
-	)
-	const item = pagosFromPeriodo?.find(pago => pago.id === itemId)
+	const { data: item, isLoading } = useQuery(pagoQueryOptions(itemId))
 	const { mutateAsync: updateItemMutation, isPending, error } = useUpdatePago()
 	const [actualRubro, setActualRubro] = useState<string>("")
 

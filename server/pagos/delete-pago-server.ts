@@ -7,9 +7,14 @@ import { pagoIdValidator } from "db/pagos/pago-validator"
 export const deletePagoServer = createServerFn({ method: "POST" })
 	.inputValidator(pagoIdValidator)
 	.handler(async ({ data }) => {
-		const request = getRequest()
-		const session = await protectedServerFn(request)
-
-		const result = await deletePagoDB(data.id, session.user.id)
-		return result[0]
+		try {
+			const request = getRequest()
+			await protectedServerFn(request)
+			const result = await deletePagoDB(data.id)
+			if (!result) throw new Error("No se pudo eliminar el pago")
+			return result[0]
+		} catch (error) {
+			console.error("ERROR en deletePagoServer:", error instanceof Error ? error.message : error)
+			throw new Error("No se pudo eliminar el pago")
+		}
 	})

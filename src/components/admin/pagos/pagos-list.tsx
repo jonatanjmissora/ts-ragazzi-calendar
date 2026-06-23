@@ -19,7 +19,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "../../ui/alert-dialog"
-import { PagoType } from "db/pagos/schema"
+import { PagoType } from "db/schema"
 import { sortByPeriodo } from "@/lib/utils"
 import { filteredItems } from "@/lib/utils"
 import { BG_RUBROS } from "@/_constants"

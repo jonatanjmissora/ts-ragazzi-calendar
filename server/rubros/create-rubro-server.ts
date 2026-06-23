@@ -7,14 +7,20 @@ import { rubroFormValidator } from "db/rubros/rubro-validator"
 export const createRubroServer = createServerFn({ method: "POST" })
 	.inputValidator(rubroFormValidator)
 	.handler(async ({ data }) => {
-		const request = getRequest()
-		await protectedServerFn(request)
+		try {
+			const request = getRequest()
+			await protectedServerFn(request)
 
-		const newRubro = {
-			...data,
-			id: crypto.randomUUID(),
+			const newRubro = {
+				...data,
+				id: crypto.randomUUID(),
+			}
+
+			const result = await createRubroDB(newRubro)
+			if (!result) throw new Error("No se pudo crear el rubro")
+			return result[0]
+		} catch (error) {
+			console.error("ERROR en createRubroServer:", error instanceof Error ? error.message : error)
+			throw new Error("No se pudo crear el rubro")
 		}
-
-		const result = await createRubroDB(newRubro)
-		return result[0]
 	})

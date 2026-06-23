@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm"
 import { delay } from "@/lib/utils"
 import { db } from "db/drizzle"
 import { UpdateRubroType } from "./rubro-validator"
-import { rubros } from "db/pagos/schema"
+import { rubros } from "db/schema"
 
 export async function updateRubroDB(updatedItem: UpdateRubroType) {
 	try {

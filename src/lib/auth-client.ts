@@ -5,6 +5,13 @@ import { toast } from "sonner"
 const checkBetterAuthConfig = () => {
 	const baseURL = import.meta.env.VITE_BETTER_AUTH_BASE_URL
 
+	if (import.meta.env.PROD && baseURL?.includes("localhost")) {
+		console.error(
+			"❌ VITE_BETTER_AUTH_BASE_URL sigue apuntando a localhost en producción.\n" +
+			"   Configúrala en el panel de tu hosting con la URL real del dominio."
+		)
+	}
+
 	if (!baseURL) {
 		const warningMessage =
 			"⚠️ Better Auth: Base URL no configurada. Por favor, configura VITE_BETTER_AUTH_BASE_URL en tu archivo .env para que los callbacks y redirecciones funcionen correctamente."

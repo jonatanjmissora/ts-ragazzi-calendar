@@ -1,32 +1,24 @@
-import { queryOptions, useQueryClient } from "@tanstack/react-query"
-import { PagoType } from "db/pagos/schema"
+import { queryOptions } from "@tanstack/react-query"
+import { queryKeys } from "queries/query-keys"
 import { getPagoByIdServer } from "server/pagos/get-pago-by-id-server"
 import { getPagosByPeriodoServer } from "server/pagos/get-pagos-by-periodo-server"
 import { getPagosServer } from "server/pagos/get-pagos-server"
 
 export const pagosQueryOptions = queryOptions({
-	queryKey: ["pagos"],
+	queryKey: queryKeys.pagos.all,
 	queryFn: () => getPagosServer(),
-	refetchInterval: 60 * 1000, // refrescar cada 60 segundos
+	staleTime: 60 * 1000,
+	refetchInterval: 60 * 1000,
 })
 
-export const pagoQueryOptions = (itemId: string) => {
-	const queryClient = useQueryClient()
-	return queryOptions({
-		queryKey: ["item", itemId],
-
+export const pagoQueryOptions = (itemId: string) =>
+	queryOptions({
+		queryKey: queryKeys.pagos.byId(itemId),
 		queryFn: () => getPagoByIdServer({ data: { id: itemId } }),
-
-		initialData: () => {
-			const items = queryClient.getQueryData<PagoType[]>(["pagos"])
-			return items?.find(item => item.id === itemId)
-		},
 	})
-}
 
 export const pagosByPeriodoQueryOptions = (start: number, end: number) =>
 	queryOptions({
-		queryKey: ["pagos-by-periodo", start, end],
+		queryKey: queryKeys.pagos.byPeriodo(start, end),
 		queryFn: () => getPagosByPeriodoServer({ data: { start, end } }),
-		// refetchInterval: 60 * 1000, // refrescar cada 60 segundos
 	})

@@ -8,7 +8,7 @@ import { Aside } from "@/components/layout/aside"
 export const Route = createFileRoute("/admin")<RouterContext>({
 	loader: async ({ context }) => {
 		await adminRoute()
-		context.queryClient.ensureQueryData(rubrosQueryOptions)
+		context.queryClient.prefetchQuery(rubrosQueryOptions)
 	},
 	component: RouteComponent,
 })

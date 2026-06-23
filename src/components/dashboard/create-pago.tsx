@@ -205,7 +205,7 @@ const PagosCreate = ({
 								field.state.meta.isTouched && !field.state.meta.isValid
 							return (
 								<Field data-invalid={isInvalid} className="gap-1">
-									<CalendarDate form={form} />
+									<CalendarDate onDateSelect={(value) => form.setFieldValue("periodo", value)} />
 									{isInvalid && <FieldError errors={field.state.meta.errors} />}
 								</Field>
 							)
@@ -255,7 +255,7 @@ const PagosCreate = ({
 	)
 }
 
-const CalendarDate = ({ form }: { form: unknown }) => {
+const CalendarDate = ({ onDateSelect }: { onDateSelect: (value: number) => void }) => {
 	const [date, setDate] = useState<Date>(new Date())
 	const [openDate, setOpenDate] = useState(false)
 
@@ -278,11 +278,7 @@ const CalendarDate = ({ form }: { form: unknown }) => {
 						setDate(selectedDate || new Date())
 						// Close the popover after a date is selected
 						setOpenDate(false)
-						// Update the form field with the selected date
-						form.setFieldValue(
-							"periodo",
-							localeDateToPeriodo(selectedDate || new Date())
-						)
+						onDateSelect(localeDateToPeriodo(selectedDate || new Date()))
 					}}
 				/>
 			</PopoverContent>

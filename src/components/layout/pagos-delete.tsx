@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form"
 import { useRouter } from "@tanstack/react-router"
 import { pagoIdValidator } from "db/pagos/pago-validator"
-import { PagoType } from "db/pagos/schema"
+import { PagoType } from "db/schema"
 import { useDeletePago } from "queries/pagos/use-delete-pago"
 import { toast } from "sonner"
 import { Button } from "../ui/button"

@@ -1,18 +1,18 @@
-import { TanStackDevtools } from "@tanstack/react-devtools"
 import type { QueryClient } from "@tanstack/react-query"
 import {
 	createRootRouteWithContext,
 	HeadContent,
 	Scripts,
 } from "@tanstack/react-router"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 
 import appCss from "../styles.css?url"
-import TanStackQueryDevtools from "../integrations/tanstack-query/devtools"
 import { Toaster } from "sonner"
 import { Session } from "better-auth"
+import { lazy, Suspense } from "react"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { NotFound } from "@/components/NotFound"
+
+const DevtoolsPanel = lazy(() => import("@/components/devtools-panel"))
 import { getSession } from "server/get-session"
 import { getThemeServerFn } from "server/theme"
 
@@ -43,10 +43,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			},
 		],
 	}),
-	beforeLoad: async () => ({
-		theme: ((await getThemeServerFn()) ?? "auto") as "light" | "dark" | "auto",
-		session: await getSession(),
-	}),
+	beforeLoad: async () => {
+		const [theme, session] = await Promise.all([
+			getThemeServerFn().then(t => (t ?? "auto") as "light" | "dark" | "auto"),
+			getSession(),
+		])
+		return { theme, session }
+	},
 	shellComponent: RootDocument,
 	errorComponent: DefaultCatchBoundary,
 	notFoundComponent: () => <NotFound />,
@@ -66,18 +69,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body className="w-full h-full flex flex-col">
 				{children}
 				<Toaster />
-				<TanStackDevtools
-					config={{
-						position: "bottom-right",
-					}}
-					plugins={[
-						{
-							name: "Tanstack Router",
-							render: <TanStackRouterDevtoolsPanel />,
-						},
-						TanStackQueryDevtools,
-					]}
-				/>
+				{import.meta.env.DEV && (
+					<Suspense fallback={null}>
+						<DevtoolsPanel />
+					</Suspense>
+				)}
 				<Scripts />
 			</body>
 		</html>

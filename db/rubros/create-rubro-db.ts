@@ -1,6 +1,6 @@
 import { delay } from "@/lib/utils"
 import { db } from "db/drizzle"
-import { rubros, RubroType } from "db/pagos/schema"
+import { rubros, RubroType } from "db/schema"
 
 export async function createRubroDB(newRubro: RubroType) {
 	try {
