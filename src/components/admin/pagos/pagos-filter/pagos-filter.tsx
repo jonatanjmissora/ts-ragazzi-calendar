@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query"
 import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 import PagosFilterPeriodo from "./pagos-filter-periodo"
 import { useNavigate, useSearch } from "@tanstack/react-router"
+import { BG_RUBROS } from "@/_constants"
 
 export default function PagosFilter() {
 	const { rubro, sector } = useSearch({ from: "/admin/pagos/" })
@@ -63,13 +64,19 @@ export default function PagosFilter() {
 							})
 						}}
 					>
-						<SelectTrigger className="w-30">
+						<SelectTrigger
+							className={`w-30 ${BG_RUBROS[rubroValue as keyof typeof BG_RUBROS] || "bg-background"}`}
+						>
 							<SelectValue placeholder={rubroValue || "todos"} />
 						</SelectTrigger>
 						<SelectContent>
 							<SelectGroup>
 								{rubrosNombreArray.map(rubro => (
-									<SelectItem key={rubro} value={rubro}>
+									<SelectItem
+										key={rubro}
+										value={rubro}
+										className={BG_RUBROS[rubro as keyof typeof BG_RUBROS]}
+									>
 										{rubro}
 									</SelectItem>
 								))}

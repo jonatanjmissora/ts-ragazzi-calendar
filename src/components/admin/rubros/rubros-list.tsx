@@ -48,6 +48,10 @@ export default function RubrosList() {
 
 	return (
 		<div className="flex flex-col gap-3 w-full">
+			<div className="flex w-full px-6">
+				<span className="w-35">Nombre</span>
+				<span className="">Sectores</span>
+			</div>
 			{sortedItems.map(item => (
 				<Card
 					className={`flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base ${BG_RUBROS[item.nombre as keyof typeof BG_RUBROS]}`}
@@ -58,8 +62,10 @@ export default function RubrosList() {
 					</div>
 					<CardTitle></CardTitle>
 					<CardContent className="flex gap-6 items-center">
-						<span>Nombre: {item.nombre.toUpperCase()}</span>
-						<span>Sectores: {item.sectores.toUpperCase()}</span>
+						<span className="w-30">{item.nombre.toUpperCase()}</span>
+						<span className=" ">
+							{item.sectores.toUpperCase().split(" ").join(" - ")}
+						</span>
 					</CardContent>
 				</Card>
 			))}

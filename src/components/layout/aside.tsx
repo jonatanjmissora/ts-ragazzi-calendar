@@ -1,6 +1,8 @@
+import { Link } from "@tanstack/react-router"
 import { Logo } from "./logo"
 import ThemeSwitch from "./theme-switch"
 import User from "./user"
+import { Settings } from "lucide-react"
 
 export const Aside = ({ children }: { children?: React.ReactNode }) => {
 	return (
@@ -8,6 +10,12 @@ export const Aside = ({ children }: { children?: React.ReactNode }) => {
 			<div className="absolute top-4 right-4 flex justify-between items-center opacity-50">
 				<ThemeSwitch />
 			</div>
+			<Link
+				to="/admin"
+				className="absolute top-4 left-4 flex justify-between items-center opacity-50"
+			>
+				<Settings size={20} />
+			</Link>
 			<Logo />
 
 			{children}

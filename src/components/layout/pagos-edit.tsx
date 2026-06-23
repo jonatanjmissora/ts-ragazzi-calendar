@@ -3,7 +3,10 @@ import { useForm, useStore } from "@tanstack/react-form"
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
 import { pagoFormValidator } from "db/pagos/pago-validator"
-import { pagoQueryOptions, pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
+import {
+	pagoQueryOptions,
+	pagosByPeriodoQueryOptions,
+} from "queries/pagos/pagos-query"
 import { useUpdatePago } from "queries/pagos/use-update-pago"
 import { toast } from "sonner"
 import { X } from "lucide-react"
@@ -93,15 +96,7 @@ export default function EditPagoForm({
 		const selectedRubro = rubros.find(r => r.nombre === rubroName)
 		if (!selectedRubro || !selectedRubro.sectores) return []
 
-		const sectoresArray = selectedRubro.sectores.split(" ")
-		const sectoresDisponibles = pagosFromPeriodo?.map(pago => {
-			if (pago.rubro === rubroName) {
-				//TODO: quitar el sector de sectoresArray
-				const index = sectoresArray.findIndex(sector => sector === pago.sector)
-				return sectoresArray.toS
-			}
-		})
-		return sectoresDisponibles?.flat() || [""]
+		return selectedRubro.sectores.split(" ")
 	}
 
 	const sectoresDisponibles = getSectoresFromRubro(rubroValue)
@@ -222,7 +217,6 @@ export default function EditPagoForm({
 							)
 						}}
 					/>
-{JSON.stringify(sectoresDisponibles)}
 					<form.Field
 						name="sector"
 						children={field => {
@@ -256,11 +250,11 @@ export default function EditPagoForm({
 													<SelectGroup>
 														<SelectLabel>Sector</SelectLabel>
 
-														{/* {sectoresDisponibles.map(sector => 
+														{sectoresDisponibles.map(sector => (
 															<SelectItem key={sector} value={sector ?? ""}>
 																{sector?.toUpperCase()}
 															</SelectItem>
-														)} */}
+														))}
 													</SelectGroup>
 												</SelectContent>
 											</Select>

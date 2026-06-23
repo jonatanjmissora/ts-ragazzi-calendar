@@ -56,6 +56,13 @@ export default function PagosList() {
 
 	return (
 		<div className="flex flex-col gap-3 w-full">
+			<div className="w-full px-6 flex gap-6 items-center border-b-2 pb-2">
+				<span className="w-30">Periodo</span>
+				<span className="w-40">Rubro</span>
+				<span className="w-40">Sector</span>
+				<span className="w-40">Monto</span>
+				<span className="w-40">Pagado</span>
+			</div>
 			{sortedItems.map(item => (
 				<Card
 					className={`flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base ${BG_RUBROS[item.rubro as keyof typeof BG_RUBROS]}`}
@@ -66,11 +73,13 @@ export default function PagosList() {
 					</div>
 					<CardTitle></CardTitle>
 					<CardContent className="flex gap-6 items-center">
-						<span>Periodo: {item.periodo}</span>
-						<span>Rubro: {item.rubro.toUpperCase()}</span>
-						<span>Sector: {item.sector.toUpperCase()}</span>
-						<span>Monto: {item.monto}</span>
-						<span>Pagado: {item.pagado ? item.pagado : "No"}</span>
+						<span className="w-30">{dateFormat(String(item.periodo))}</span>
+						<span className="w-40">{item.rubro.toUpperCase()}</span>
+						<span className="w-40">{item.sector.toUpperCase()}</span>
+						<span className="w-40">{item.monto}</span>
+						<span className="w-40">
+							{item.pagado ? dateFormat(String(item.pagado)) : "No"}
+						</span>
 					</CardContent>
 				</Card>
 			))}
@@ -128,4 +137,13 @@ export function DeleteItemAlertDialog({
 			</AlertDialogContent>
 		</AlertDialog>
 	)
+}
+
+function dateFormat(date: string) {
+	const [year, month, day] = [
+		date.slice(0, 4),
+		date.slice(4, 6),
+		date.slice(6, 8),
+	]
+	return `${day}/${month}/${year}`
 }
