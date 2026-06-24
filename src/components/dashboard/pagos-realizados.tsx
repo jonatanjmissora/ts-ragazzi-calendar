@@ -6,7 +6,7 @@ import {
 	periodoConvert,
 } from "@/lib/utils"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { useSearch } from "node_modules/@tanstack/react-router/dist/esm/useSearch"
+import { useSearch } from "@tanstack/react-router"
 import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
 
 export default function PagosRealizadosList({

@@ -20,7 +20,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
-import { Pencil, Trash2 } from "lucide-react"
+import { BarChart3, Pencil, Trash2 } from "lucide-react"
 import { useState } from "react"
 import {
 	AlertDialog,
@@ -171,6 +171,13 @@ const DropdownMenuComponent = ({ item }: { item: PagoType }) => {
 						<Button variant="ghost">
 							<Pencil size={14} />
 							Editar
+						</Button>
+					</Link>
+					<DropdownMenuSeparator />
+					<Link to="/histograma" search={{ sector: item.sector, rubro: item.rubro }}>
+						<Button variant="ghost" className="w-full justify-start">
+							<BarChart3 size={14} />
+							Histograma
 						</Button>
 					</Link>
 					<DropdownMenuSeparator />
