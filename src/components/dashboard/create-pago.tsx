@@ -46,7 +46,7 @@ export default function DashboardCreatePago() {
 				value={accordionValue}
 				onValueChange={setAccordionValue}
 			>
-				{RUBROS.map(rubro => (
+				{[...RUBROS, "varios"].map(rubro => (
 					<AccordionItem
 						key={rubro}
 						value={rubro}
@@ -54,13 +54,11 @@ export default function DashboardCreatePago() {
 					>
 						<AccordionTrigger className="flex items-center justify-between px-4 m-0 cursor-pointer">
 							<span className="m-0 tracking-widest">{rubro.toUpperCase()}</span>
-							{
-								!(mesUrl && anioUrl) && (
-									<Suspense>
-										<UnusedSectoresFromRubroComponent rubro={rubro} />
-									</Suspense>
-								)
-							}
+							{!(mesUrl && anioUrl) && rubro !== "varios" && (
+								<Suspense>
+									<UnusedSectoresFromRubroComponent rubro={rubro} />
+								</Suspense>
+							)}
 						</AccordionTrigger>
 						<Suspense>
 							<AccordionContent>
@@ -149,7 +147,7 @@ const PagosCreate = ({
 		},
 	})
 
-	if (unusedSectoresFromRubroArray.length === 0) {
+	if (rubro !== "varios" && unusedSectoresFromRubroArray.length === 0) {
 		return
 	}
 
@@ -163,40 +161,68 @@ const PagosCreate = ({
 				}}
 			>
 				<FieldGroup className="gap-3 my-3">
-					<form.Field
-						name="sector"
-						children={field => {
-							const isInvalid =
-								field.state.meta.isTouched && !field.state.meta.isValid
+					{rubro === "varios" ? (
+						<form.Field
+							name="sector"
+							children={field => {
+								const isInvalid =
+									field.state.meta.isTouched && !field.state.meta.isValid
+								return (
+									<Field data-invalid={isInvalid} className="gap-1">
+										<Input
+											value={field.state.value}
+											onBlur={field.handleBlur}
+											onChange={e => field.handleChange(e.target.value)}
+											aria-invalid={isInvalid}
+											placeholder="Nuevo sector"
+										/>
+										{isInvalid && (
+											<FieldError errors={field.state.meta.errors} />
+										)}
+									</Field>
+								)
+							}}
+						/>
+					) : (
+						unusedSectoresFromRubroArray.length > 0 && (
+							<form.Field
+								name="sector"
+								children={field => {
+									const isInvalid =
+										field.state.meta.isTouched && !field.state.meta.isValid
 
-							return (
-								<Field data-invalid={isInvalid} className="gap-1">
-									<Select
-										value={field.state.value ?? ""}
-										onValueChange={value => {
-											field.handleChange(value)
-										}}
-									>
-										<SelectTrigger className="w-full">
-											<SelectValue placeholder={"Seleccionar sector"} />
-										</SelectTrigger>
+									return (
+										<Field data-invalid={isInvalid} className="gap-1">
+											<Select
+												value={field.state.value ?? ""}
+												onValueChange={value => {
+													field.handleChange(value)
+												}}
+											>
+												<SelectTrigger className="w-full">
+													<SelectValue placeholder={"Seleccionar sector"} />
+												</SelectTrigger>
 
-										<SelectContent>
-											<SelectGroup>
-												{unusedSectoresFromRubroArray?.map(sector => (
-													<SelectItem key={sector} value={sector}>
-														{sector.toUpperCase()}
-													</SelectItem>
-												))}
-											</SelectGroup>
-										</SelectContent>
-									</Select>
+												<SelectContent>
+													<SelectGroup>
+														{unusedSectoresFromRubroArray?.map(sector => (
+															<SelectItem key={sector} value={sector}>
+																{sector.toUpperCase()}
+															</SelectItem>
+														))}
+													</SelectGroup>
+												</SelectContent>
+											</Select>
 
-									{isInvalid && <FieldError errors={field.state.meta.errors} />}
-								</Field>
-							)
-						}}
-					/>
+											{isInvalid && (
+												<FieldError errors={field.state.meta.errors} />
+											)}
+										</Field>
+									)
+								}}
+							/>
+						)
+					)}
 
 					<form.Field
 						name="periodo"
@@ -205,7 +231,9 @@ const PagosCreate = ({
 								field.state.meta.isTouched && !field.state.meta.isValid
 							return (
 								<Field data-invalid={isInvalid} className="gap-1">
-									<CalendarDate onDateSelect={(value) => form.setFieldValue("periodo", value)} />
+									<CalendarDate
+										onDateSelect={value => form.setFieldValue("periodo", value)}
+									/>
 									{isInvalid && <FieldError errors={field.state.meta.errors} />}
 								</Field>
 							)
@@ -255,7 +283,11 @@ const PagosCreate = ({
 	)
 }
 
-const CalendarDate = ({ onDateSelect }: { onDateSelect: (value: number) => void }) => {
+const CalendarDate = ({
+	onDateSelect,
+}: {
+	onDateSelect: (value: number) => void
+}) => {
 	const [date, setDate] = useState<Date>(new Date())
 	const [openDate, setOpenDate] = useState(false)
 

@@ -63,9 +63,9 @@ export default function RubrosList() {
 					<CardTitle></CardTitle>
 					<CardContent className="flex gap-6 items-center">
 						<span className="w-30">{item.nombre.toUpperCase()}</span>
-						<span className=" ">
+						<textarea className="w-full mr-6 h-max" readOnly>
 							{item.sectores.toUpperCase().split(" ").join(" - ")}
-						</span>
+						</textarea>
 					</CardContent>
 				</Card>
 			))}

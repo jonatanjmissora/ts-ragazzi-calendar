@@ -136,7 +136,7 @@ export default function EditRubroForm({
 									) : (
 										!isLoading &&
 										item && (
-											<Input
+											<textarea
 												id={field.name}
 												name={field.name}
 												value={

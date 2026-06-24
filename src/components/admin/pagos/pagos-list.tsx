@@ -52,7 +52,7 @@ export default function PagosList() {
 	}
 	const sortedItems = sortByPeriodo(
 		filteredItems(items, periodoDesde, periodoHasta, rubro, sector)
-	)
+	).sort((a, b) => a.periodo - b.periodo)
 
 	return (
 		<div className="flex flex-col gap-3 w-full">

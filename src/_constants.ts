@@ -5,4 +5,5 @@ export const BG_RUBROS = {
 	palihue: "bg-(--palihue)",
 	patricios: "bg-(--patricios)",
 	jmolina: "bg-(--jmolina)",
+	varios: "bg-(--varios)",
 } as const

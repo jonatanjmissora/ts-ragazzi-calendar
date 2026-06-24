@@ -93,6 +93,8 @@ export default function EditPagoForm({
 
 	const sectoresDisponibles = getSectoresFromRubro(rubroValue)
 
+	if (!rubros) return
+
 	return (
 		<div
 			className={cn(
@@ -190,7 +192,10 @@ export default function EditPagoForm({
 													<SelectGroup>
 														<SelectLabel>Rubro</SelectLabel>
 
-														{rubros?.map(rubro => (
+														{[
+															...rubros,
+															{ id: "varios", nombre: "varios", sectores: "" },
+														].map(rubro => (
 															<SelectItem
 																key={rubro.id}
 																value={String(rubro.nombre)}
@@ -209,55 +214,82 @@ export default function EditPagoForm({
 							)
 						}}
 					/>
-					<form.Field
-						name="sector"
-						children={field => {
-							const isInvalid =
-								field.state.meta.isTouched && !field.state.meta.isValid
-							return (
-								<Field data-invalid={isInvalid} className="gap-1">
-									<FieldLabel htmlFor={field.name}>Sector</FieldLabel>
+					{rubroValue === "varios" ? (
+						<form.Field
+							name="sector"
+							children={field => {
+								const isInvalid =
+									field.state.meta.isTouched && !field.state.meta.isValid
+								return (
+									<Field data-invalid={isInvalid} className="gap-1">
+										<Input
+											value={field.state.value}
+											onBlur={field.handleBlur}
+											onChange={e => field.handleChange(e.target.value)}
+											aria-invalid={isInvalid}
+											placeholder="Nuevo sector"
+										/>
+										{isInvalid && (
+											<FieldError errors={field.state.meta.errors} />
+										)}
+									</Field>
+								)
+							}}
+						/>
+					) : (
+						<form.Field
+							name="sector"
+							children={field => {
+								const isInvalid =
+									field.state.meta.isTouched && !field.state.meta.isValid
+								return (
+									<Field data-invalid={isInvalid} className="gap-1">
+										<FieldLabel htmlFor={field.name}>Sector</FieldLabel>
 
-									{isLoading ? (
-										<div
-											className={`w-full h-9 rounded-lg bg-gray-800/50 flex justify-center items-center border animate-pulse`}
-										>
-											Cargando... <Loader size={14} className="animate-spin" />
-										</div>
-									) : (
-										!isLoading &&
-										item && (
-											<Select
-												key={`${item.id}-${rubroValue}`}
-												value={field.state.value}
-												onValueChange={value => {
-													field.handleChange(value)
-												}}
+										{isLoading ? (
+											<div
+												className={`w-full h-9 rounded-lg bg-gray-800/50 flex justify-center items-center border animate-pulse`}
 											>
-												<SelectTrigger className="w-full">
-													<SelectValue placeholder={"Seleccionar sector"} />
-												</SelectTrigger>
+												Cargando...{" "}
+												<Loader size={14} className="animate-spin" />
+											</div>
+										) : (
+											!isLoading &&
+											item && (
+												<Select
+													key={`${item.id}-${rubroValue}`}
+													value={field.state.value}
+													onValueChange={value => {
+														field.handleChange(value)
+													}}
+												>
+													<SelectTrigger className="w-full">
+														<SelectValue placeholder={"Seleccionar sector"} />
+													</SelectTrigger>
 
-												<SelectContent>
-													<SelectGroup>
-														<SelectLabel>Sector</SelectLabel>
+													<SelectContent>
+														<SelectGroup>
+															<SelectLabel>Sector</SelectLabel>
 
-														{sectoresDisponibles.map(sector => (
-															<SelectItem key={sector} value={sector ?? ""}>
-																{sector?.toUpperCase()}
-															</SelectItem>
-														))}
-													</SelectGroup>
-												</SelectContent>
-											</Select>
-										)
-									)}
+															{sectoresDisponibles.map(sector => (
+																<SelectItem key={sector} value={sector ?? ""}>
+																	{sector?.toUpperCase()}
+																</SelectItem>
+															))}
+														</SelectGroup>
+													</SelectContent>
+												</Select>
+											)
+										)}
 
-									{isInvalid && <FieldError errors={field.state.meta.errors} />}
-								</Field>
-							)
-						}}
-					/>
+										{isInvalid && (
+											<FieldError errors={field.state.meta.errors} />
+										)}
+									</Field>
+								)
+							}}
+						/>
+					)}
 
 					<form.Field
 						name="monto"
