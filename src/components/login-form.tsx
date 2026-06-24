@@ -47,18 +47,28 @@ export function LoginForm({
 			onSubmit: formSchema,
 		},
 		onSubmit: async ({ value }) => {
-			const result = await authClient.signIn.email({
-				email: value.email,
-				password: value.password,
-				callbackURL: "/",
-			})
-			if (result.error) {
-				toast.error("Email o contraseña incorrectos")
-				return
+			setLoading(true)
+			try {
+				const result = await authClient.signIn.email({
+					email: value.email,
+					password: value.password,
+					callbackURL: "/",
+				})
+				if (result.error) {
+					toast.error("Email o contraseña incorrectos")
+					return
+				}
+				toast.success("Login exitoso")
+				router.invalidate()
+			} catch (error: unknown) {
+				if (error instanceof Error) {
+					toast.error(error.message)
+				} else {
+					toast.error("Error al iniciar sesión")
+				}
+			} finally {
+				setLoading(false)
 			}
-
-			toast.success("Login exitoso")
-			router.invalidate()
 		},
 	})
 
@@ -81,7 +91,7 @@ export function LoginForm({
 	return (
 		<div
 			className={cn(
-				"min-w-1/4 flex flex-col gap-6 w-full sm:w-1/4 mx-auto",
+				"min-w-1/4 flex flex-col gap-6 w-11/12 sm:w-1/4 2xl:w-1/8 mx-auto",
 				className
 			)}
 			{...props}
@@ -109,7 +119,7 @@ export function LoginForm({
 											fill="currentColor"
 										/>
 									</svg>
-									{loading ? "Iniciando..." : "Google"}
+									{/* {loading ? "Iniciando..." : "Google"} */}
 								</Button>
 							</Field>
 							<FieldSeparator>O continua con</FieldSeparator>
@@ -179,7 +189,9 @@ export function LoginForm({
 							/>
 
 							<Field>
-								<Button type="submit">Ingresar</Button>
+								<Button type="submit">
+									{loading ? "Iniciando..." : "Ingresar"}
+								</Button>
 								<FieldDescription className="text-center">
 									No tiene cuenta ?{" "}
 									<Link to="/register" viewTransition={{ types: ["rotateZ"] }}>

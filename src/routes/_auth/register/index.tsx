@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_auth/register/")({
 
 function RouteComponent() {
 	return (
-		<SectionContainer className="gap-20 sm:gap-40">
+		<SectionContainer className="gap-10 2xl:gap-30">
 			<AuthHeader />
 			<RegisterForm />
 		</SectionContainer>
