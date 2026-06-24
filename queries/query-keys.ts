@@ -4,7 +4,8 @@ export const queryKeys = {
 		byId: (id: string) => ["pagos", id] as const,
 		byPeriodo: (start: number, end: number) =>
 			["pagos-by-periodo", start, end] as const,
-		bySector: (sector: string) => ["pagos-by-sector", sector] as const,
+		bySector: (sector: string, rubro: string) =>
+			["pagos-by-sector", sector, rubro] as const,
 	},
 	rubros: {
 		all: ["rubros"] as const,

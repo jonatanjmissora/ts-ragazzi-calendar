@@ -6,8 +6,10 @@ import {
 	periodoConvert,
 } from "@/lib/utils"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { useSearch } from "@tanstack/react-router"
+import { Link, useSearch } from "@tanstack/react-router"
+import { BarChart3 } from "lucide-react"
 import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
+import { Button } from "../ui/button"
 
 export default function PagosRealizadosList({
 	rubro,
@@ -39,14 +41,22 @@ export default function PagosRealizadosList({
 				<GridContainer6
 					key={item.id}
 					rubro={item.rubro}
-					className="my-1 py-1 rounded-lg shadow h-12"
+					className="my-1 py-1 rounded-lg shadow h-12 relative"
 				>
 					<span></span>
 					<span>{periodoConvert(item.periodo)}</span>
 					<span>{item.rubro.toUpperCase()}</span>
 					<span>{item.sector.toUpperCase()}</span>
 					<span>{montoFormat(item.monto)}</span>
-					<span></span>
+					<Link
+						to="/histograma"
+						search={{ sector: item.sector, rubro: item.rubro }}
+					>
+						<Button variant="ghost" className="">
+							<BarChart3 size={14} />
+							Histo
+						</Button>
+					</Link>
 				</GridContainer6>
 			))}
 		</div>

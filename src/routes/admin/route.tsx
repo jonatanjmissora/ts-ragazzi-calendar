@@ -17,7 +17,7 @@ function RouteComponent() {
 	return (
 		<div className="flex-1">
 			<SectionContainer>
-				<div className="w-full flex">
+				<div className="w-full flex flex-col sm:flex-row">
 					<Aside>
 						<nav>
 							<Link
@@ -52,7 +52,7 @@ function RouteComponent() {
 							</Link>
 						</nav>
 					</Aside>
-					<article className="w-[80dvw] py-20">
+					<article className="w-full sm:w-[80dvw] py-20">
 						<Outlet />
 					</article>
 				</div>

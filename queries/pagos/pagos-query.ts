@@ -24,8 +24,8 @@ export const pagosByPeriodoQueryOptions = (start: number, end: number) =>
 		queryFn: () => getPagosByPeriodoServer({ data: { start, end } }),
 	})
 
-export const pagosBySectorQueryOptions = (sector: string) =>
+export const pagosBySectorQueryOptions = (sector: string, rubro: string) =>
 	queryOptions({
-		queryKey: queryKeys.pagos.bySector(sector),
-		queryFn: () => getPagosBySectorServer({ data: { sector } }),
+		queryKey: queryKeys.pagos.bySector(sector, rubro),
+		queryFn: () => getPagosBySectorServer({ data: { sector, rubro } }),
 	})

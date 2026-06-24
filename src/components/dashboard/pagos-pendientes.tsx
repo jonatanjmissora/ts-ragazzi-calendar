@@ -41,36 +41,38 @@ export default function DashboardPagosPendientes() {
 	}
 
 	return (
-		<article className="sm:w-3/4 2xl:w-2/3 mx-auto flex flex-col gap-4 p-6 border rounded-lg shadow bg-accent relative">
+		<article className="sm:w-3/4 2xl:w-2/3 mx-auto flex flex-col gap-4 p-6 border rounded-lg shadow bg-accent relative overflow-y-auto">
 			<Suspense fallback={<div>...</div>}>
 				<DashboardFilter rubro={rubro} sector={sector} />
 			</Suspense>
-			<GridContainer6 className=" text-lg font-semibold mt-10">
-				<span></span>
-				<span>vencimiento</span>
-				<span>rubro</span>
-				<span>sector</span>
-				<span>monto</span>
-				<span>menu</span>
-			</GridContainer6>
-			<Suspense fallback={<PagosSkelton />}>
-				<PagosPendientesList rubro={rubro} sector={sector} />
-			</Suspense>
+			<div className="sm:w-full w-[200dvw]">
+				<GridContainer6 className=" text-lg font-semibold mt-10">
+					<span></span>
+					<span>vencimiento</span>
+					<span>rubro</span>
+					<span>sector</span>
+					<span>monto</span>
+					<span>menu</span>
+				</GridContainer6>
+				<Suspense fallback={<PagosSkelton />}>
+					<PagosPendientesList rubro={rubro} sector={sector} />
+				</Suspense>
 
-			<h2 className="text-lg font-semibold mt-20 w-full text-center tracking-widest">
-				PAGOS REALIZADOS
-			</h2>
-			<GridContainer6 className=" text-lg font-semibold">
-				<span></span>
-				<span>vencimiento</span>
-				<span>rubro</span>
-				<span>sector</span>
-				<span>monto</span>
-				<span>menu</span>
-			</GridContainer6>
-			<Suspense fallback={<PagosSkelton />}>
-				<PagosRealizadosList />
-			</Suspense>
+				<h2 className="text-lg font-semibold mt-20 w-full text-center tracking-widest">
+					PAGOS REALIZADOS
+				</h2>
+				<GridContainer6 className=" text-lg font-semibold">
+					<span></span>
+					<span>vencimiento</span>
+					<span>rubro</span>
+					<span>sector</span>
+					<span>monto</span>
+					<span>menu</span>
+				</GridContainer6>
+				<Suspense fallback={<PagosSkelton />}>
+					<PagosRealizadosList />
+				</Suspense>
+			</div>
 		</article>
 	)
 }
@@ -174,10 +176,13 @@ const DropdownMenuComponent = ({ item }: { item: PagoType }) => {
 						</Button>
 					</Link>
 					<DropdownMenuSeparator />
-					<Link to="/histograma" search={{ sector: item.sector, rubro: item.rubro }}>
+					<Link
+						to="/histograma"
+						search={{ sector: item.sector, rubro: item.rubro }}
+					>
 						<Button variant="ghost" className="w-full justify-start">
 							<BarChart3 size={14} />
-							Histograma
+							Histo
 						</Button>
 					</Link>
 					<DropdownMenuSeparator />

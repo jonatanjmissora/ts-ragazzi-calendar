@@ -28,7 +28,7 @@ export default function DashboardFilter({
 	const [showFilter, setShowFilter] = useState(false)
 
 	return (
-		<div className="flex items-center justify-between gap-14">
+		<div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-14">
 			<div className=""></div>
 			<Periodo />
 			<div className="flex items-center gap-4 ">
@@ -75,7 +75,7 @@ function FilterContent({ rubro, sector }: DashboardFilterProps) {
 
 	const sectoresDisponibles = ["todos", ...getSectoresFromRubro()]
 	return (
-		<div className="flex items-center gap-10">
+		<div className="flex items-center gap-10 flex-wrap">
 			<div className="flex items-center justify-center gap-3">
 				<Label htmlFor="rubro">Rubro</Label>
 

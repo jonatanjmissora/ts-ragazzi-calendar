@@ -55,34 +55,36 @@ export default function PagosList() {
 	).sort((a, b) => a.periodo - b.periodo)
 
 	return (
-		<div className="flex flex-col gap-3 w-full">
-			<div className="w-full px-6 flex gap-6 items-center border-b-2 pb-2">
-				<span className="w-30">Periodo</span>
-				<span className="w-40">Rubro</span>
-				<span className="w-40">Sector</span>
-				<span className="w-40">Monto</span>
-				<span className="w-40">Pagado</span>
+		<div className="flex flex-col gap-3 w-full overflow-x-auto">
+			<div className="w-[200dvw] sm:w-full">
+				<div className="w-full px-6 flex gap-6 items-center border-b-2 pb-2">
+					<span className="w-30">Periodo</span>
+					<span className="w-40">Rubro</span>
+					<span className="w-40">Sector</span>
+					<span className="w-40">Monto</span>
+					<span className="w-40">Pagado</span>
+				</div>
+				{sortedItems.map(item => (
+					<Card
+						className={`flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base ${BG_RUBROS[item.rubro as keyof typeof BG_RUBROS]}`}
+						key={item.id}
+					>
+						<div className="absolute top-1/2 -translate-y-1/2 right-2">
+							<DropdownMenuComponent item={item} />
+						</div>
+						<CardTitle></CardTitle>
+						<CardContent className="flex gap-6 items-center">
+							<span className="w-30">{dateFormat(String(item.periodo))}</span>
+							<span className="w-40">{item.rubro.toUpperCase()}</span>
+							<span className="w-40">{item.sector.toUpperCase()}</span>
+							<span className="w-40">{item.monto}</span>
+							<span className="w-40">
+								{item.pagado ? dateFormat(String(item.pagado)) : "No"}
+							</span>
+						</CardContent>
+					</Card>
+				))}
 			</div>
-			{sortedItems.map(item => (
-				<Card
-					className={`flex flex-col gap-0 w-full py-4 relative text-xs 2xl:text-base ${BG_RUBROS[item.rubro as keyof typeof BG_RUBROS]}`}
-					key={item.id}
-				>
-					<div className="absolute top-1/2 -translate-y-1/2 right-2">
-						<DropdownMenuComponent item={item} />
-					</div>
-					<CardTitle></CardTitle>
-					<CardContent className="flex gap-6 items-center">
-						<span className="w-30">{dateFormat(String(item.periodo))}</span>
-						<span className="w-40">{item.rubro.toUpperCase()}</span>
-						<span className="w-40">{item.sector.toUpperCase()}</span>
-						<span className="w-40">{item.monto}</span>
-						<span className="w-40">
-							{item.pagado ? dateFormat(String(item.pagado)) : "No"}
-						</span>
-					</CardContent>
-				</Card>
-			))}
 		</div>
 	)
 }

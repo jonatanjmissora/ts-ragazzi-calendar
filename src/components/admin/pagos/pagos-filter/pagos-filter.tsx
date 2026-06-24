@@ -38,10 +38,10 @@ export default function PagosFilter() {
 	const sectoresDisponibles = ["todos", ...getSectoresFromRubro()]
 
 	return (
-		<article className="flex items-center flex-col 2xl:flex-row gap-2 2xl:gap-14">
+		<article className="flex items-center flex-col 2xl:flex-row gap-10 2xl:gap-14">
 			<PagosFilterPeriodo />
 
-			<div className="flex items-center gap-14">
+			<div className="flex flex-col sm:flex-row  items-center sm:gap-14 gap-4">
 				<div className="flex items-center justify-center gap-3">
 					<Label htmlFor="rubro">Rubro</Label>
 

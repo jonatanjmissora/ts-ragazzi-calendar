@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_protected/histograma")({
 function RouteComponent() {
 	const { sector, rubro } = Route.useSearch()
 	const { data: pagosHistograma } = useSuspenseQuery(
-		pagosBySectorQueryOptions(sector)
+		pagosBySectorQueryOptions(sector, rubro)
 	)
 
 	const data = (pagosHistograma || [])
@@ -43,7 +43,7 @@ function RouteComponent() {
 
 	return (
 		<div
-			className={`w-full h-[80svh] flex flex-col items-center justify-center px-[10%]`}
+			className={`w-full h-[80svh] flex flex-col items-start justify-center px-5 sm:px-[10%] overflow-x-auto`}
 		>
 			<div className="w-full flex items-center gap-4 mb-6">
 				<Link to="/">
@@ -55,7 +55,7 @@ function RouteComponent() {
 					{sector.toUpperCase()} — {rubro.toLocaleUpperCase()}
 				</h1>
 			</div>
-			<div className="w-full h-[60vh]">
+			<div className="w-[200dvw] sm:w-full h-[60vh]">
 				<ResponsiveContainer width="100%" height="100%">
 					<BarChart
 						data={data}

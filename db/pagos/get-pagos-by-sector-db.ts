@@ -1,13 +1,19 @@
 import { db } from "db/drizzle"
 import { pagos } from "db/schema"
-import { desc, eq } from "drizzle-orm"
+import { desc, eq, and } from "drizzle-orm"
 
-export async function getPagosBySectorDB({ sector }: { sector: string }) {
+export async function getPagosBySectorDB({
+	sector,
+	rubro,
+}: {
+	sector: string
+	rubro: string
+}) {
 	try {
 		return await db
 			.select()
 			.from(pagos)
-			.where(eq(pagos.sector, sector))
+			.where(and(eq(pagos.sector, sector), eq(pagos.rubro, rubro)))
 			.orderBy(desc(pagos.periodo))
 			.limit(12)
 	} catch (error) {
