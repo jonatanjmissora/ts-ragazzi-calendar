@@ -145,7 +145,7 @@ export function getPeriodo(mes: number | undefined, anio: number | undefined) {
 	let start = 0
 	let end = 0
 
-	if (mes && anio) {
+	if (mes !== undefined && anio !== undefined) {
 		start = anio * 10000 + (mes + 1) * 100 + 1
 		end = anio * 10000 + (mes + 2) * 100 + 1
 	} else {
