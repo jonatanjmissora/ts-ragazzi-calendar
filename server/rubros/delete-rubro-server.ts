@@ -14,8 +14,7 @@ export const deleteRubroServer = createServerFn({ method: "POST" })
 			const result = await deleteRubroDB(data.id)
 			if (!result) throw new Error("No se pudo eliminar el rubro")
 			return result[0]
-		} catch (error) {
-			console.error("ERROR en deleteRubroServer:", error instanceof Error ? error.message : error)
+		} catch {
 			throw new Error("No se pudo eliminar el rubro")
 		}
 	})

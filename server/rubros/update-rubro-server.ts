@@ -12,8 +12,7 @@ export const updateRubroServer = createServerFn({ method: "POST" })
 			await protectedServerFn(request)
 
 			return await updateRubroDB(data)
-		} catch (error) {
-			console.error("ERROR en updateRubroServer:", error instanceof Error ? error.message : error)
+		} catch {
 			throw new Error("No se pudo actualizar el rubro")
 		}
 	})

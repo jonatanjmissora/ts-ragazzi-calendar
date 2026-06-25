@@ -19,8 +19,7 @@ export const createRubroServer = createServerFn({ method: "POST" })
 			const result = await createRubroDB(newRubro)
 			if (!result) throw new Error("No se pudo crear el rubro")
 			return result[0]
-		} catch (error) {
-			console.error("ERROR en createRubroServer:", error instanceof Error ? error.message : error)
+		} catch {
 			throw new Error("No se pudo crear el rubro")
 		}
 	})

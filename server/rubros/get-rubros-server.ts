@@ -9,8 +9,7 @@ export const getRubrosServer = createServerFn({ method: "GET" }).handler(async (
 		await protectedServerFn(request)
 
 		return await getRubrosDB()
-	} catch (error) {
-		console.error("ERROR en getRubrosServer:", error instanceof Error ? error.message : error)
+	} catch {
 		return []
 	}
 })

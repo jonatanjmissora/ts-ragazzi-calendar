@@ -10,18 +10,12 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Ellipsis, Pencil, Trash2 } from "lucide-react"
+import { Ellipsis, Pencil } from "lucide-react"
 import { useState } from "react"
-import {
-	AlertDialog,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { RubroType } from "db/schema"
 import { sortByName } from "@/lib/utils"
 import DeleteForm from "./rubros-delete"
+import { DeleteItemAlertDialog } from "@/components/shared/delete-item-alert-dialog"
 import { BG_RUBROS } from "@/_constants"
 
 export default function RubrosList() {
@@ -94,33 +88,11 @@ const DropdownMenuComponent = ({ item }: { item: RubroType }) => {
 						</Button>
 					</Link>
 					<DropdownMenuSeparator />
-					<DeleteItemAlertDialog item={item} setIsMenuOpen={setIsMenuOpen} />
+					<DeleteItemAlertDialog>
+						<DeleteForm item={item} setIsMenuOpen={setIsMenuOpen} />
+					</DeleteItemAlertDialog>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>
-	)
-}
-
-export function DeleteItemAlertDialog({
-	item,
-	setIsMenuOpen,
-}: {
-	item: RubroType
-	setIsMenuOpen: (open: boolean) => void
-}) {
-	return (
-		<AlertDialog>
-			<AlertDialogTrigger asChild>
-				<Button variant="ghost">
-					<Trash2 size={14} />
-					Borrar
-				</Button>
-			</AlertDialogTrigger>
-			<AlertDialogContent>
-				<AlertDialogTitle></AlertDialogTitle>
-				<AlertDialogDescription></AlertDialogDescription>
-				<DeleteForm item={item} setIsMenuOpen={setIsMenuOpen} />
-			</AlertDialogContent>
-		</AlertDialog>
 	)
 }

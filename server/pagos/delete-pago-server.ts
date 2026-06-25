@@ -13,8 +13,7 @@ export const deletePagoServer = createServerFn({ method: "POST" })
 			const result = await deletePagoDB(data.id)
 			if (!result) throw new Error("No se pudo eliminar el pago")
 			return result[0]
-		} catch (error) {
-			console.error("ERROR en deletePagoServer:", error instanceof Error ? error.message : error)
+		} catch {
 			throw new Error("No se pudo eliminar el pago")
 		}
 	})

@@ -20,25 +20,16 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
-import { BarChart3, Pencil, Trash2 } from "lucide-react"
+import { BarChart3, Pencil } from "lucide-react"
 import { useState } from "react"
-import {
-	AlertDialog,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from "../ui/alert-dialog"
 import { PagoType } from "db/schema"
 import DeletePagoForm from "../layout/pagos-delete"
 import CheckPagoForm from "./check-pago-form"
 import PagosRealizadosList from "./pagos-realizados"
+import { DeleteItemAlertDialog } from "@/components/shared/delete-item-alert-dialog"
 
 export default function DashboardPagosPendientes() {
-	const { rubro, sector } = useSearch({ from: "/_protected/" }) as {
-		rubro?: string
-		sector?: string
-	}
+	const { rubro, sector } = useSearch({ from: "/_protected/" })
 
 	return (
 		<article className="sm:w-3/4 2xl:w-2/3 mx-auto flex flex-col gap-4 p-6 border rounded-lg shadow bg-accent relative overflow-y-auto">
@@ -54,7 +45,7 @@ export default function DashboardPagosPendientes() {
 					<span>monto</span>
 					<span>menu</span>
 				</GridContainer6>
-				<Suspense fallback={<PagosSkelton />}>
+				<Suspense fallback={<PagosSkeleton />}>
 					<PagosPendientesList rubro={rubro} sector={sector} />
 				</Suspense>
 
@@ -69,7 +60,7 @@ export default function DashboardPagosPendientes() {
 					<span>monto</span>
 					<span>menu</span>
 				</GridContainer6>
-				<Suspense fallback={<PagosSkelton />}>
+				<Suspense fallback={<PagosSkeleton />}>
 					<PagosRealizadosList />
 				</Suspense>
 			</div>
@@ -186,34 +177,12 @@ const DropdownMenuComponent = ({ item }: { item: PagoType }) => {
 						</Button>
 					</Link>
 					<DropdownMenuSeparator />
-					<DeleteItemAlertDialog item={item} setIsMenuOpen={setIsMenuOpen} />
+					<DeleteItemAlertDialog>
+						<DeletePagoForm item={item} setIsMenuOpen={setIsMenuOpen} />
+					</DeleteItemAlertDialog>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>
-	)
-}
-
-export function DeleteItemAlertDialog({
-	item,
-	setIsMenuOpen,
-}: {
-	item: PagoType
-	setIsMenuOpen: (open: boolean) => void
-}) {
-	return (
-		<AlertDialog>
-			<AlertDialogTrigger asChild>
-				<Button variant="ghost">
-					<Trash2 size={14} />
-					Borrar
-				</Button>
-			</AlertDialogTrigger>
-			<AlertDialogContent>
-				<AlertDialogTitle></AlertDialogTitle>
-				<AlertDialogDescription></AlertDialogDescription>
-				<DeletePagoForm item={item} setIsMenuOpen={setIsMenuOpen} />
-			</AlertDialogContent>
-		</AlertDialog>
 	)
 }
 
@@ -237,7 +206,7 @@ const GridContainer6 = ({
 	)
 }
 
-const PagosSkelton = () => {
+const PagosSkeleton = () => {
 	const backgrounds = {
 		0: "bg-(--ragazzi)/65",
 		1: "bg-(--palihue)/50",

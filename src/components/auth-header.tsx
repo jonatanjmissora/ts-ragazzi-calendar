@@ -1,20 +1,6 @@
-import { useRouteContext, useRouter } from "@tanstack/react-router"
-import { Monitor, Moon, Sun } from "lucide-react"
-
-import { setThemeServerFn } from "server/theme"
+import ThemeSwitch from "@/components/layout/theme-switch"
 
 export default function AuthHeader() {
-	const { theme } = useRouteContext({ from: "__root__" })
-	const router = useRouter()
-
-	const toggleTheme = () => {
-		const themes = ["light", "dark", "auto"] as const
-		const nextTheme = themes[(themes.indexOf(theme) + 1) % themes.length]
-		setThemeServerFn({ data: nextTheme }).then(() => {
-			router.invalidate()
-		})
-	}
-
 	return (
 		<header className="py-8 w-[90%] 2xl:w-[80%] mx-auto">
 			<nav className="flex items-center justify-between">
@@ -37,15 +23,7 @@ export default function AuthHeader() {
 				</div>
 
 				<div className="flex items-center gap-4">
-					<button className="cursor-pointer" onClick={toggleTheme}>
-						{theme === "dark" ? (
-							<Moon size={20} />
-						) : theme === "light" ? (
-							<Sun size={20} />
-						) : (
-							<Monitor size={20} />
-						)}
-					</button>
+					<ThemeSwitch />
 				</div>
 			</nav>
 		</header>

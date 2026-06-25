@@ -11,19 +11,12 @@ import {
 	DropdownMenuTrigger,
 } from "../../ui/dropdown-menu"
 import { useState } from "react"
-import { Ellipsis, Pencil, Trash2 } from "lucide-react"
-import {
-	AlertDialog,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from "../../ui/alert-dialog"
+import { Ellipsis, Pencil } from "lucide-react"
 import { PagoType } from "db/schema"
-import { sortByPeriodo } from "@/lib/utils"
-import { filteredItems } from "@/lib/utils"
+import { sortByPeriodo, filteredItems, dateFormat } from "@/lib/utils"
 import { BG_RUBROS } from "@/_constants"
 import DeletePagoForm from "@/components/layout/pagos-delete"
+import { DeleteItemAlertDialog } from "@/components/shared/delete-item-alert-dialog"
 
 export default function PagosList() {
 	const { data: items } = useSuspenseQuery(pagosQueryOptions)
@@ -52,7 +45,7 @@ export default function PagosList() {
 	}
 	const sortedItems = sortByPeriodo(
 		filteredItems(items, periodoDesde, periodoHasta, rubro, sector)
-	).sort((a, b) => a.periodo - b.periodo)
+	)
 
 	return (
 		<div className="flex flex-col gap-3 w-full overflow-x-auto">
@@ -110,42 +103,11 @@ const DropdownMenuComponent = ({ item }: { item: PagoType }) => {
 						</Button>
 					</Link>
 					<DropdownMenuSeparator />
-					<DeleteItemAlertDialog item={item} setIsMenuOpen={setIsMenuOpen} />
+					<DeleteItemAlertDialog>
+						<DeletePagoForm item={item} setIsMenuOpen={setIsMenuOpen} />
+					</DeleteItemAlertDialog>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)
-}
-
-export function DeleteItemAlertDialog({
-	item,
-	setIsMenuOpen,
-}: {
-	item: PagoType
-	setIsMenuOpen: (open: boolean) => void
-}) {
-	return (
-		<AlertDialog>
-			<AlertDialogTrigger asChild>
-				<Button variant="ghost">
-					<Trash2 size={14} />
-					Borrar
-				</Button>
-			</AlertDialogTrigger>
-			<AlertDialogContent>
-				<AlertDialogTitle></AlertDialogTitle>
-				<AlertDialogDescription></AlertDialogDescription>
-				<DeletePagoForm item={item} setIsMenuOpen={setIsMenuOpen} />
-			</AlertDialogContent>
-		</AlertDialog>
-	)
-}
-
-function dateFormat(date: string) {
-	const [year, month, day] = [
-		date.slice(0, 4),
-		date.slice(4, 6),
-		date.slice(6, 8),
-	]
-	return `${day}/${month}/${year}`
 }

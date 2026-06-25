@@ -9,8 +9,7 @@ export const getPagosServer = createServerFn({ method: "GET" }).handler(async ()
 		await protectedServerFn(request)
 
 		return await getPagosDB()
-	} catch (error) {
-		console.error("ERROR en getPagosServer:", error instanceof Error ? error.message : error)
+	} catch {
 		return []
 	}
 })

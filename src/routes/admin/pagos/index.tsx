@@ -39,7 +39,7 @@ function RouteComponent() {
 					</Link>
 				</div>
 			</div>
-			<Suspense fallback={<PagosSkelton />}>
+			<Suspense fallback={<PagosSkeleton />}>
 				<PagosList />
 			</Suspense>
 		</article>
@@ -64,7 +64,7 @@ const PagosQuantity = () => {
 	)
 }
 
-const PagosSkelton = () => {
+const PagosSkeleton = () => {
 	const backgrounds = {
 		0: "bg-(--ragazzi)/65",
 		1: "bg-(--palihue)/50",

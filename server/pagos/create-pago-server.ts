@@ -19,8 +19,7 @@ export const createPagoServer = createServerFn({ method: "POST" })
 			const result = await createPagoDB(newPago)
 			if (!result) throw new Error("No se pudo crear el pago")
 			return result[0]
-		} catch (error) {
-			console.error("ERROR en createPagoServer:", error instanceof Error ? error.message : error)
+		} catch {
 			throw new Error("No se pudo crear el pago")
 		}
 	})

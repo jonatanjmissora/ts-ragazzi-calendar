@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import { useState } from "react"
 
-const MIN_PERIODO = 20200000
+const MIN_PERIODO = 20260000
 
 export default function PagosFilterPeriodo() {
 	const { "periodo-desde": periodoDesde, "periodo-hasta": periodoHasta } =

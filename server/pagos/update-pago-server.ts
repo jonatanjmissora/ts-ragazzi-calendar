@@ -12,8 +12,7 @@ export const updatePagoServer = createServerFn({ method: "POST" })
 			await protectedServerFn(request)
 
 			return await updatePagoDB(data)
-		} catch (error) {
-			console.error("ERROR en updatePagoServer:", error instanceof Error ? error.message : error)
+		} catch {
 			throw new Error("No se pudo actualizar el pago")
 		}
 	})

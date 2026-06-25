@@ -11,8 +11,7 @@ export const getPagoByIdServer = createServerFn({ method: "GET" })
 			const request = getRequest()
 			await protectedServerFn(request)
 			return await getPagoByIdDB(data.id)
-		} catch (error) {
-			console.error("ERROR en getPagoByIdServer:", error instanceof Error ? error.message : error)
+		} catch {
 			return null
 		}
 	})

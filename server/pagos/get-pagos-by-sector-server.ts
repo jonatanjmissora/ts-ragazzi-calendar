@@ -10,11 +10,7 @@ export const getPagosBySectorServer = createServerFn({ method: "GET" })
 			const request = getRequest()
 			await protectedServerFn(request)
 			return await getPagosBySectorDB(data)
-		} catch (error) {
-			console.error(
-				"ERROR en getPagosBySectorServer:",
-				error instanceof Error ? error.message : error
-			)
+		} catch {
 			return []
 		}
 	})

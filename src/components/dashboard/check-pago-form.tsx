@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { getPeriodo, localeDateToPeriodo } from "@/lib/utils"
 import { useForm } from "@tanstack/react-form"
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { pagoFormValidator } from "db/pagos/pago-validator"
 import { Check, Loader } from "lucide-react"
-import { pagoQueryOptions, pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
+import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
 import { useUpdatePago } from "queries/pagos/use-update-pago"
 import { toast } from "sonner"
 
@@ -13,7 +13,7 @@ export default function CheckPagoForm({ itemId }: { itemId: string }) {
 	const { data: pagosFromPeriodo } = useSuspenseQuery(
 		pagosByPeriodoQueryOptions(start, end)
 	)
-	const item = pagosFromPeriodo?.find((item) => item.id === itemId)
+	const item = pagosFromPeriodo?.find(item => item.id === itemId)
 	const { mutateAsync: updateItemMutation, isPending, error } = useUpdatePago()
 
 	const form = useForm({
@@ -33,8 +33,7 @@ export default function CheckPagoForm({ itemId }: { itemId: string }) {
 				pagado: localeDateToPeriodo(),
 				id: itemId,
 			}
-			console.log("updatedItem", updatedItem)
-			const result = await updateItemMutation({ data: updatedItem, start, end })
+			const result = await updateItemMutation({ data: updatedItem })
 
 			if (!result) {
 				console.error("Error al realizar el pago", error)

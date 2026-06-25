@@ -64,19 +64,16 @@ export default function EditPagoForm({
 		},
 	})
 
-	// Update form values when item data loads
 	useEffect(() => {
 		if (item) {
-			setTimeout(() => {
-				form.reset({
-					periodo: item.periodo,
-					rubro: item.rubro,
-					sector: item.sector,
-					monto: item.monto,
-					pagado: item.pagado,
-				})
-				setActualRubro(item.rubro)
-			}, 0)
+			form.reset({
+				periodo: item.periodo,
+				rubro: item.rubro,
+				sector: item.sector,
+				monto: item.monto,
+				pagado: item.pagado,
+			})
+			setActualRubro(item.rubro)
 		}
 	}, [item, form])
 

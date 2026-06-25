@@ -7,10 +7,6 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
 }
 
-export async function delay() {
-	return new Promise(resolve => setTimeout(resolve, 3000))
-}
-
 export function sortByPeriodo<T extends { periodo: number | bigint }>(
 	pagos: T[]
 ) {
@@ -141,6 +137,11 @@ export function periodoConvert(periodo: number) {
 	return `${day}-${month}`
 }
 
+export function dateFormat(periodo: number | string) {
+	const str = String(periodo)
+	return `${str.slice(6, 8)}/${str.slice(4, 6)}/${str.slice(0, 4)}`
+}
+
 export function getPeriodo(mes: number | undefined, anio: number | undefined) {
 	let start = 0
 	let end = 0
@@ -158,4 +159,4 @@ export function getPeriodo(mes: number | undefined, anio: number | undefined) {
 }
 
 export const montoFormat = (number: number) =>
-  new Intl.NumberFormat("de-DE", { minimumFractionDigits: 0 }).format(number)
+	new Intl.NumberFormat("de-DE", { minimumFractionDigits: 0 }).format(number)

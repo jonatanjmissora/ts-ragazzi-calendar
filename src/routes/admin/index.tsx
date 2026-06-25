@@ -20,14 +20,14 @@ function RouteComponent() {
 					Rubro
 				</Link>
 			</div>
-			<Suspense fallback={<RubrosSkelton />}>
+			<Suspense fallback={<RubrosSkeleton />}>
 				<RubrosList />
 			</Suspense>
 		</article>
 	)
 }
 
-const RubrosSkelton = () => {
+const RubrosSkeleton = () => {
 	const backgrounds = {
 		0: "bg-(--ragazzi)/65",
 		1: "bg-(--patricios)/35",

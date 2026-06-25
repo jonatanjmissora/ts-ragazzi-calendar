@@ -11,8 +11,7 @@ export const getRubroByIdServer = createServerFn({ method: "GET" })
 			const request = getRequest()
 			await protectedServerFn(request)
 			return await getRubroByIdDB(data.id)
-		} catch (error) {
-			console.error("ERROR en getRubroByIdServer:", error instanceof Error ? error.message : error)
+		} catch {
 			return null
 		}
 	})

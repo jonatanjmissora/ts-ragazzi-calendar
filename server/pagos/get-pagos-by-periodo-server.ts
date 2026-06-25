@@ -10,8 +10,7 @@ export const getPagosByPeriodoServer = createServerFn({ method: "GET" })
 			const request = getRequest()
 			await protectedServerFn(request)
 			return await getPagosByPeriodoDB(data.start, data.end)
-		} catch (error) {
-			console.error("ERROR en getPagosByPeriodoServer:", error instanceof Error ? error.message : error)
+		} catch {
 			return []
 		}
 	})

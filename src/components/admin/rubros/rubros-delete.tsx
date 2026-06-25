@@ -53,7 +53,7 @@ export default function DeleteRubroForm({
 				¿Estás seguro de borrar el rubro?
 			</p>
 
-			<p className="text-center opacity-50 text-xs balance">
+			<p className="text-center opacity-50 text-xs">
 				Esta acción no se puede deshacer. Esto eliminará permanentemente el dato
 				de nuestros servidores.
 			</p>
