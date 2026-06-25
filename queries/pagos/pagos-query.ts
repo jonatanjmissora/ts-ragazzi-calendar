@@ -4,6 +4,8 @@ import { getPagoByIdServer } from "server/pagos/get-pago-by-id-server"
 import { getPagosByPeriodoServer } from "server/pagos/get-pagos-by-periodo-server"
 import { getPagosBySectorServer } from "server/pagos/get-pagos-by-sector-server"
 import { getPagosServer } from "server/pagos/get-pagos-server"
+import { getPagosPageServer } from "server/pagos/get-pagos-page-server"
+import type { PagosFilter } from "db/pagos/get-pagos-db"
 
 export const pagosQueryOptions = queryOptions({
 	queryKey: queryKeys.pagos.all,
@@ -11,6 +13,19 @@ export const pagosQueryOptions = queryOptions({
 	staleTime: 60 * 1000,
 	refetchInterval: 60 * 1000,
 })
+
+export const pagosPageQueryOptions = (
+	page: number,
+	pageSize: number,
+	filter: PagosFilter
+) =>
+	queryOptions({
+		queryKey: queryKeys.pagos.byPage(page, pageSize, filter),
+		queryFn: () =>
+			getPagosPageServer({
+				data: { page, pageSize, ...filter },
+			}),
+	})
 
 export const pagoQueryOptions = (itemId: string) =>
 	queryOptions({

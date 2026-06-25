@@ -43,7 +43,6 @@ function RouteComponent() {
 							className:
 								"shadow-[0_0_6px_#00000090] dark:shadow-[0_0_6px_#ffffff30] w-full",
 						}}
-						activeOptions={{ exact: true }}
 						className="border border-transparent hover:bg-background/60 bg-background my-3 p-3 px-6 rounded-lg shadow block font-semibold text-sm tracking-widest"
 					>
 						PAGOS

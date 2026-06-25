@@ -1,5 +1,4 @@
 🔵 Performance / Arquitectura
-24. Sin paginación en pagos — get-pagos-db.ts sin limit/offset.
 25. defaultPendingMs: 0 — la UI muestra pending states instantáneamente sin umbral.
 26. defaultPreloadStaleTime: 0 — los preloads se marcan como stale al instante.
 27. Schema de rubros está en db/pagos/schema.ts en vez de db/rubros/schema.ts.

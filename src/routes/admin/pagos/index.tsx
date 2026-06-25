@@ -1,24 +1,38 @@
 import PagosFilter from "@/components/admin/pagos/pagos-filter/pagos-filter"
 import PagosList from "@/components/admin/pagos/pagos-list"
-import { filteredItems, sortByPeriodo } from "@/lib/utils"
-import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router"
 import { Plus } from "lucide-react"
-import { pagosQueryOptions } from "queries/pagos/pagos-query"
 import { Suspense } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { getPagosCountServer } from "server/pagos/get-pagos-count-server"
+import { queryKeys } from "queries/query-keys"
 import z from "zod"
 
+const pageSize = 50
+
+const searchSchema = z.object({
+	"periodo-desde": z.string().optional(),
+	"periodo-hasta": z.string().optional(),
+	rubro: z.string().optional(),
+	sector: z.string().optional(),
+	page: z.coerce.number().int().min(1).optional().default(1),
+})
+
 export const Route = createFileRoute("/admin/pagos/")({
-	validateSearch: z.object({
-		"periodo-desde": z.string().optional(),
-		"periodo-hasta": z.string().optional(),
-		rubro: z.string().optional(),
-		sector: z.string().optional(),
-	}),
+	validateSearch: searchSchema,
 	component: RouteComponent,
 })
 
 function RouteComponent() {
+	const search = useSearch({ from: "/admin/pagos/" })
+	const {
+		page,
+		"periodo-desde": periodoDesde,
+		"periodo-hasta": periodoHasta,
+		rubro,
+		sector,
+	} = search
+
 	return (
 		<article className="sm:w-3/4 2xl:w-2/3 mx-auto flex flex-col gap-4 p-6 border rounded-lg shadow bg-accent">
 			<div className="flex items-center justify-between gap-8 border-b-2 pb-2">
@@ -26,7 +40,12 @@ function RouteComponent() {
 					<div className="flex items-center gap-2">
 						<h2 className="text-2xl font-bold">PAGOS</h2>
 						<Suspense fallback={<span>...</span>}>
-							<PagosQuantity />
+							<PagosQuantity
+								periodoDesde={periodoDesde}
+								periodoHasta={periodoHasta}
+								rubro={rubro}
+								sector={sector}
+							/>
 						</Suspense>
 					</div>
 					<PagosFilter />
@@ -40,28 +59,43 @@ function RouteComponent() {
 				</div>
 			</div>
 			<Suspense fallback={<PagosSkeleton />}>
-				<PagosList />
+				<PagosList
+					page={page}
+					pageSize={pageSize}
+					periodoDesde={periodoDesde}
+					periodoHasta={periodoHasta}
+					rubro={rubro}
+					sector={sector}
+				/>
 			</Suspense>
 		</article>
 	)
 }
 
-const PagosQuantity = () => {
-	const { data: items } = useSuspenseQuery(pagosQueryOptions)
-	const {
-		"periodo-desde": periodoDesde,
-		"periodo-hasta": periodoHasta,
-		rubro,
-		sector,
-	} = useSearch({ from: "/admin/pagos/" })
-	const sortedItems = sortByPeriodo(
-		filteredItems(items || [], periodoDesde, periodoHasta, rubro, sector)
-	)
-	return (
-		<span className="text-lg text-muted-foreground">
-			( {sortedItems.length} )
-		</span>
-	)
+const PagosQuantity = ({
+	periodoDesde,
+	periodoHasta,
+	rubro,
+	sector,
+}: {
+	periodoDesde?: string
+	periodoHasta?: string
+	rubro?: string
+	sector?: string
+}) => {
+	const { data: total } = useQuery({
+		queryKey: queryKeys.pagos.byPage(0, 0, {
+			periodoDesde,
+			periodoHasta,
+			rubro,
+			sector,
+		}),
+		queryFn: () =>
+			getPagosCountServer({
+				data: { periodoDesde, periodoHasta, rubro, sector },
+			}),
+	})
+	return <span className="text-lg text-muted-foreground">( {total ?? 0} )</span>
 }
 
 const PagosSkeleton = () => {
