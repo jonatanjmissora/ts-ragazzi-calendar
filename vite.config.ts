@@ -14,6 +14,20 @@ const config = defineConfig({
 			"@": fileURLToPath(new URL("./src", import.meta.url)),
 		},
 	},
+	build: {
+		rollupOptions: {
+			output: {
+				manualChunks(id) {
+					if (id.includes("node_modules/react-dom") || id.includes("node_modules/react/")) return "vendor-react"
+					if (id.includes("node_modules/@tanstack/react-router")) return "vendor-router"
+					if (id.includes("node_modules/@tanstack/react-query")) return "vendor-query"
+					if (id.includes("node_modules/@tanstack/react-form")) return "vendor-form"
+					if (id.includes("node_modules/better-auth")) return "vendor-auth"
+					if (id.includes("node_modules/recharts")) return "vendor-charts"
+				},
+			},
+		},
+	},
 	plugins: [
 		devtools(),
 		nitro(),

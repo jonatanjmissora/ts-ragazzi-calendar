@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "NITRO_PRESET=vercel vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "format": "biome format",
@@ -35,7 +35,7 @@
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.45.0",
     "lucide-react": "^0.561.0",
-    "nitro": "^2.11.0",
+    "nitro": "3.0.260610-beta",
     "pg": "^8.16.3",
     "radix-ui": "^1.4.3",
     "react": "^19.2.0",
