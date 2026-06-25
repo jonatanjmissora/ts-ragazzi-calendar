@@ -19,7 +19,7 @@ export const getRouter = () => {
 
 		defaultPendingMs: 0,
 		defaultPreload: "intent",
-		defaultPreloadStaleTime: 0,
+		defaultPreloadStaleTime: Infinity,
 		scrollRestoration: true,
 	})
 

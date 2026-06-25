@@ -22,7 +22,7 @@ export const pagoIdValidator = z.object({
 })
 
 export const updatePagoValidator = pagoFormValidator.extend({
-	id: z.string().min(1, "Id requerido"),
+	id: z.string().uuid("ID inválido"),
 })
 
 export type UpdatePagoType = z.infer<typeof updatePagoValidator>

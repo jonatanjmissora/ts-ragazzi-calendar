@@ -21,13 +21,3 @@ export const pagos = pgTable(
 )
 
 export type PagoType = typeof pagos.$inferSelect
-
-export const rubros = pgTable("rubros", {
-	id: text("id").primaryKey(),
-
-	nombre: text("nombre").notNull(),
-
-	sectores: text("sectores").notNull(),
-})
-
-export type RubroType = typeof rubros.$inferSelect
