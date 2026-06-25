@@ -7,6 +7,7 @@ import { fileURLToPath, URL } from "url"
 
 import tailwindcss from "@tailwindcss/vite"
 import { nitro } from "nitro/vite"
+import { visualizer } from "rollup-plugin-visualizer"
 
 const config = defineConfig({
 	resolve: {
@@ -38,7 +39,13 @@ const config = defineConfig({
 		}),
 		tailwindcss(),
 		viteReact(),
-	],
+		process.env.ANALYZE && visualizer({
+			open: true,
+			gzipSize: true,
+			brotliSize: true,
+			filename: "stats.html",
+		}),
+	].filter(Boolean),
 })
 
 export default config

@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { lazy, Suspense } from "react"
 import { protectedRoute } from "@/lib/protected-route"
 import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 import { pagosQueryOptions } from "queries/pagos/pagos-query"
 import { AppLayout } from "@/components/shared/app-layout"
-import DashboardCreatePago from "@/components/dashboard/create-pago"
 import { z } from "zod"
+
+const DashboardCreatePago = lazy(() => import("@/components/dashboard/create-pago"))
 
 export const Route = createFileRoute("/_protected")({
 	validateSearch: z.object({
@@ -21,6 +23,12 @@ export const Route = createFileRoute("/_protected")({
 
 function RouteComponent() {
 	return (
-		<AppLayout asideContent={<DashboardCreatePago />} />
+		<AppLayout
+			asideContent={
+				<Suspense fallback={<div className="p-4 text-center text-sm text-foreground/50">Cargando...</div>}>
+					<DashboardCreatePago />
+				</Suspense>
+			}
+		/>
 	)
 }
