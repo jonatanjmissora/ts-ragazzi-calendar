@@ -35,6 +35,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			{
 				title: "Ragazzi",
 			},
+			{
+				name: "description",
+				content: "Ragazzi — app de gestión de pagos para vaquería",
+			},
 		],
 		links: [
 			{

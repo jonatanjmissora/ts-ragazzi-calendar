@@ -15,7 +15,7 @@ export default function ThemeSwitch() {
 	}
 
 	return (
-		<button className="cursor-pointer" onClick={toggleTheme}>
+		<button aria-label="Toggle theme" className="cursor-pointer" onClick={toggleTheme}>
 			{theme === "dark" ? (
 				<Moon size={20} />
 			) : theme === "light" ? (

@@ -9,8 +9,8 @@ import * as schema from "../../db/schema"
 const baseURL = process.env.BETTER_AUTH_BASE_URL
 
 if (process.env.NODE_ENV === "production" && baseURL?.includes("localhost")) {
-	console.error(
-		"❌ BETTER_AUTH_BASE_URL sigue apuntando a localhost en producción.\n" +
+	console.warn(
+		"⚠️ BETTER_AUTH_BASE_URL sigue apuntando a localhost en producción.\n" +
 		"   Configúrala en el panel de tu hosting con la URL real del dominio."
 	)
 }

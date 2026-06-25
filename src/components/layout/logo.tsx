@@ -13,7 +13,7 @@ export const Logo = () => {
 					alt="Logo"
 				/>
 			</div>
-			<div className="w-full text-center flex flex-col gap-2 relative text-foreground/20">
+			<div className="w-full text-center flex flex-col gap-2 relative text-foreground/30">
 				<h1 className="sm:text-5xl 2xl:text-6xl text-4xl font-bold tracking-wider">
 					ragazzi
 				</h1>
