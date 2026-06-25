@@ -267,7 +267,7 @@ const PagosCreate = ({
 						/>
 
 						<Field className="w-1/3">
-							<Button type="submit" disabled={isPending}>
+							<Button type="submit" disabled={isPending} aria-label="Crear pago">
 								{isPending ? (
 									<Loader size={16} className="animate-spin"></Loader>
 								) : (

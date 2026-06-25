@@ -72,7 +72,7 @@ const DropdownMenuComponent = ({ item }: { item: RubroType }) => {
 	return (
 		<DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
 			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" className="cursor-pointer">
+				<Button variant="ghost" className="cursor-pointer" aria-label="Opciones de rubro">
 					<Ellipsis size={14} />
 				</Button>
 			</DropdownMenuTrigger>

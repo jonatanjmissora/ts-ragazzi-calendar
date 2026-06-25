@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "../ui/button"
 import { useNavigate, useSearch } from "@tanstack/react-router"
@@ -18,12 +19,14 @@ const MESES = [
 ]
 
 export default function Periodo() {
-	const ahora = new Date()
-	const mesActual = Number(ahora.getMonth().toLocaleString())
-	const anioActual = Number(ahora.getFullYear().toLocaleString())
-
 	const { mes: mesUrl, anio: anioUrl } = useSearch({ from: "/_protected/" })
 	const navigate = useNavigate({ from: "/" })
+
+	const [ahora, setAhora] = useState<Date | null>(null)
+	useEffect(() => { setAhora(new Date()) }, [])
+
+	const mesActual = ahora?.getMonth() ?? 0
+	const anioActual = ahora?.getFullYear() ?? 2026
 
 	const mes = mesUrl ?? mesActual
 	const anio = anioUrl ?? anioActual
@@ -52,13 +55,13 @@ export default function Periodo() {
 
 	return (
 		<div className="flex items-center gap-2 w-54 justify-between">
-			<Button variant="ghost" onClick={prev}>
+			<Button variant="ghost" onClick={prev} aria-label="Mes anterior">
 				<ChevronLeft className="size-6" />
 			</Button>
-			<span className="text-sm font-semibold text-center select-none">
+			<span className="text-sm font-semibold text-center select-none" suppressHydrationWarning>
 				{MESES[mes]} {String(anio).slice(2)}
 			</span>
-			<Button variant="ghost" onClick={next}>
+			<Button variant="ghost" onClick={next} aria-label="Mes siguiente">
 				<ChevronRight className="size-6" />
 			</Button>
 		</div>

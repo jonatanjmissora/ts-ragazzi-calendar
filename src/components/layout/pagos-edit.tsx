@@ -105,6 +105,7 @@ export default function EditPagoForm({
 					variant="ghost"
 					className="cursor-pointer"
 					onClick={() => router.navigate({ to: returnedPath })}
+					aria-label="Cerrar"
 				>
 					<X size={20} />
 				</Button>

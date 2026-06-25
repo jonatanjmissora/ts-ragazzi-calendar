@@ -184,7 +184,7 @@ const DropdownMenuComponent = ({ item }: { item: PagoType }) => {
 	return (
 		<DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
 			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" className="cursor-pointer">
+				<Button variant="ghost" className="cursor-pointer" aria-label="Opciones de pago">
 					<Ellipsis size={14} />
 				</Button>
 			</DropdownMenuTrigger>

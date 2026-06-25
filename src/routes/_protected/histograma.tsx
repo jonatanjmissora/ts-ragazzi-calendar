@@ -46,7 +46,7 @@ function RouteComponent() {
 			className={`w-full h-[80svh] flex flex-col items-start justify-center px-5 sm:px-[10%] overflow-x-auto`}
 		>
 			<div className="w-full flex items-center gap-4 mb-6">
-				<Link to="/">
+				<Link to="/" aria-label="Volver al inicio">
 					<Button variant="ghost" size="icon">
 						<ArrowLeft size={20} />
 					</Button>

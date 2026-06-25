@@ -111,7 +111,7 @@ export function LoginForm({
 					>
 						<FieldGroup>
 							<Field>
-								<Button variant="outline" type="button" onClick={signIn}>
+								<Button variant="outline" type="button" onClick={signIn} aria-label="Iniciar sesión con Google">
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 										<title>Google</title>
 										<path
@@ -119,7 +119,6 @@ export function LoginForm({
 											fill="currentColor"
 										/>
 									</svg>
-									{/* {loading ? "Iniciando..." : "Google"} */}
 								</Button>
 							</Field>
 							<FieldSeparator>O continua con</FieldSeparator>
@@ -172,6 +171,7 @@ export function LoginForm({
 													type="button"
 													onClick={() => setShowPassword(!showPassword)}
 													className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+													aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
 												>
 													{showPassword ? (
 														<EyeClosed size={16} />

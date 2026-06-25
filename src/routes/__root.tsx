@@ -64,7 +64,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 	return (
 		<html
-			lang="en"
+			lang="es"
 			className={`${theme} w-screen overflow-x-hidden min-h-screen`}
 		>
 			<head>

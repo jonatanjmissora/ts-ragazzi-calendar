@@ -9,12 +9,12 @@ export default function AuthHeader() {
 						<img
 							className="object-contain h-auto dark:hidden opacity-75"
 							src="/logo-dark.svg"
-							alt="Logo"
+							alt=""
 						/>
 						<img
 							className="object-contain h-auto hidden dark:block"
 							src="/logo-light.svg"
-							alt="Logo"
+							alt=""
 						/>
 					</div>
 					<h1 className="font-bold tracking-wider text-3xl text-foreground/75">

@@ -56,7 +56,7 @@ export default function CheckPagoForm({ itemId }: { itemId: string }) {
 				form.handleSubmit()
 			}}
 		>
-			<Button variant="outline" type="submit" disabled={isPending}>
+			<Button variant="outline" type="submit" disabled={isPending} aria-label="Marcar como pagado">
 				{isPending ? (
 					<Loader className="animate-spin"></Loader>
 				) : (

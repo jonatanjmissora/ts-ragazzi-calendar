@@ -69,6 +69,7 @@ export default function EditRubroForm({
 					variant="ghost"
 					className="cursor-pointer"
 					onClick={() => router.navigate({ to: "/admin" })}
+					aria-label="Cerrar"
 				>
 					<X size={20} />
 				</Button>

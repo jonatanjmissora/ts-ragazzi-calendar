@@ -125,10 +125,10 @@ function PagosPendientesList({
 					className="my-1 py-1 rounded-lg shadow h-12"
 				>
 					<Switch
-						id="check"
 						size="sm"
 						className="mx-2"
 						onCheckedChange={() => reduceItem(item)}
+						aria-label={`Seleccionar ${item.rubro} ${item.sector}`}
 					/>
 					<span>{periodoConvert(item.periodo)}</span>
 					<span>{item.rubro.toUpperCase()}</span>
@@ -151,7 +151,7 @@ const DropdownMenuComponent = ({ item }: { item: PagoType }) => {
 	return (
 		<DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
 			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" className="cursor-pointer">
+				<Button variant="ghost" className="cursor-pointer" aria-label="Opciones">
 					<Ellipsis size={14} />
 				</Button>
 			</DropdownMenuTrigger>

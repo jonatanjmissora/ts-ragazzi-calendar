@@ -13,6 +13,7 @@ export const Aside = ({ children }: { children?: React.ReactNode }) => {
 			<Link
 				to="/admin"
 				className="absolute top-4 left-4 flex justify-between items-center opacity-50"
+				aria-label="Administración"
 			>
 				<Settings size={20} />
 			</Link>

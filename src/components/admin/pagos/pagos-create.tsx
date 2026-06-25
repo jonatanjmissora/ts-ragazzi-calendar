@@ -83,6 +83,7 @@ export default function PagosCreate({
 					variant="ghost"
 					className="cursor-pointer"
 					onClick={() => router.navigate({ to: "/admin/pagos" })}
+					aria-label="Cerrar"
 				>
 					<X size={20} />
 				</Button>
