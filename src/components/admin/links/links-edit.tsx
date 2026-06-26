@@ -10,7 +10,6 @@ import { Field } from "../../ui/field"
 import { FieldLabel } from "../../ui/field"
 import { Loader } from "lucide-react"
 import { Input } from "../../ui/input"
-import { Textarea } from "../../ui/textarea"
 import { linkQueryOptions } from "queries/links/links-query"
 import { useEffect, useRef } from "react"
 import { useUpdateLink } from "queries/links/use-update-link"
@@ -213,12 +212,11 @@ export default function EditLinkForm({
 											className="mt-2 w-30 h-20 object-contain rounded-lg border"
 										/>
 									)}
-									<Textarea
+									<Input
 										placeholder="O pegar cadena base64 aquí..."
 										value={field.state.value}
 										onChange={e => field.handleChange(e.target.value)}
 										className="mt-2 text-xs"
-										rows={3}
 									/>
 								</Field>
 							)

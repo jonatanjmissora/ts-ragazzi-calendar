@@ -17,13 +17,13 @@ export const Logo = () => {
 					height="165"
 				/>
 			</div>
-			<div className="w-full text-center flex flex-col gap-2 relative text-foreground/60">
-				<h1 className="sm:text-5xl 2xl:text-6xl text-4xl font-bold tracking-wider">
+			<div className="w-full text-center flex flex-col gap-2 relative text-foreground/60 -z-1">
+				<span className="sm:text-5xl 2xl:text-6xl text-4xl font-bold tracking-wider">
 					ragazzi
-				</h1>
-				<h2 className="absolute right-5 -bottom-1/3 font-semibold sm:text-base 2xl:text-xl text-base">
+				</span>
+				<span className="absolute right-5 -bottom-1/3 font-semibold sm:text-base 2xl:text-xl text-base">
 					vaqueria
-				</h2>
+				</span>
 			</div>
 		</article>
 	)
