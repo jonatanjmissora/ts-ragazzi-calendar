@@ -8,7 +8,6 @@ import { fileURLToPath, URL } from "url"
 import tailwindcss from "@tailwindcss/vite"
 import { nitro } from "nitro/vite"
 import { visualizer } from "rollup-plugin-visualizer"
-import { VitePWA } from "vite-plugin-pwa"
 
 const config = defineConfig({
 	resolve: {
@@ -44,52 +43,6 @@ const config = defineConfig({
 			projects: ["./tsconfig.json"],
 		}),
 		tailwindcss(),
-		VitePWA({
-			registerType: "prompt",
-			workbox: {
-				globDirectory: ".output/public",
-				globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}", "**/manifest.webmanifest"],
-				swDest: ".output/public/sw.js",
-				navigateFallback: "/",
-				navigateFallbackDenylist: [/^\/api\//],
-				runtimeCaching: [
-					{
-						urlPattern: /^https:\/\/.*\/api\/.*/i,
-						handler: "NetworkFirst",
-						options: {
-							cacheName: "api-cache",
-							expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 },
-						},
-					},
-					{
-						urlPattern: ({ request }) => request.mode === "navigate",
-						handler: "NetworkFirst",
-						options: {
-							cacheName: "pages",
-							expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 },
-						},
-					},
-				],
-			},
-			manifest: {
-				name: "Ragazzi",
-				short_name: "Ragazzi",
-				description: "App de gestión de pagos para vaquería",
-				start_url: "/",
-				display: "standalone",
-				background_color: "#09090b",
-				theme_color: "#09090b",
-				orientation: "portrait-primary",
-				icons: [
-					{ src: "/logo192.png", sizes: "192x192", type: "image/png" },
-					{ src: "/logo512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
-				],
-				screenshots: [
-					{ src: "/screenshot-mobile.png", sizes: "390x844", type: "image/png", form_factor: "narrow" },
-					{ src: "/screenshot-wide.png", sizes: "1280x720", type: "image/png", form_factor: "wide" },
-				],
-			},
-		}),
 		process.env.ANALYZE && visualizer({
 			open: true,
 			gzipSize: true,

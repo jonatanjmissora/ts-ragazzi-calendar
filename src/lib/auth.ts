@@ -1,3 +1,7 @@
+import { config } from "dotenv"
+import { resolve } from "path"
+config({ path: resolve(".env") })
+
 import { betterAuth } from "better-auth"
 import { tanstackStartCookies } from "better-auth/tanstack-start"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
@@ -20,6 +24,7 @@ const databaseUrl = process.env.DATABASE_URL
 
 interface AuthOptions {
 	baseURL?: string
+	secret?: string
 	emailAndPassword: {
 		enabled: boolean
 	}
@@ -27,8 +32,15 @@ interface AuthOptions {
 	database?: any
 }
 
+const secret = process.env.BETTER_AUTH_SECRET
+
+if (!secret) {
+	console.error("❌ Better Auth: BETTER_AUTH_SECRET no está configurada en las variables de entorno.")
+}
+
 let authOptions: AuthOptions = {
 	baseURL,
+	secret,
 	emailAndPassword: {
 		enabled: true,
 	},

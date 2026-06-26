@@ -16,7 +16,7 @@ type DataItem = {
 	periodo: number
 }
 
-export function HistogramaChart({
+export default function HistogramaChart({
 	data,
 	rubro,
 }: {
