@@ -6,3 +6,6 @@ export * from "./pagos/schema"
 
 // Rubros
 export * from "./rubros/schema"
+
+// Links
+export * from "./links/schema"

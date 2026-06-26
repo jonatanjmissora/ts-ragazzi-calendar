@@ -7,7 +7,6 @@ import { fileURLToPath, URL } from "url"
 
 import tailwindcss from "@tailwindcss/vite"
 import { nitro } from "nitro/vite"
-import { visualizer } from "rollup-plugin-visualizer"
 
 const config = defineConfig({
 	resolve: {
@@ -19,10 +18,17 @@ const config = defineConfig({
 		rollupOptions: {
 			output: {
 				manualChunks(id) {
-					if (id.includes("node_modules/react-dom") || id.includes("node_modules/react/")) return "vendor-react"
-					if (id.includes("node_modules/@tanstack/react-router")) return "vendor-router"
-					if (id.includes("node_modules/@tanstack/react-query")) return "vendor-query"
-					if (id.includes("node_modules/@tanstack/react-form")) return "vendor-form"
+					if (
+						id.includes("node_modules/react-dom") ||
+						id.includes("node_modules/react/")
+					)
+						return "vendor-react"
+					if (id.includes("node_modules/@tanstack/react-router"))
+						return "vendor-router"
+					if (id.includes("node_modules/@tanstack/react-query"))
+						return "vendor-query"
+					if (id.includes("node_modules/@tanstack/react-form"))
+						return "vendor-form"
 					if (id.includes("node_modules/better-auth")) return "vendor-auth"
 					if (id.includes("node_modules/recharts")) return "vendor-charts"
 				},
@@ -39,13 +45,7 @@ const config = defineConfig({
 		}),
 		tailwindcss(),
 		viteReact(),
-		process.env.ANALYZE && visualizer({
-			open: true,
-			gzipSize: true,
-			brotliSize: true,
-			filename: "stats.html",
-		}),
-	].filter(Boolean),
+	],
 })
 
 export default config

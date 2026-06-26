@@ -15,4 +15,8 @@ export const queryKeys = {
 		all: ["rubros"] as const,
 		byId: (id: string) => ["rubros", id] as const,
 	},
+	links: {
+		all: ["links"] as const,
+		byId: (id: string) => ["links", id] as const,
+	},
 }
