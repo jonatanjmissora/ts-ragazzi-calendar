@@ -31,7 +31,6 @@ const config = defineConfig({
 					if (id.includes("node_modules/@tanstack/react-form"))
 						return "vendor-form"
 					if (id.includes("node_modules/better-auth")) return "vendor-auth"
-					if (id.includes("node_modules/recharts")) return "vendor-charts"
 				},
 			},
 		},
