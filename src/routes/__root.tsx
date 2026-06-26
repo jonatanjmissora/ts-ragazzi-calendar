@@ -40,6 +40,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 				name: "description",
 				content: "Ragazzi — app de gestión de pagos para vaquería",
 			},
+			{
+				name: "theme-color",
+				content: "#09090b",
+			},
 		],
 		links: [
 			{
@@ -48,7 +52,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			},
 			{
 				rel: "manifest",
-				href: "/manifest.json",
+				href: "/manifest.webmanifest",
 			},
 		],
 	}),
