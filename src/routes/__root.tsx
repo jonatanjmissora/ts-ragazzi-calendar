@@ -13,6 +13,7 @@ import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { NotFound } from "@/components/NotFound"
 
 const DevtoolsPanel = lazy(() => import("@/components/devtools-panel"))
+import { PWARegister } from "@/components/pwa-register"
 import { getSession } from "server/get-session"
 import { getThemeServerFn } from "server/theme"
 
@@ -45,6 +46,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 				rel: "stylesheet",
 				href: appCss,
 			},
+			{
+				rel: "manifest",
+				href: "/manifest.json",
+			},
 		],
 	}),
 	beforeLoad: async () => {
@@ -72,6 +77,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body className="w-full h-full flex flex-col">
 				{children}
+				<PWARegister />
 				<Toaster />
 				{import.meta.env.DEV && (
 					<Suspense fallback={null}>
