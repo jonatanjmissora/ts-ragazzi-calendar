@@ -1,11 +1,53 @@
 {
-  "version": 1,
-  "skills": {
-    "performance-lighthouse-runner": {
-      "source": "jeremylongshore/claude-code-plugins-plus-skills",
-      "sourceType": "github",
-      "skillPath": "skills/05-frontend-dev/performance-lighthouse-runner/SKILL.md",
-      "computedHash": "3646a9c24d8e9802859edeb7de63325763332ac13510888828107d955e3f567a"
-    }
-  }
+	"version": 1,
+	"skills": {
+		"performance-lighthouse-runner": {
+			"source": "jeremylongshore/claude-code-plugins-plus-skills",
+			"sourceType": "github",
+			"skillPath": "skills/05-frontend-dev/performance-lighthouse-runner/SKILL.md",
+			"computedHash": "952cec7e328285d945f3a9c27ae4c812facd4f59d64c096b02256f2305e4d183"
+		},
+		"better-auth-patterns": {
+			"source": "local",
+			"sourceType": "local",
+			"skillPath": "skills/.agents/skills/better-auth-patterns/SKILL.md",
+			"computedHash": "95cdc52e9054a77e095e773aa5fb5ec96b4171259f3701b23e9137ab93b0366a"
+		},
+		"data-patterns": {
+			"source": "local",
+			"sourceType": "local",
+			"skillPath": "skills/.agents/skills/data-patterns/SKILL.md",
+			"computedHash": "82179a51df51e227cd15eb28755d86360cf2aaf66119cbb527b686db3e552991"
+		},
+		"frontend-design": {
+			"source": "local",
+			"sourceType": "local",
+			"skillPath": "skills/.agents/skills/frontend-design/SKILL.md",
+			"computedHash": "70044bbc8e4c21d23b8c8b864956aa1515c1c6cb2f9df14148dbb8c4af6187e5"
+		},
+		"tanstack-pwa-offline": {
+			"source": "local",
+			"sourceType": "local",
+			"skillPath": "skills/.agents/skills/tanstack+pwa+offline/SKILL.md",
+			"computedHash": "b10ea1bcfbff6d303536862cf83d3d3e2fefbdc0227f30a95301f8de1cadb1c3"
+		},
+		"tanstack-query-best-practices": {
+			"source": "local",
+			"sourceType": "local",
+			"skillPath": "skills/.agents/skills/tanstack-query-best-practices/SKILL.md",
+			"computedHash": "8149b5533879ffb726fb5788382e4858527d798e4ecd2b8c49f5c10c43526b58"
+		},
+		"tanstack-start-best-practices": {
+			"source": "local",
+			"sourceType": "local",
+			"skillPath": "skills/.agents/skills/tanstack-start-best-practices/SKILL.md",
+			"computedHash": "1aba30170aa7db7a42ff0191f5c809b26775acad1596c841875cbef75e434798"
+		},
+		"web-design-guidelines": {
+			"source": "local",
+			"sourceType": "local",
+			"skillPath": "skills/.agents/skills/web-design-guidelines/SKILL.md",
+			"computedHash": "f4647ca866a3accf763777f83e7682954f0187cd6bea7eea0399796652414e8f"
+		}
+	}
 }
