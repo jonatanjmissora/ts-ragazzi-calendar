@@ -15,6 +15,7 @@ export function useDeletePago(pagoId: string) {
 			} catch {
 				await addMutationToQueue("delete", data)
 			}
+			return data
 		},
 		onSuccess: () => {
 			const [start, end] = getPeriodo(undefined, undefined)
