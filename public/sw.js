@@ -1,75 +1,112 @@
-const CACHE_NAME = "ragazzi-v1"
-const STATIC_CACHE = "ragazzi-static-v1"
+const CACHE_STATIC = "ragazzi-static-v1"
+const CACHE_PAGES = "ragazzi-pages-v1"
+const CACHE_API = "ragazzi-api-v1"
+
+const PRECACHE_URLS = [
+	"/",
+	"/offline.html",
+	"/manifest.json",
+	"/logo192.png",
+	"/logo512.png",
+	"/favicon.ico",
+]
 
 self.addEventListener("install", (event) => {
+	event.waitUntil(
+		caches.open(CACHE_STATIC).then((cache) => cache.addAll(PRECACHE_URLS))
+	)
 	self.skipWaiting()
 })
 
 self.addEventListener("activate", (event) => {
 	event.waitUntil(
-		Promise.all([
-			self.clients.claim(),
-			caches.keys().then((keys) =>
-				Promise.all(
-					keys
-						.filter((key) => key !== STATIC_CACHE && key !== CACHE_NAME)
-						.map((key) => caches.delete(key))
-				)
-			),
-		])
+		caches.keys().then((keys) =>
+			Promise.all(
+				keys
+					.filter((key) => key !== CACHE_STATIC && key !== CACHE_PAGES && key !== CACHE_API)
+					.map((key) => caches.delete(key))
+			)
+		)
 	)
+	self.clients.claim()
+})
+
+self.addEventListener("message", (event) => {
+	if (event.data && event.data.type === "SKIP_WAITING") {
+		self.skipWaiting()
+	}
 })
 
 self.addEventListener("fetch", (event) => {
 	const { request } = event
-
-	if (request.method !== "GET") return
-
 	const url = new URL(request.url)
 
-	if (url.pathname.startsWith("/__")) return
+	if (request.method !== "GET") return
+	if (!url.protocol.startsWith("http")) return
 
 	if (url.pathname.startsWith("/api/")) {
-		event.respondWith(
-			fetch(request).catch(() => caches.match(request))
-		)
+		event.respondWith(networkFirst(request, CACHE_API))
 		return
 	}
 
-	if (
-		url.pathname.endsWith(".js") ||
-		url.pathname.endsWith(".css") ||
-		url.pathname.endsWith(".png") ||
-		url.pathname.endsWith(".jpg") ||
-		url.pathname.endsWith(".svg") ||
-		url.pathname.endsWith(".ico") ||
-		url.pathname.endsWith(".woff2")
-	) {
-		event.respondWith(
-			caches.open(STATIC_CACHE).then((cache) =>
-				cache.match(request).then((cached) => {
-					const fetched = fetch(request).then((response) => {
-						if (response.ok) {
-							cache.put(request, response.clone())
-						}
-						return response
-					})
-					return cached || fetched
-				})
-			)
-		)
+	if (request.mode === "navigate") {
+		event.respondWith(networkFirstWithOffline(request))
 		return
 	}
 
-	event.respondWith(
-		fetch(request)
-			.then((response) => {
-				if (response.ok) {
-					const clone = response.clone()
-					caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
-				}
-				return response
-			})
-			.catch(() => caches.match(request))
-	)
+	event.respondWith(cacheFirst(request, CACHE_STATIC))
 })
+
+async function cacheFirst(request, cacheName) {
+	const cache = await caches.open(cacheName)
+	const cached = await cache.match(request)
+	if (cached) return cached
+
+	try {
+		const response = await fetch(request)
+		if (response.ok) {
+			cache.put(request, response.clone())
+		}
+		return response
+	} catch {
+		return new Response("", { status: 408 })
+	}
+}
+
+async function networkFirst(request, cacheName) {
+	const cache = await caches.open(cacheName)
+	try {
+		const response = await fetch(request)
+		if (response.ok) {
+			cache.put(request, response.clone())
+		}
+		return response
+	} catch {
+		const cached = await cache.match(request)
+		if (cached) return cached
+		return new Response(JSON.stringify({ error: "offline" }), {
+			status: 503,
+			headers: { "Content-Type": "application/json" },
+		})
+	}
+}
+
+async function networkFirstWithOffline(request) {
+	const cache = await caches.open(CACHE_PAGES)
+	try {
+		const response = await fetch(request)
+		if (response.ok) {
+			cache.put(request, response.clone())
+		}
+		return response
+	} catch {
+		const cached = await cache.match(request)
+		if (cached) return cached
+
+		const offlineCache = await caches.open(CACHE_STATIC)
+		const offlinePage = await offlineCache.match("/offline.html")
+		if (offlinePage) return offlinePage
+
+		return new Response("Offline", { status: 503 })
+	}
+}

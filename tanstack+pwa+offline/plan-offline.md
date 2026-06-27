@@ -1,15 +1,130 @@
-# Plan: Offline CRUD de Pagos con IndexedDB
+# Plan: PWA + Offline CRUD de Pagos con IndexedDB
 
 ## Resumen
 
-Agregar soporte offline a la app para que el usuario pueda crear, editar y eliminar pagos sin conexion. Los datos se guardan en IndexedDB localmente y se sincronizan automaticamente cuando vuelve la conexion.
+**PWA (Progressive Web App):**
+- Service Worker manual (sin `vite-plugin-pwa` — incompatible con TanStack Start + Nitro)
+- Manifest.json en `public/`
+- Offline fallback a `public/offline.html`
+- Update prompt para nueva versión
+- Banner offline con `OfflineIndicator`
 
-**Scope:**
+**Offline CRUD:**
 - Lectura offline (cache de datos leidos)
 - CRUD offline solo para pagos (create, update, delete)
 - Sin resolucion de conflictos (ultima escritura gana)
 
 ---
+
+## PWA: Configuración
+
+### Por qué NO se usa `vite-plugin-pwa`
+
+`vite-plugin-pwa` genera el SW en `dist/` durante el build del client, pero TanStack Start + Nitro copia los assets a `.output/public/`. Son dos builds separados, lo que genera:
+- SW con contenido roto (SyntaxError en el browser)
+- Conflictos entre `dist/sw.js` y `.output/public/sw.js`
+- Manifest no se sirve correctamente
+
+**Solución:** SW manual en `public/sw.js` + `public/manifest.json`. Nitro copia todo `public/` a `.output/public/` automáticamente.
+
+### Archivos de PWA
+
+| Archivo | Descripción |
+|---------|-------------|
+| `public/sw.js` | Service Worker manual con cache strategies |
+| `public/manifest.json` | Web App Manifest |
+| `public/offline.html` | Página de fallback cuando offline |
+| `src/components/pwa-register.tsx` | Registro del SW + update prompt |
+| `src/components/offline-indicator.tsx` | Banner "Sin conexión" en top bar |
+| `src/routes/__root.tsx` | Link al manifest + theme-color |
+
+### `public/sw.js` — Estrategias de Cache
+
+```
+Cache STATIC  → assets estáticos (logos, CSS, JS bundles)
+Cache PAGES   → rutas visitadas (navigate requests)
+Cache API     → responses de /api/*
+```
+
+| Tipo de request | Estrategia | Descripción |
+|-----------------|------------|-------------|
+| `GET` no-navigate | Cache First | Busca en cache, si no existe fetch + cache |
+| `/api/*` | Network First | Intenta red, si falla usa cache |
+| Navigate (rutas) | Network First + offline fallback | Intenta red, si falla busca cache, si no tiene muestra `offline.html` |
+| Non-GET | Skip | No intercepta POST, PUT, DELETE |
+
+### `public/sw.js` — Precache
+
+El SW precachea estáticamente al instalarse:
+```js
+const PRECACHE_URLS = [
+  "/",
+  "/offline.html",
+  "/manifest.json",
+  "/logo192.png",
+  "/logo512.png",
+  "/favicon.ico",
+]
+```
+
+### `src/components/pwa-register.tsx`
+
+- Solo registra el SW en producción (`import.meta.env.PROD`)
+- Detecta cuando hay un nuevo SW instalado → muestra toast "Nueva versión disponible"
+- Al clickear "Actualizar" → envía `SKIP_WAITING` al SW y recarga la página
+- Muestra "App lista para uso offline" al activarse
+
+### `src/components/offline-indicator.tsx`
+
+- Banner fijo arriba de todo (`fixed top-0 z-50`)
+- Se muestra cuando:
+  - El usuario está **offline** (siempre)
+  - El usuario está **online** pero hay cambios pendientes en la cola de mutaciones
+- Muestra `WifiOff` icon + "Sin conexión" cuando offline
+- Muestra `Wifi` icon + count de pendientes cuando online pero con cola
+- Auto-sync: al volver online, procesa la cola de mutaciones pendientes
+
+### `src/routes/__root.tsx`
+
+```tsx
+head: () => ({
+  meta: [
+    { name: "theme-color", content: "#09090b" },
+    // ... viewport, charset, etc.
+  ],
+  links: [
+    { rel: "manifest", href: "/manifest.json" },
+    // ... stylesheet
+  ],
+})
+```
+
+### `package.json`
+
+```json
+{
+  "scripts": {
+    "preview": "node .output/server/index.mjs"
+  }
+}
+```
+
+**Por qué no `vite preview`:** `vite preview` sirve desde `dist/` como SPA estática. TanStack Start genera un server SSR en `.output/server/` que maneja server functions, API routes y SSR. Se necesita `node .output/server/index.mjs`.
+
+### Testing PWA
+
+1. **Build:** `pnpm build`
+2. **Preview:** `node .output/server/index.mjs`
+3. **Chrome DevTools → Application:**
+   - Service Workers: "Activated and is running"
+   - Manifest: nombre, iconos, display standalone
+   - Cache Storage: caches STATIC, PAGES, API
+4. **Test offline:** Network → Offline → recargar → debería mostrar offline.html en rutas no cacheadas
+5. **Test update:** hacer cambio → rebuild → preview → debería aparecer toast de actualización
+
+---
+
+## Offline CRUD: Plan Original
 
 ## Arquitectura
 

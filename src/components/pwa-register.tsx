@@ -9,15 +9,7 @@ export function PWARegister() {
 	useEffect(() => {
 		if (import.meta.env.DEV || !("serviceWorker" in navigator)) return
 
-		let registration: ServiceWorkerRegistration | undefined
-
 		navigator.serviceWorker.register("/sw.js").then((reg) => {
-			registration = reg
-
-			if (reg.waiting) {
-				setNeedRefresh(true)
-			}
-
 			reg.addEventListener("updatefound", () => {
 				const newWorker = reg.installing
 				if (!newWorker) return
@@ -25,35 +17,24 @@ export function PWARegister() {
 				newWorker.addEventListener("statechange", () => {
 					if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
 						setNeedRefresh(true)
-					} else if (newWorker.state === "activated") {
-						setOfflineReady(true)
-						setTimeout(() => setOfflineReady(false), 5000)
 					}
 				})
 			})
 		})
 
-		navigator.serviceWorker.addEventListener("controllerchange", () => {
-			window.location.reload()
+		navigator.serviceWorker.ready.then(() => {
+			setOfflineReady(true)
+			setTimeout(() => setOfflineReady(false), 5000)
 		})
-
-		return () => {
-			registration?.unregister()
-		}
 	}, [])
-
-	useEffect(() => {
-		if (import.meta.env.DEV) {
-			setNeedRefresh(false)
-			setOfflineReady(false)
-		}
-	}, [])
-
-	if (import.meta.env.DEV) return null
 
 	const updateSW = () => {
 		navigator.serviceWorker.controller?.postMessage({ type: "SKIP_WAITING" })
+		setNeedRefresh(false)
+		window.location.reload()
 	}
+
+	if (import.meta.env.DEV) return null
 
 	return (
 		<>
