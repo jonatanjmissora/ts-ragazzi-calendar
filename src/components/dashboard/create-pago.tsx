@@ -1,5 +1,5 @@
 import { Suspense, useState } from "react"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 import {
 	Select,
@@ -25,7 +25,6 @@ import { useForm } from "@tanstack/react-form"
 import { toast } from "sonner"
 import { pagoFormValidator } from "db/pagos/pago-validator"
 import { Field, FieldError, FieldGroup } from "../ui/field"
-import { useCreatePago } from "queries/pagos/use-create-pago"
 import {
 	getPeriodo,
 	getUnusedSectoresFromPeriodo,
@@ -34,6 +33,10 @@ import {
 import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
 import { BG_RUBROS, RUBROS } from "@/_constants"
 import { useSearch } from "@tanstack/react-router"
+import { createPagoServer } from "server/pagos/create-pago-server"
+import type { PagoType } from "db/pagos/schema"
+import { addMutationToQueue } from "@/lib/offline/db"
+import { queryKeys } from "queries/query-keys"
 
 export default function DashboardCreatePago() {
 	const { mes: mesUrl, anio: anioUrl } = useSearch({ from: "/_protected" })
@@ -108,8 +111,9 @@ const PagosCreate = ({
 	const { data: pagosFromPeriodo } = useSuspenseQuery(
 		pagosByPeriodoQueryOptions(start, end)
 	)
+	const queryClient = useQueryClient()
+	const [isPending, setIsPending] = useState(false)
 
-	// obtengo los sectores que no estan utilizados del periodo
 	const unusedSectoresObj = getUnusedSectoresFromPeriodo(
 		pagosFromPeriodo || [],
 		rubros || []
@@ -119,8 +123,6 @@ const PagosCreate = ({
 		rubro,
 		unusedSectoresObj
 	)
-
-	const { mutateAsync: createItemMutation, isPending, error } = useCreatePago()
 
 	const form = useForm({
 		defaultValues: {
@@ -134,15 +136,38 @@ const PagosCreate = ({
 			onSubmit: pagoFormValidator,
 		},
 		onSubmit: async ({ value }) => {
-			const result = await createItemMutation({ data: value })
+			setIsPending(true)
 
-			if (!result) {
-				console.error("Error al crear pago", error)
-				toast.error("Error al crear el pago")
-			} else {
+			try {
+				let pago: PagoType
+
+				try {
+					pago = await createPagoServer({ data: value })
+				} catch {
+					pago = { ...value, id: crypto.randomUUID() }
+					await addMutationToQueue("create", pago)
+				}
+
+				const [pStart, pEnd] = getPeriodo(undefined, undefined)
+				queryClient.setQueryData<PagoType[]>(
+					queryKeys.pagos.byPeriodo(pStart, pEnd),
+					oldPagos => {
+						if (!oldPagos) return [pago]
+						return [pago, ...oldPagos]
+					}
+				)
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.pagos.all,
+					refetchType: "active",
+				})
+
 				toast.success("Pago creado exitosamente")
 				form.reset()
 				setAccordionValue("")
+			} catch {
+				toast.error("Error al crear el pago")
+			} finally {
+				setIsPending(false)
 			}
 		},
 	})
@@ -267,7 +292,11 @@ const PagosCreate = ({
 						/>
 
 						<Field className="w-1/3">
-							<Button type="submit" disabled={isPending} aria-label="Crear pago">
+							<Button
+								type="submit"
+								disabled={isPending}
+								aria-label="Crear pago"
+							>
 								{isPending ? (
 									<Loader size={16} className="animate-spin"></Loader>
 								) : (
@@ -276,7 +305,7 @@ const PagosCreate = ({
 							</Button>
 						</Field>
 					</div>
-					{error && <p>{error.message}</p>}
+	
 				</FieldGroup>
 			</form>
 		</div>

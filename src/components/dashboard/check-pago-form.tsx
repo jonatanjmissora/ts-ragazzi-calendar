@@ -1,20 +1,25 @@
 import { Button } from "@/components/ui/button"
 import { getPeriodo, localeDateToPeriodo } from "@/lib/utils"
 import { useForm } from "@tanstack/react-form"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { pagoFormValidator } from "db/pagos/pago-validator"
+import type { PagoType } from "db/pagos/schema"
 import { Check, Loader } from "lucide-react"
 import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
-import { useUpdatePago } from "queries/pagos/use-update-pago"
+import { queryKeys } from "queries/query-keys"
+import { updatePagoServer } from "server/pagos/update-pago-server"
+import { addMutationToQueue } from "@/lib/offline/db"
 import { toast } from "sonner"
+import { useState } from "react"
 
 export default function CheckPagoForm({ itemId }: { itemId: string }) {
 	const [start, end] = getPeriodo(undefined, undefined)
 	const { data: pagosFromPeriodo } = useSuspenseQuery(
 		pagosByPeriodoQueryOptions(start, end)
 	)
+	const queryClient = useQueryClient()
 	const item = pagosFromPeriodo?.find(item => item.id === itemId)
-	const { mutateAsync: updateItemMutation, isPending, error } = useUpdatePago()
+	const [isPending, setIsPending] = useState(false)
 
 	const form = useForm({
 		defaultValues: {
@@ -28,18 +33,41 @@ export default function CheckPagoForm({ itemId }: { itemId: string }) {
 			onSubmit: pagoFormValidator,
 		},
 		onSubmit: async ({ value }) => {
-			const updatedItem = {
-				...value,
-				pagado: localeDateToPeriodo(),
-				id: itemId,
-			}
-			const result = await updateItemMutation({ data: updatedItem })
+			setIsPending(true)
 
-			if (!result) {
-				console.error("Error al realizar el pago", error)
+			try {
+				const updatedItem: PagoType = {
+					...value,
+					pagado: localeDateToPeriodo(),
+					id: itemId,
+				}
+
+				try {
+					await updatePagoServer({ data: updatedItem })
+				} catch {
+					await addMutationToQueue("update", updatedItem)
+				}
+
+				const [pStart, pEnd] = getPeriodo(undefined, undefined)
+				queryClient.setQueryData<PagoType>(queryKeys.pagos.byId(itemId), updatedItem)
+				queryClient.setQueryData<PagoType[]>(
+					queryKeys.pagos.byPeriodo(pStart, pEnd),
+					oldPagos => {
+						if (!oldPagos) return oldPagos
+						return oldPagos.map(p => (p.id === itemId ? updatedItem : p))
+					}
+				)
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.pagos.all,
+					refetchType: "active",
+				})
+
+				toast.success("Pago realizado exitosamente")
+			} catch {
 				toast.error("Error al realizar el pago")
+			} finally {
+				setIsPending(false)
 			}
-			toast.success("Pago realizado exitosamente")
 		},
 	})
 

@@ -8,12 +8,14 @@ import {
 import appCss from "../styles.css?url"
 import { Toaster } from "sonner"
 import { Session } from "better-auth"
-import { lazy, Suspense } from "react"
+import { lazy, Suspense, useEffect } from "react"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { NotFound } from "@/components/NotFound"
 
 const DevtoolsPanel = lazy(() => import("@/components/devtools-panel"))
 import { PWARegister } from "@/components/pwa-register"
+import { OfflineIndicator } from "@/components/offline-indicator"
+import { startSyncListener } from "@/lib/offline/sync"
 import { getSession } from "server/get-session"
 import { getThemeServerFn } from "server/theme"
 
@@ -71,6 +73,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootDocument({ children }: { children: React.ReactNode }) {
 	const { theme } = Route.useRouteContext()
 
+	useEffect(() => {
+		startSyncListener()
+	}, [])
+
 	return (
 		<html
 			lang="es"
@@ -80,6 +86,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body className="w-full h-full flex flex-col">
+				<OfflineIndicator />
 				{children}
 				<PWARegister />
 				<Toaster />

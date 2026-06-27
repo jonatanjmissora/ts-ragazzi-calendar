@@ -3,13 +3,19 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "queries/query-keys"
 import { PagoType } from "db/schema"
 import { deletePagoServer } from "server/pagos/delete-pago-server"
+import { addMutationToQueue } from "@/lib/offline/db"
 
 export function useDeletePago(pagoId: string) {
 	const queryClient = useQueryClient()
 
 	return useMutation({
-		mutationFn: ({ data }: { data: { id: string } }) =>
-			deletePagoServer({ data }),
+		mutationFn: async ({ data }: { data: { id: string } }) => {
+			try {
+				await deletePagoServer({ data })
+			} catch {
+				await addMutationToQueue("delete", data)
+			}
+		},
 		onSuccess: () => {
 			const [start, end] = getPeriodo(undefined, undefined)
 			queryClient.removeQueries({ queryKey: queryKeys.pagos.byId(pagoId) })

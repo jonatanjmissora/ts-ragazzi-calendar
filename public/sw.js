@@ -27,6 +27,8 @@ self.addEventListener("fetch", (event) => {
 
 	const url = new URL(request.url)
 
+	if (url.pathname.startsWith("/__")) return
+
 	if (url.pathname.startsWith("/api/")) {
 		event.respondWith(
 			fetch(request).catch(() => caches.match(request))
