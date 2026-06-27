@@ -34,7 +34,7 @@ export function OfflineIndicator() {
 	if (pending === 0 && isOnline) return null
 
 	return (
-		<div className="fixed top-0 left-0 right-0 z-50 bg-amber-500/90 backdrop-blur-sm text-white px-4 py-2 text-sm flex items-center justify-center gap-2">
+		<div className="fixed bottom-0 left-0 right-0 z-50 bg-amber-500/90 backdrop-blur-sm text-white px-4 py-2 text-sm flex items-center justify-center gap-2">
 			{isOnline ? (
 				<>
 					<Wifi size={14} />
@@ -48,7 +48,10 @@ export function OfflineIndicator() {
 				<>
 					<WifiOff size={14} />
 					<span>
-						Sin conexion{pending > 0 ? ` — ${pending} cambio${pending !== 1 ? "s" : ""} pendiente${pending !== 1 ? "s" : ""}` : ""}
+						Sin conexion
+						{pending > 0
+							? ` — ${pending} cambio${pending !== 1 ? "s" : ""} pendiente${pending !== 1 ? "s" : ""}`
+							: ""}
 					</span>
 				</>
 			)}
