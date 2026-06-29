@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "queries/query-keys"
 import { PagoType } from "db/schema"
 import { updatePagoServer } from "server/pagos/update-pago-server"
-import { addMutationToQueue } from "@/lib/offline/db"
+import { addMutationToQueue, putPagoInCache } from "@/lib/offline/db"
 
 export function useUpdatePago() {
 	const queryClient = useQueryClient()
@@ -14,6 +14,8 @@ export function useUpdatePago() {
 				return await updatePagoServer({ data })
 			} catch {
 				await addMutationToQueue("update", data)
+				// Mantener el cache de lectura por-entidad consistente offline.
+				await putPagoInCache(data)
 				return data
 			}
 		},

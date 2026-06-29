@@ -6,6 +6,13 @@ import { getPagosBySectorServer } from "server/pagos/get-pagos-by-sector-server"
 import { getPagosServer } from "server/pagos/get-pagos-server"
 import { getPagosPageServer } from "server/pagos/get-pagos-page-server"
 import type { PagosFilter } from "db/pagos/get-pagos-db"
+import {
+	savePagosByPeriodoToCache,
+	getCachedPagosByPeriodo,
+	getCachedPagoById,
+	putPagoInCache,
+} from "@/lib/offline/db"
+import { OfflineNoCacheError } from "@/lib/offline/errors"
 
 export const pagosQueryOptions = queryOptions({
 	queryKey: queryKeys.pagos.all,
@@ -27,16 +34,50 @@ export const pagosPageQueryOptions = (
 			}),
 	})
 
+/**
+ * Lee un pago por id. Online lo pide al server y queda cacheado por-entidad en
+ * IndexedDB; offline sirve el cache. Si nunca se visito online, lanza
+ * OfflineNoCacheError para que la ruta muestre el bloque offline.
+ */
 export const pagoQueryOptions = (itemId: string) =>
 	queryOptions({
 		queryKey: queryKeys.pagos.byId(itemId),
-		queryFn: () => getPagoByIdServer({ data: { id: itemId } }),
+		queryFn: async () => {
+			try {
+				const data = await getPagoByIdServer({ data: { id: itemId } })
+				if (data) {
+					await putPagoInCache(data)
+				}
+				return data
+			} catch {
+				const cached = await getCachedPagoById(itemId)
+				if (!cached) throw new OfflineNoCacheError()
+				return cached
+			}
+		},
+		networkMode: "always",
 	})
 
+/**
+ * Pagos por periodo (alimenta el dashboard de pendientes/realizados).
+ * Online pide al server y cachea el rango en IndexedDB; offline sirve el cache.
+ * Si nunca se visito ese periodo online, lanza OfflineNoCacheError.
+ */
 export const pagosByPeriodoQueryOptions = (start: number, end: number) =>
 	queryOptions({
 		queryKey: queryKeys.pagos.byPeriodo(start, end),
-		queryFn: () => getPagosByPeriodoServer({ data: { start, end } }),
+		queryFn: async () => {
+			try {
+				const data = await getPagosByPeriodoServer({ data: { start, end } })
+				await savePagosByPeriodoToCache(start, end, data)
+				return data
+			} catch {
+				const cached = await getCachedPagosByPeriodo(start, end)
+				if (cached.length === 0) throw new OfflineNoCacheError()
+				return cached
+			}
+		},
+		networkMode: "always",
 	})
 
 export const pagosBySectorQueryOptions = (sector: string, rubro: string) =>

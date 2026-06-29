@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 import DashboardPagosPendientes from "@/components/dashboard/pagos-pendientes"
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
+import { OfflineRouteBlock } from "@/components/offline-route-block"
+import { isOfflineNoCacheError } from "@/lib/offline/errors"
 import { z } from "zod"
 
 export const Route = createFileRoute("/_protected/")({
@@ -8,6 +11,8 @@ export const Route = createFileRoute("/_protected/")({
 		sector: z.string().optional(),
 	}),
 	component: App,
+	errorComponent: ({ error }) =>
+		isOfflineNoCacheError(error) ? <OfflineRouteBlock /> : <DefaultCatchBoundary error={error} />,
 })
 
 function App() {

@@ -2,6 +2,7 @@ import {
 	getMutationQueue,
 	removeMutationFromQueue,
 	getPendingCount,
+	clearPagosCache,
 } from "./db"
 import { createPagoServer } from "server/pagos/create-pago-server"
 import { updatePagoServer } from "server/pagos/update-pago-server"
@@ -27,6 +28,16 @@ async function processOneMutation(entry: {
 	}
 }
 
+/**
+ * Procesa la cola de mutaciones pendientes.
+ *
+ * Si un item falla (datos invalidos o red), se deja en la cola y se continúa
+ * con el siguiente: no queremos que un item problematico atasque a los validos
+ * que vienen despues. Los errores de red transitorios dejan todo pendiente para
+ * reintentar en el proximo sync.
+ *
+ * Devuelve true si la cola quedo vacia (todo sincronizado).
+ */
 export async function processMutationQueue(): Promise<boolean> {
 	if (isSyncing) return false
 
@@ -44,7 +55,7 @@ export async function processMutationQueue(): Promise<boolean> {
 					await removeMutationFromQueue(entry.id)
 				}
 			} catch {
-				break
+				// Item fallido: queda en la cola, seguimos con el siguiente.
 			}
 		}
 	} finally {
@@ -52,17 +63,13 @@ export async function processMutationQueue(): Promise<boolean> {
 	}
 
 	const remaining = await getPendingCount()
-	return remaining === 0
-}
 
-export function startSyncListener() {
-	if (typeof window === "undefined") return
-
-	window.addEventListener("online", () => {
-		processMutationQueue()
-	})
-
-	if (navigator.onLine) {
-		processMutationQueue()
+	// Si todo sincronizo, limpiamos el cache de lectura para que la proxima
+	// lectura online repueble con los datos reales del server (incluidos los
+	// IDs definitivos de los pagos creados offline).
+	if (remaining === 0) {
+		await clearPagosCache()
 	}
+
+	return remaining === 0
 }

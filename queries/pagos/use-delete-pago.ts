@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { queryKeys } from "queries/query-keys"
 import { PagoType } from "db/schema"
 import { deletePagoServer } from "server/pagos/delete-pago-server"
-import { addMutationToQueue } from "@/lib/offline/db"
+import { addMutationToQueue, removePagoFromCache } from "@/lib/offline/db"
 
 export function useDeletePago(pagoId: string) {
 	const queryClient = useQueryClient()
@@ -14,6 +14,9 @@ export function useDeletePago(pagoId: string) {
 				await deletePagoServer({ data })
 			} catch {
 				await addMutationToQueue("delete", data)
+				// Mantener el cache de lectura por-entidad consistente offline:
+				// el pago borrado no debe reaparecer al recargar offline.
+				await removePagoFromCache(data.id)
 			}
 			return data
 		},

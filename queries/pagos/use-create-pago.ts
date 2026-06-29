@@ -4,7 +4,7 @@ import { queryKeys } from "queries/query-keys"
 import { PagoFormType } from "db/pagos/pago-validator"
 import type { PagoType } from "db/pagos/schema"
 import { createPagoServer } from "server/pagos/create-pago-server"
-import { addMutationToQueue } from "@/lib/offline/db"
+import { addMutationToQueue, putPagoInCache } from "@/lib/offline/db"
 
 export function useCreatePago() {
 	const queryClient = useQueryClient()
@@ -19,6 +19,9 @@ export function useCreatePago() {
 					id: crypto.randomUUID(),
 				}
 				await addMutationToQueue("create", newPago)
+				// Mantener el cache de lectura por-entidad consistente offline:
+				// asi recargar offline sigue mostrando el pago recien creado.
+				await putPagoInCache(newPago)
 				return newPago
 			}
 		},

@@ -1,3 +1,6 @@
+para probar el offline:
+pnpm build && node .output/server/index.mjs
+
 1️⃣compiamos del template:
                 git clone https://github.com/jonatanjmissora/ts-ragazzi-calendar.git
 

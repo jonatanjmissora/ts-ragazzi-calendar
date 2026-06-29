@@ -1,35 +1,48 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useOnlineStatus } from "@/hooks/use-online-status"
 import { getPendingCount } from "@/lib/offline/db"
 import { processMutationQueue } from "@/lib/offline/sync"
 import { Wifi, WifiOff } from "lucide-react"
 
+const PENDING_COUNT_KEY = ["offline", "pending-count"] as const
+
 export function OfflineIndicator() {
 	const isOnline = useOnlineStatus()
-	const [pending, setPending] = useState(0)
+	const queryClient = useQueryClient()
 	const [syncing, setSyncing] = useState(false)
 
+	// Count de pendientes. Solo polea cuando hay algo pendiente o estamos
+	// offline; si no, se queda quieto (no desperdicia cycles).
+	const { data: pending = 0 } = useQuery({
+		queryKey: PENDING_COUNT_KEY,
+		queryFn: () => getPendingCount(),
+		refetchInterval: pending > 0 || !isOnline ? 5000 : false,
+		staleTime: 1000,
+	})
+
+	// Auto-sync cuando vuelve la conexion y hay pendientes. Es el unico dueño
+	// del trigger de sync (startSyncListener fue removido).
 	useEffect(() => {
-		const check = async () => {
-			const count = await getPendingCount()
-			setPending(count)
+		if (!isOnline || pending === 0 || syncing) return
 
-			if (count > 0 && navigator.onLine) {
-				setSyncing(true)
-				await processMutationQueue()
-				const remaining = await getPendingCount()
-				setPending(remaining)
+		let cancelled = false
+		setSyncing(true)
+		processMutationQueue()
+			.catch(() => {})
+			.finally(() => {
+				if (cancelled) return
 				setSyncing(false)
-			}
+				queryClient.invalidateQueries({ queryKey: PENDING_COUNT_KEY })
+				// Repoblar lecturas con los datos reales del server.
+				queryClient.invalidateQueries({ queryKey: ["pagos"] })
+			})
+		return () => {
+			cancelled = true
 		}
-
-		check()
-		const interval = setInterval(check, 3000)
-
-		return () => clearInterval(interval)
-	}, [])
+	}, [isOnline, pending, syncing, queryClient])
 
 	if (pending === 0 && isOnline) return null
 
