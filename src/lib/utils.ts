@@ -88,6 +88,14 @@ export const localeDateToPeriodo = (date: Date = new Date()) => {
 	return periodo
 }
 
+export const periodoToDate = (periodo: number): Date => {
+	const str = String(periodo)
+	const year = Number(str.slice(0, 4))
+	const month = Number(str.slice(4, 6)) - 1
+	const day = Number(str.slice(6, 8))
+	return new Date(year, month, day)
+}
+
 export function arrayIntersection<T>(arr1: T[], arr2: T[]) {
 	const set1 = new Set(arr1)
 	const set2 = new Set(arr2)

@@ -13,15 +13,29 @@ export function OfflineIndicator() {
 	const isOnline = useOnlineStatus()
 	const queryClient = useQueryClient()
 	const [syncing, setSyncing] = useState(false)
+	const [shouldPoll, setShouldPoll] = useState(false)
 
-	// Count de pendientes. Solo polea cuando hay algo pendiente o estamos
-	// offline; si no, se queda quieto (no desperdicia cycles).
+	// Count de pendientes. Se activa solo cuando shouldPoll es true (offline
+	// o hay pendientes). Esto evita la temporal dead zone de usar `pending`
+	// dentro de su propia declaracion de useQuery.
 	const { data: pending = 0 } = useQuery({
 		queryKey: PENDING_COUNT_KEY,
 		queryFn: () => getPendingCount(),
-		refetchInterval: pending > 0 || !isOnline ? 5000 : false,
+		enabled: typeof window !== "undefined" && shouldPoll,
+		refetchInterval: shouldPoll ? 5000 : false,
 		staleTime: 1000,
 	})
+
+	// Activar polling cuando estamos offline o hay pendientes.
+	// Desactivar cuando online y sin pendientes.
+	useEffect(() => {
+		if (typeof window === "undefined") return
+		if (!isOnline || pending > 0) {
+			setShouldPoll(true)
+		} else {
+			setShouldPoll(false)
+		}
+	}, [isOnline, pending])
 
 	// Auto-sync cuando vuelve la conexion y hay pendientes. Es el unico dueño
 	// del trigger de sync (startSyncListener fue removido).

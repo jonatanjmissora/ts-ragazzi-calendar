@@ -34,6 +34,8 @@ export const pagosPageQueryOptions = (
 			}),
 	})
 
+const isClient = typeof window !== "undefined"
+
 /**
  * Lee un pago por id. Online lo pide al server y queda cacheado por-entidad en
  * IndexedDB; offline sirve el cache. Si nunca se visito online, lanza
@@ -45,11 +47,14 @@ export const pagoQueryOptions = (itemId: string) =>
 		queryFn: async () => {
 			try {
 				const data = await getPagoByIdServer({ data: { id: itemId } })
-				if (data) {
+				// Solo cachear en el cliente; IndexedDB no existe en SSR.
+				if (isClient && data) {
 					await putPagoInCache(data)
 				}
 				return data
 			} catch {
+				// SSR no tiene cache: si el server fallo, no hay fallback.
+				if (!isClient) throw new OfflineNoCacheError()
 				const cached = await getCachedPagoById(itemId)
 				if (!cached) throw new OfflineNoCacheError()
 				return cached
@@ -69,9 +74,14 @@ export const pagosByPeriodoQueryOptions = (start: number, end: number) =>
 		queryFn: async () => {
 			try {
 				const data = await getPagosByPeriodoServer({ data: { start, end } })
-				await savePagosByPeriodoToCache(start, end, data)
+				// Solo cachear en el cliente; IndexedDB no existe en SSR.
+				if (isClient) {
+					await savePagosByPeriodoToCache(start, end, data)
+				}
 				return data
 			} catch {
+				// SSR no tiene cache: si el server fallo, no hay fallback.
+				if (!isClient) throw new OfflineNoCacheError()
 				const cached = await getCachedPagosByPeriodo(start, end)
 				if (cached.length === 0) throw new OfflineNoCacheError()
 				return cached
