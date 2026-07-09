@@ -2,6 +2,7 @@ import type { QueryClient } from "@tanstack/react-query"
 import {
 	createRootRouteWithContext,
 	HeadContent,
+	ScriptOnce,
 	Scripts,
 } from "@tanstack/react-router"
 
@@ -17,6 +18,8 @@ import { PWARegister } from "@/components/pwa-register"
 import { OfflineIndicator } from "@/components/offline-indicator"
 import { getSession } from "server/get-session"
 import { getThemeServerFn } from "server/theme"
+
+const THEME_SCRIPT = `var t=(document.cookie.match(/(?:^|;\\s*)app-theme=(\\w+)/)?.[1]||"auto");document.documentElement.className=t+" w-screen overflow-x-hidden min-h-screen"`
 
 export type RouterContext = {
 	session: Session | null
@@ -70,15 +73,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-	const { theme } = Route.useRouteContext()
-
 	return (
-		<html
-			lang="es"
-			className={`${theme} w-screen overflow-x-hidden min-h-screen`}
-		>
+		<html lang="es" suppressHydrationWarning>
 			<head>
 				<HeadContent />
+				<ScriptOnce>{THEME_SCRIPT}</ScriptOnce>
 			</head>
 			<body className="w-full h-full flex flex-col">
 				<OfflineIndicator />

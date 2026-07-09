@@ -159,14 +159,18 @@ export default function PagosCreate({
 												<SelectGroup>
 													<SelectLabel>Rubro</SelectLabel>
 
-													{rubros?.map(rubro => (
-														<SelectItem
-															key={rubro.id}
-															value={String(rubro.nombre)}
-														>
-															{rubro.nombre.toUpperCase()}
-														</SelectItem>
-													))}
+													{rubros &&
+														[
+															...rubros,
+															{ nombre: "varios", id: "varios", sectores: "" },
+														]?.map(rubro => (
+															<SelectItem
+																key={rubro.id}
+																value={String(rubro.nombre)}
+															>
+																{rubro.nombre.toUpperCase()}
+															</SelectItem>
+														))}
 												</SelectGroup>
 											</SelectContent>
 										</Select>

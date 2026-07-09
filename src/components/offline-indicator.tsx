@@ -1,44 +1,92 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { useOnlineStatus } from "@/hooks/use-online-status"
-import { getPendingCount } from "@/lib/offline/db"
+import {
+	getPendingCount,
+	getMutationQueue,
+	type MutationEntry,
+} from "@/lib/offline/db"
 import { processMutationQueue } from "@/lib/offline/sync"
 import { Wifi, WifiOff } from "lucide-react"
 
-const PENDING_COUNT_KEY = ["offline", "pending-count"] as const
+function formatMutation(entry: MutationEntry): string {
+	const { type, payload } = entry
+	const desc =
+		payload?.rubro && payload?.sector
+			? `${payload.rubro}/${payload.sector}`
+			: payload?.id
+				? payload.id.slice(0, 8)
+				: ""
+	if (type === "create") return `Crear${desc ? `: ${desc}` : ""}`
+	if (type === "update") return `Actualizar${desc ? `: ${desc}` : ""}`
+	if (type === "delete") return `Eliminar${desc ? `: ${desc}` : ""}`
+	return type
+}
+
+async function checkActualOnline(): Promise<boolean> {
+	if (!navigator.onLine) return false
+	try {
+		const ctrl = new AbortController()
+		const id = setTimeout(() => ctrl.abort(), 3000)
+		await fetch("/manifest.webmanifest", {
+			method: "HEAD",
+			cache: "no-store",
+			signal: ctrl.signal,
+		})
+		clearTimeout(id)
+		return true
+	} catch {
+		return false
+	}
+}
 
 export function OfflineIndicator() {
-	const isOnline = useOnlineStatus()
-	const queryClient = useQueryClient()
+	const [pending, setPending] = useState(0)
+	const [entries, setEntries] = useState<MutationEntry[]>([])
+	const [isOnline, setIsOnline] = useState(true)
 	const [syncing, setSyncing] = useState(false)
-	const [shouldPoll, setShouldPoll] = useState(false)
 
-	// Count de pendientes. Se activa solo cuando shouldPoll es true (offline
-	// o hay pendientes). Esto evita la temporal dead zone de usar `pending`
-	// dentro de su propia declaracion de useQuery.
-	const { data: pending = 0 } = useQuery({
-		queryKey: PENDING_COUNT_KEY,
-		queryFn: () => getPendingCount(),
-		enabled: typeof window !== "undefined" && shouldPoll,
-		refetchInterval: shouldPoll ? 5000 : false,
-		staleTime: 1000,
-	})
-
-	// Activar polling cuando estamos offline o hay pendientes.
-	// Desactivar cuando online y sin pendientes.
 	useEffect(() => {
 		if (typeof window === "undefined") return
-		if (!isOnline || pending > 0) {
-			setShouldPoll(true)
-		} else {
-			setShouldPoll(false)
-		}
-	}, [isOnline, pending])
 
-	// Auto-sync cuando vuelve la conexion y hay pendientes. Es el unico dueño
-	// del trigger de sync (startSyncListener fue removido).
+		let cancelled = false
+
+		const refresh = async () => {
+			const online = await checkActualOnline()
+			if (cancelled) return
+			setIsOnline(online)
+
+			const count = await getPendingCount()
+			if (cancelled) return
+			setPending(count)
+
+			if (count > 0) {
+				const queue = await getMutationQueue()
+				if (!cancelled) setEntries(queue)
+			} else {
+				if (!cancelled) setEntries([])
+			}
+		}
+
+		refresh()
+		const interval = setInterval(refresh, 3000)
+
+		const handleOnline = () => refresh()
+		const handleOffline = () => {
+			setIsOnline(false)
+			refresh()
+		}
+		window.addEventListener("online", handleOnline)
+		window.addEventListener("offline", handleOffline)
+
+		return () => {
+			cancelled = true
+			clearInterval(interval)
+			window.removeEventListener("online", handleOnline)
+			window.removeEventListener("offline", handleOffline)
+		}
+	}, [])
+
 	useEffect(() => {
 		if (!isOnline || pending === 0 || syncing) return
 
@@ -49,38 +97,32 @@ export function OfflineIndicator() {
 			.finally(() => {
 				if (cancelled) return
 				setSyncing(false)
-				queryClient.invalidateQueries({ queryKey: PENDING_COUNT_KEY })
-				// Repoblar lecturas con los datos reales del server.
-				queryClient.invalidateQueries({ queryKey: ["pagos"] })
 			})
 		return () => {
 			cancelled = true
 		}
-	}, [isOnline, pending, syncing, queryClient])
+	}, [isOnline, pending, syncing])
 
 	if (pending === 0 && isOnline) return null
 
 	return (
-		<div className="fixed bottom-0 left-0 right-0 z-50 bg-amber-500/90 backdrop-blur-sm text-white px-4 py-2 text-sm flex items-center justify-center gap-2">
-			{isOnline ? (
-				<>
-					<Wifi size={14} />
-					<span>
-						{syncing
+		<div className="fixed bottom-0 left-0 right-0 z-50 bg-amber-500/90 backdrop-blur-sm text-white px-4 py-2 text-sm flex flex-col items-center gap-1">
+			<div className="flex items-center gap-2">
+				{isOnline ? <Wifi size={14} /> : <WifiOff size={14} />}
+				<span className="font-medium">
+					{isOnline
+						? syncing
 							? `Sincronizando ${pending} cambio${pending !== 1 ? "s" : ""}...`
-							: `${pending} cambio${pending !== 1 ? "s" : ""} pendiente${pending !== 1 ? "s" : ""}`}
-					</span>
-				</>
-			) : (
-				<>
-					<WifiOff size={14} />
-					<span>
-						Sin conexion
-						{pending > 0
-							? ` — ${pending} cambio${pending !== 1 ? "s" : ""} pendiente${pending !== 1 ? "s" : ""}`
-							: ""}
-					</span>
-				</>
+							: `${pending} cambio${pending !== 1 ? "s" : ""} pendiente${pending !== 1 ? "s" : ""}`
+						: `Sin conexion — ${pending} cambio${pending !== 1 ? "s" : ""} pendiente${pending !== 1 ? "s" : ""}`}
+				</span>
+			</div>
+			{entries.length > 0 && (
+				<ul className="text-xs text-white/80 list-disc list-inside">
+					{entries.map(e => (
+						<li key={e.id}>{formatMutation(e)}</li>
+					))}
+				</ul>
 			)}
 		</div>
 	)

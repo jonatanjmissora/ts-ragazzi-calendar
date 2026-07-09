@@ -39,13 +39,14 @@ export default function EditPagoForm({
 	const returnedPath = originPath === "pagos" ? "/" : "/admin/pagos"
 	const { data: rubros } = useQuery(rubrosQueryOptions)
 	const { data: item, isLoading } = useQuery(pagoQueryOptions(itemId))
-
-	const rubroValue = item?.rubro ?? ""
+	const [actualRubro, setActualRubro] = useState<string>(
+		item?.rubro ?? "ragazzi"
+	)
 
 	return (
 		<div
 			className={cn(
-				`w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative ${BG_RUBROS[rubroValue as keyof typeof BG_RUBROS]}`,
+				`w-full sm:w-1/4 mx-auto flex flex-col gap-6 border rounded-lg py-8 px-12 relative ${BG_RUBROS[actualRubro as keyof typeof BG_RUBROS]}`,
 				className
 			)}
 			{...props}
@@ -88,6 +89,8 @@ export default function EditPagoForm({
 					item={item}
 					rubros={rubros}
 					returnedPath={returnedPath}
+					actualRubro={actualRubro}
+					setActualRubro={setActualRubro}
 				/>
 			)}
 		</div>
@@ -99,14 +102,17 @@ function EditPagoFormInner({
 	item,
 	rubros,
 	returnedPath,
+	actualRubro,
+	setActualRubro,
 }: {
 	item: PagoType
 	rubros: RubroType[]
 	returnedPath: string
+	actualRubro: string
+	setActualRubro: (rubro: string) => void
 }) {
 	const router = useRouter()
 	const { mutateAsync: updateItemMutation, isPending, error } = useUpdatePago()
-	const [actualRubro, setActualRubro] = useState<string>(item.rubro)
 
 	const form = useForm({
 		defaultValues: {
@@ -165,9 +171,7 @@ function EditPagoFormInner({
 								<FieldLabel htmlFor={field.name}>Periodo</FieldLabel>
 								<CalendarDate
 									initialDate={periodoToDate(field.state.value)}
-									onDateSelect={value =>
-										form.setFieldValue("periodo", value)
-									}
+									onDateSelect={value => form.setFieldValue("periodo", value)}
 								/>
 								{isInvalid && <FieldError errors={field.state.meta.errors} />}
 							</Field>
@@ -198,14 +202,18 @@ function EditPagoFormInner({
 									<SelectContent>
 										<SelectGroup>
 											<SelectLabel>Rubro</SelectLabel>
-											{[
-												...rubros,
-												{ id: "varios", nombre: "varios", sectores: "" },
-											].map(rubro => (
-												<SelectItem key={rubro.id} value={String(rubro.nombre)}>
-													{rubro.nombre.toUpperCase()}
-												</SelectItem>
-											))}
+											{rubros &&
+												[
+													...rubros,
+													{ id: "varios", nombre: "varios", sectores: "" },
+												]?.map(rubro => (
+													<SelectItem
+														key={rubro.id}
+														value={String(rubro.nombre)}
+													>
+														{rubro.nombre.toUpperCase()}
+													</SelectItem>
+												))}
 										</SelectGroup>
 									</SelectContent>
 								</Select>

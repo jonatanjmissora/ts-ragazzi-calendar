@@ -1,11 +1,15 @@
 import { useForm } from "@tanstack/react-form"
-import { useRouter } from "@tanstack/react-router"
+import { useQueryClient } from "@tanstack/react-query"
 import { pagoIdValidator } from "db/pagos/pago-validator"
-import { PagoType } from "db/schema"
-import { useDeletePago } from "queries/pagos/use-delete-pago"
+import type { PagoType } from "db/schema"
+import { queryKeys } from "queries/query-keys"
+import { deletePagoServer } from "server/pagos/delete-pago-server"
+import { addMutationToQueue, removePagoFromCache } from "@/lib/offline/db"
+import { getPeriodo } from "@/lib/utils"
 import { toast } from "sonner"
 import { Button } from "../ui/button"
 import { Loader } from "lucide-react"
+import { useState } from "react"
 
 export default function DeletePagoForm({
 	item,
@@ -14,12 +18,8 @@ export default function DeletePagoForm({
 	item: PagoType
 	setIsMenuOpen: (open: boolean) => void
 }) {
-	const {
-		mutateAsync: deleteItemMutation,
-		error,
-		isPending,
-	} = useDeletePago(item.id)
-	const router = useRouter()
+	const queryClient = useQueryClient()
+	const [isPending, setIsPending] = useState(false)
 
 	const form = useForm({
 		defaultValues: {
@@ -29,20 +29,42 @@ export default function DeletePagoForm({
 			onSubmit: pagoIdValidator,
 		},
 		onSubmit: async ({ value }) => {
-			const result = await deleteItemMutation({ data: { id: value.id } })
+			setIsPending(true)
 
-			if (!result) {
-				console.error("Error al eliminar el pago", error)
+			try {
+				try {
+					await deletePagoServer({ data: { id: value.id } })
+				} catch {
+					await addMutationToQueue("delete", { id: value.id })
+					await removePagoFromCache(value.id)
+				}
+
+				const [start, end] = getPeriodo(undefined, undefined)
+				queryClient.setQueryData<PagoType[]>(
+					queryKeys.pagos.byPeriodo(start, end),
+					oldItems => {
+						if (!oldItems) return oldItems
+						return oldItems.filter(item => item.id !== value.id)
+					}
+				)
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.pagos.all,
+					refetchType: "active",
+				})
+
+				toast.success("Pago eliminado exitosamente")
+				setIsMenuOpen(false)
+			} catch {
 				toast.error("Error al eliminar el pago")
+			} finally {
+				setIsPending(false)
 			}
-			toast.success("Pago eliminado exitosamente")
-			router.invalidate()
 		},
 	})
 
 	return (
 		<form
-			id="create-form"
+			id="delete-form"
 			className="flex flex-col items-center justify-center gap-2"
 			onSubmit={e => {
 				e.preventDefault()
@@ -76,9 +98,6 @@ export default function DeletePagoForm({
 					)}
 				</Button>
 			</div>
-			{error && (
-				<p className="text-red-500 text-xs">Error al eliminar el pago</p>
-			)}
 		</form>
 	)
 }
