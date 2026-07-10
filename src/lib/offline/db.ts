@@ -1,8 +1,9 @@
 import { openDB, type IDBPDatabase } from "idb"
 import type { PagoType } from "db/pagos/schema"
+import type { RubroType } from "db/rubros/schema"
 
 const DB_NAME = "ragazzi-offline"
-const DB_VERSION = 3
+const DB_VERSION = 4
 
 export type MutationEntry = {
 	id?: number
@@ -21,6 +22,10 @@ interface RagazziDB {
 		key: string
 		value: PagoType
 		indexes: { "by-periodo": number }
+	}
+	"rubros-cache": {
+		key: string
+		value: RubroType
 	}
 }
 
@@ -48,6 +53,10 @@ export async function openRagazziDB(): Promise<IDBPDatabase<RagazziDB>> {
 					keyPath: "id",
 				})
 				pagosStore.createIndex("by-periodo", "periodo")
+			}
+			// v4 agrega rubros-cache para lectura offline (usado en edit-pago).
+			if (oldVersion < 4 && !db.objectStoreNames.contains("rubros-cache")) {
+				db.createObjectStore("rubros-cache", { keyPath: "id" })
 			}
 		},
 	})
@@ -147,4 +156,22 @@ export async function getCachedPagoById(id: string): Promise<PagoType | undefine
 export async function clearPagosCache(): Promise<void> {
 	const db = await openRagazziDB()
 	await db.clear("pagos-cache")
+}
+
+// ---------------------------------------------------------------------------
+// Cache de lectura (rubros-cache)
+// ---------------------------------------------------------------------------
+
+export async function saveRubrosToCache(rubros: RubroType[]): Promise<void> {
+	const db = await openRagazziDB()
+	const tx = db.transaction("rubros-cache", "readwrite")
+	for (const rubro of rubros) {
+		await tx.store.put(rubro)
+	}
+	await tx.done
+}
+
+export async function getCachedRubros(): Promise<RubroType[]> {
+	const db = await openRagazziDB()
+	return db.getAll("rubros-cache")
 }

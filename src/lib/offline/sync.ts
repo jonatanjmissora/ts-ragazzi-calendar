@@ -1,3 +1,4 @@
+import type { QueryClient } from "@tanstack/react-query"
 import {
 	getMutationQueue,
 	removeMutationFromQueue,
@@ -17,14 +18,99 @@ async function processOneMutation(entry: {
 }) {
 	switch (entry.type) {
 		case "create":
-			await createPagoServer({ data: entry.payload })
-			break
+			return await createPagoServer({ data: entry.payload })
 		case "update":
-			await updatePagoServer({ data: entry.payload })
-			break
+			return await updatePagoServer({ data: entry.payload })
 		case "delete":
-			await deletePagoServer({ data: { id: entry.payload.id } })
-			break
+			return await deletePagoServer({ data: { id: entry.payload.id } })
+	}
+}
+
+function updatePagosCache(
+	queryClient: QueryClient,
+	type: "create" | "update" | "delete",
+	result: any,
+) {
+	const queryCache = queryClient.getQueryCache()
+	const pagosQueries = queryCache.getAll().filter(q => {
+		const k = q.queryKey
+		return (
+			Array.isArray(k) &&
+			(typeof k[0] === "string" || typeof k[0] === "symbol") &&
+			String(k[0]).startsWith("pagos")
+		)
+	})
+
+	for (const query of pagosQueries) {
+		const key = query.queryKey
+		const data = query.state.data
+
+		if (!data) continue
+
+		if (key.length === 2 && key[0] === "pagos" && typeof key[1] === "string") {
+			// ["pagos", id]
+			if (type === "update" && key[1] === result.id) {
+				queryClient.setQueryData(key, result)
+			}
+			continue
+		}
+
+		if (!Array.isArray(data)) continue
+
+		if (key.length === 1 && key[0] === "pagos") {
+			// ["pagos"] — flat list of all pagos
+			if (type === "create") {
+				queryClient.setQueryData(key, [...data, result])
+			} else if (type === "update") {
+				queryClient.setQueryData(
+					key,
+					data.map((p: any) => (p.id === result.id ? result : p)),
+				)
+			} else if (type === "delete") {
+				queryClient.setQueryData(
+					key,
+					data.filter((p: any) => p.id !== result.id),
+				)
+			}
+			continue
+		}
+
+		if (key[0] === "pagos-by-periodo" || key[0] === "pagos-by-sector") {
+			// ["pagos-by-periodo", start, end]
+			// ["pagos-by-sector", sector, rubro]
+			if (type === "create") {
+				queryClient.setQueryData(key, [result, ...data])
+			} else if (type === "update") {
+				queryClient.setQueryData(
+					key,
+					data.map((p: any) => (p.id === result.id ? result : p)),
+				)
+			} else if (type === "delete") {
+				queryClient.setQueryData(
+					key,
+					data.filter((p: any) => p.id !== result.id),
+				)
+			}
+			continue
+		}
+
+		// ["pagos", "page", page, pageSize, filter]
+		if (key.length >= 3 && key[0] === "pagos" && key[1] === "page") {
+			if (type === "create") {
+				queryClient.setQueryData(key, [result, ...data])
+			} else if (type === "update") {
+				queryClient.setQueryData(
+					key,
+					data.map((p: any) => (p.id === result.id ? result : p)),
+				)
+			} else if (type === "delete") {
+				queryClient.setQueryData(
+					key,
+					data.filter((p: any) => p.id !== result.id),
+				)
+			}
+			continue
+		}
 	}
 }
 
@@ -36,9 +122,12 @@ async function processOneMutation(entry: {
  * que vienen despues. Los errores de red transitorios dejan todo pendiente para
  * reintentar en el proximo sync.
  *
+ * Al terminar, si `queryClient` fue provisto, actualiza el cache de React Query
+ * con los resultados del servidor para evitar un refetch innecesario.
+ *
  * Devuelve true si la cola quedo vacia (todo sincronizado).
  */
-export async function processMutationQueue(): Promise<boolean> {
+export async function processMutationQueue(queryClient?: QueryClient): Promise<boolean> {
 	if (isSyncing) return false
 
 	const count = await getPendingCount()
@@ -46,11 +135,14 @@ export async function processMutationQueue(): Promise<boolean> {
 
 	isSyncing = true
 
+	const results: { type: "create" | "update" | "delete"; result: any }[] = []
+
 	try {
 		const queue = await getMutationQueue()
 		for (const entry of queue) {
 			try {
-				await processOneMutation(entry)
+				const result = await processOneMutation(entry)
+				results.push({ type: entry.type, result })
 				if (entry.id != null) {
 					await removeMutationFromQueue(entry.id)
 				}
@@ -64,11 +156,16 @@ export async function processMutationQueue(): Promise<boolean> {
 
 	const remaining = await getPendingCount()
 
-	// Si todo sincronizo, limpiamos el cache de lectura para que la proxima
-	// lectura online repueble con los datos reales del server (incluidos los
-	// IDs definitivos de los pagos creados offline).
 	if (remaining === 0) {
 		await clearPagosCache()
+
+		// Sincroniza el cache de React Query sin refetchear al servidor,
+		// ya que somos la unica fuente de verdad.
+		if (queryClient) {
+			for (const { type, result } of results) {
+				updatePagosCache(queryClient, type, result)
+			}
+		}
 	}
 
 	return remaining === 0

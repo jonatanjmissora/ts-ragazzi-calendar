@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import {
 	getPendingCount,
 	getMutationQueue,
@@ -41,6 +42,7 @@ async function checkActualOnline(): Promise<boolean> {
 }
 
 export function OfflineIndicator() {
+	const queryClient = useQueryClient()
 	const [pending, setPending] = useState(0)
 	const [entries, setEntries] = useState<MutationEntry[]>([])
 	const [isOnline, setIsOnline] = useState(true)
@@ -92,7 +94,7 @@ export function OfflineIndicator() {
 
 		let cancelled = false
 		setSyncing(true)
-		processMutationQueue()
+		processMutationQueue(queryClient)
 			.catch(() => {})
 			.finally(() => {
 				if (cancelled) return
