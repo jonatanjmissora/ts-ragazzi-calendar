@@ -8,17 +8,51 @@ import { getPagosPageServer } from "server/pagos/get-pagos-page-server"
 import type { PagosFilter } from "db/pagos/get-pagos-db"
 import {
 	savePagosByPeriodoToCache,
+	getPendingCount,
 	getCachedPagosByPeriodo,
 	getCachedPagoById,
 	putPagoInCache,
+	getCachedPagos,
 } from "@/lib/offline/db"
 import { OfflineNoCacheError } from "@/lib/offline/errors"
 
+const isClient = typeof window !== "undefined"
+
 export const pagosQueryOptions = queryOptions({
 	queryKey: queryKeys.pagos.all,
-	queryFn: () => getPagosServer(),
+	queryFn: async ({ queryKey, client }) => {
+		if (isClient) {
+			const cached = await getCachedPagos()
+			if (cached.length > 0) {
+				getPagosServer()
+					.then(async (data) => {
+						const pending = await getPendingCount()
+						console.log(
+							"[offline-debug] pagosQueryOptions bg-sync | pending:",
+							pending,
+							"server length:",
+							data.length
+						)
+						if (pending === 0) {
+							client.setQueryData(queryKey, data)
+						}
+					})
+					.catch(() => {})
+				return cached
+			}
+		}
+		try {
+			const data = await getPagosServer()
+			// No guardar en IndexedDB: las queries especificas
+			// (pagosByPeriodo) se encargan del cache.
+			return data
+		} catch {
+			throw new OfflineNoCacheError()
+		}
+	},
 	staleTime: 60 * 1000,
 	refetchInterval: 60 * 1000,
+	networkMode: "always",
 })
 
 export const pagosPageQueryOptions = (
@@ -34,59 +68,85 @@ export const pagosPageQueryOptions = (
 			}),
 	})
 
-const isClient = typeof window !== "undefined"
-
-/**
- * Lee un pago por id. Online lo pide al server y queda cacheado por-entidad en
- * IndexedDB; offline sirve el cache. Si nunca se visito online, lanza
- * OfflineNoCacheError para que la ruta muestre el bloque offline.
- */
 export const pagoQueryOptions = (itemId: string) =>
 	queryOptions({
 		queryKey: queryKeys.pagos.byId(itemId),
-		queryFn: async () => {
+		queryFn: async ({ queryKey, client }) => {
+			if (isClient) {
+				const cached = await getCachedPagoById(itemId)
+				if (cached) {
+					getPagoByIdServer({ data: { id: itemId } })
+						.then(async (data) => {
+							const pending = await getPendingCount()
+							if (data && pending === 0) {
+								await putPagoInCache(data)
+								client.setQueryData(queryKey, data)
+							}
+						})
+						.catch(() => {})
+					return cached
+				}
+			}
 			try {
 				const data = await getPagoByIdServer({ data: { id: itemId } })
-				// Solo cachear en el cliente; IndexedDB no existe en SSR.
-				if (isClient && data) {
-					await putPagoInCache(data)
-				}
+				if (isClient && data) await putPagoInCache(data)
 				return data
 			} catch {
-				// SSR no tiene cache: si el server fallo, no hay fallback.
-				if (!isClient) throw new OfflineNoCacheError()
-				const cached = await getCachedPagoById(itemId)
-				if (!cached) throw new OfflineNoCacheError()
-				return cached
+				throw new OfflineNoCacheError()
 			}
 		},
 		networkMode: "always",
 	})
 
-/**
- * Pagos por periodo (alimenta el dashboard de pendientes/realizados).
- * Online pide al server y cachea el rango en IndexedDB; offline sirve el cache.
- * Si nunca se visito ese periodo online, lanza OfflineNoCacheError.
- */
 export const pagosByPeriodoQueryOptions = (start: number, end: number) =>
 	queryOptions({
 		queryKey: queryKeys.pagos.byPeriodo(start, end),
-		queryFn: async () => {
+		queryFn: async ({ queryKey, client }) => {
+			if (isClient) {
+				const cached = await getCachedPagosByPeriodo(start, end)
+				if (cached.length > 0) {
+					getPagosByPeriodoServer({ data: { start, end } })
+						.then(async (data) => {
+							const pending = await getPendingCount()
+							console.log(
+								"[offline-debug] pagosByPeriodo bg-sync | pending:",
+								pending,
+								"cached.length:",
+								cached.length,
+								"server.length:",
+								data.length
+							)
+							if (pending === 0) {
+								await savePagosByPeriodoToCache(start, end, data)
+								client.setQueryData(queryKey, data)
+							}
+						})
+						.catch(() => {})
+					console.log(
+						"[offline-debug] pagosByPeriodo RETURNING CACHED | len:",
+						cached.length,
+						"periodos:",
+						cached.map((p) => p.periodo)
+					)
+					return cached
+				}
+			}
+			console.log("[offline-debug] pagosByPeriodo NO CACHE → falling to server try")
 			try {
 				const data = await getPagosByPeriodoServer({ data: { start, end } })
-				// Solo cachear en el cliente; IndexedDB no existe en SSR.
-				if (isClient) {
-					await savePagosByPeriodoToCache(start, end, data)
-				}
+				console.log(
+					"[offline-debug] pagosByPeriodo server try OK | len:",
+					data.length
+				)
+				if (isClient) await savePagosByPeriodoToCache(start, end, data)
 				return data
 			} catch {
-				// SSR no tiene cache: si el server fallo, no hay fallback.
-				if (!isClient) throw new OfflineNoCacheError()
-				const cached = await getCachedPagosByPeriodo(start, end)
-				if (cached.length === 0) throw new OfflineNoCacheError()
-				return cached
+				console.log("[offline-debug] pagosByPeriodo server try FAILED")
+				throw new OfflineNoCacheError()
 			}
 		},
+		staleTime: 60 * 1000,
+		refetchInterval: 60 * 1000,
 		networkMode: "always",
 	})
 

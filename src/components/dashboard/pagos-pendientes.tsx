@@ -83,6 +83,16 @@ function PagosPendientesList({
 		pagosByPeriodoQueryOptions(start, end)
 	)
 
+	console.log(
+		"[offline-debug] PagosPendientesList render | start:end",
+		start,
+		end,
+		"pagosFromPeriodo.length:",
+		pagosFromPeriodo?.length,
+		"ids:",
+		pagosFromPeriodo?.map((p) => ({ id: p.id, periodo: p.periodo }))
+	)
+
 	const pagosPendientes = filteredItems(
 		pagosFromPeriodo || [],
 		undefined,
@@ -151,7 +161,11 @@ const DropdownMenuComponent = ({ item }: { item: PagoType }) => {
 	return (
 		<DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
 			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" className="cursor-pointer" aria-label="Opciones">
+				<Button
+					variant="ghost"
+					className="cursor-pointer"
+					aria-label="Opciones"
+				>
 					<Ellipsis size={14} />
 				</Button>
 			</DropdownMenuTrigger>

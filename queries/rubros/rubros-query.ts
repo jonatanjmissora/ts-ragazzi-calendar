@@ -9,18 +9,25 @@ const isClient = typeof window !== "undefined"
 
 export const rubrosQueryOptions = queryOptions({
 	queryKey: queryKeys.rubros.all,
-	queryFn: async () => {
+	queryFn: async ({ queryKey, client }) => {
+		if (isClient) {
+			const cached = await getCachedRubros()
+			if (cached.length > 0) {
+				getRubrosServer()
+					.then(async (data) => {
+						await saveRubrosToCache(data)
+						client.setQueryData(queryKey, data)
+					})
+					.catch(() => {})
+				return cached
+			}
+		}
 		try {
 			const data = await getRubrosServer()
-			if (isClient) {
-				await saveRubrosToCache(data)
-			}
+			if (isClient) await saveRubrosToCache(data)
 			return data
 		} catch {
-			if (!isClient) throw new OfflineNoCacheError()
-			const cached = await getCachedRubros()
-			if (cached.length === 0) throw new OfflineNoCacheError()
-			return cached
+			throw new OfflineNoCacheError()
 		}
 	},
 	staleTime: 60 * 1000,
@@ -31,5 +38,37 @@ export const rubrosQueryOptions = queryOptions({
 export const rubroQueryOptions = (itemId: string) =>
 	queryOptions({
 		queryKey: queryKeys.rubros.byId(itemId),
-		queryFn: () => getRubroByIdServer({ data: { id: itemId } }),
+		queryFn: async ({ queryKey, client }) => {
+			if (isClient) {
+				const rubros = await getCachedRubros()
+				const cached = rubros.find((r) => r.id === itemId)
+				if (cached) {
+					getRubroByIdServer({ data: { id: itemId } })
+						.then(async (data) => {
+							if (data) {
+								const updated = rubros.map((r) =>
+									r.id === itemId ? data : r
+								)
+								await saveRubrosToCache(updated)
+								client.setQueryData(queryKey, data)
+							}
+						})
+						.catch(() => {})
+					return cached
+				}
+			}
+			try {
+				const data = await getRubroByIdServer({
+					data: { id: itemId },
+				})
+				if (isClient && data) {
+					const all = await getCachedRubros()
+					await saveRubrosToCache([...all, data])
+				}
+				return data
+			} catch {
+				throw new OfflineNoCacheError()
+			}
+		},
+		networkMode: "always",
 	})

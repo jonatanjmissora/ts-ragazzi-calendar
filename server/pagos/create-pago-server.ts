@@ -13,7 +13,7 @@ export const createPagoServer = createServerFn({ method: "POST" })
 
 			const newPago = {
 				...data,
-				id: crypto.randomUUID(),
+				id: data.id || crypto.randomUUID(),
 			}
 
 			const result = await createPagoDB(newPago)

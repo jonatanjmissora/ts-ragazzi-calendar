@@ -1,9 +1,8 @@
-const CACHE_STATIC = "ragazzi-static-v1"
+const CACHE_STATIC = "ragazzi-static-v2"
 const CACHE_PAGES = "ragazzi-pages-v1"
 const CACHE_API = "ragazzi-api-v1"
 
 const PRECACHE_URLS = [
-	"/",
 	"/offline.html",
 	"/manifest.json",
 	"/logo192.png",
@@ -43,6 +42,9 @@ self.addEventListener("fetch", (event) => {
 
 	if (request.method !== "GET") return
 	if (!url.protocol.startsWith("http")) return
+
+	// Ignorar requests internas de SSR a source files
+	if (url.pathname.startsWith("/src/") || url.pathname.startsWith("/server/")) return
 
 	if (url.pathname.startsWith("/api/")) {
 		event.respondWith(networkFirst(request, CACHE_API))

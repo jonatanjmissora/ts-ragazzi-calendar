@@ -18,10 +18,20 @@ export function useCreatePago() {
 					...data,
 					id: crypto.randomUUID(),
 				}
+				console.log(
+					"[offline-debug] useCreatePago catch (offline) | id:",
+					newPago.id,
+					"periodo:",
+					newPago.periodo,
+				)
 				await addMutationToQueue("create", newPago)
-				// Mantener el cache de lectura por-entidad consistente offline:
-				// asi recargar offline sigue mostrando el pago recien creado.
 				await putPagoInCache(newPago)
+				const { getPendingCount } = await import("@/lib/offline/db")
+				const count = await getPendingCount()
+				console.log(
+					"[offline-debug] after putPagoInCache + queue | pending:",
+					count,
+				)
 				return newPago
 			}
 		},

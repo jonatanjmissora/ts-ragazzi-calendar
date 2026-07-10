@@ -35,7 +35,7 @@ import { BG_RUBROS, RUBROS } from "@/_constants"
 import { useSearch } from "@tanstack/react-router"
 import { createPagoServer } from "server/pagos/create-pago-server"
 import type { PagoType } from "db/pagos/schema"
-import { addMutationToQueue } from "@/lib/offline/db"
+import { addMutationToQueue, putPagoInCache } from "@/lib/offline/db"
 import { queryKeys } from "queries/query-keys"
 
 export default function DashboardCreatePago() {
@@ -146,6 +146,7 @@ const PagosCreate = ({
 				} catch {
 					pago = { ...value, id: crypto.randomUUID() }
 					await addMutationToQueue("create", pago)
+					await putPagoInCache(pago)
 				}
 
 				const [pStart, pEnd] = getPeriodo(undefined, undefined)

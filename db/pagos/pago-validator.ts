@@ -1,6 +1,8 @@
 import { z } from "zod"
 
 export const pagoFormValidator = z.object({
+	id: z.string().optional(),
+
 	periodo: z
 		.number()
 		.min(20260000, "El periodo debe ser mayor o igual a 20260000")

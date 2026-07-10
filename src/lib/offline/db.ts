@@ -128,13 +128,35 @@ export async function savePagosByPeriodoToCache(
 /** Upsert de un pago en el cache (para create/update offline). */
 export async function putPagoInCache(pago: PagoType): Promise<void> {
 	const db = await openRagazziDB()
+	console.log(
+		"[offline-debug] putPagoInCache | id:",
+		pago.id,
+		"periodo:",
+		pago.periodo,
+		"rubro:",
+		pago.rubro
+	)
 	await db.put("pagos-cache", pago)
+	// Verify
+	const saved = await db.get("pagos-cache", pago.id)
+	console.log(
+		"[offline-debug] putPagoInCache verified | exists:",
+		!!saved,
+		"saved.periodo:",
+		saved?.periodo
+	)
 }
 
 /** Elimina un pago del cache (para delete offline). */
 export async function removePagoFromCache(id: string): Promise<void> {
 	const db = await openRagazziDB()
 	await db.delete("pagos-cache", id)
+}
+
+/** Lee todos los pagos cacheados. */
+export async function getCachedPagos(): Promise<PagoType[]> {
+	const db = await openRagazziDB()
+	return db.getAll("pagos-cache")
 }
 
 /** Lee los pagos cacheados en el rango [start, end). */
@@ -150,6 +172,17 @@ export async function getCachedPagosByPeriodo(
 export async function getCachedPagoById(id: string): Promise<PagoType | undefined> {
 	const db = await openRagazziDB()
 	return db.get("pagos-cache", id)
+}
+
+/** Reemplaza todo el cache de pagos (para sync del listado completo). */
+export async function saveAllPagosToCache(pagos: PagoType[]): Promise<void> {
+	const db = await openRagazziDB()
+	const tx = db.transaction("pagos-cache", "readwrite")
+	await tx.store.clear()
+	for (const pago of pagos) {
+		await tx.store.put(pago)
+	}
+	await tx.done
 }
 
 /** Vacia todo el cache de pagos (tras un sync exitoso, para repoblar desde el server). */

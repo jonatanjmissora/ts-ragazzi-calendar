@@ -77,7 +77,7 @@ export default function EditPagoForm({
 			)}
 
 			{!isLoading && !item && (
-				<p className="text-red-700 text-center">⚠ Pago no encontrado</p>
+				<p className="text-amber-700 text-center">⚠ Pago no encontrado</p>
 			)}
 
 			{/* Montar el form solo cuando item y rubros estén disponibles.
