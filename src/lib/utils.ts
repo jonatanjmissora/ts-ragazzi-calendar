@@ -130,6 +130,7 @@ export function getUnusedSectoresFromPeriodo(
 		{ nombre: "jmolina", sectores: [] as string[] },
 	]
 	unusedSectores.forEach((rubro, i) => {
+		if (!rubros[i] || !rubrosFromPeriodo[i]) return
 		rubro.sectores = rubros[i].sectores
 			.split(" ")
 			.filter(sector => !rubrosFromPeriodo[i].sectores.includes(sector))

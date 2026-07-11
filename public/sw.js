@@ -1,4 +1,4 @@
-const CACHE_STATIC = "ragazzi-static-v2"
+const CACHE_STATIC = "ragazzi-static-v3"
 const CACHE_PAGES = "ragazzi-pages-v1"
 const CACHE_API = "ragazzi-api-v1"
 
@@ -45,6 +45,10 @@ self.addEventListener("fetch", (event) => {
 
 	// Ignorar requests internas de SSR a source files
 	if (url.pathname.startsWith("/src/") || url.pathname.startsWith("/server/")) return
+
+	// Server Functions: siempre a la red (nunca cacheadas por SW).
+	// Las queries offline ya estan cubiertas por IndexedDB + queryFn fallback.
+	if (url.pathname.startsWith("/_serverFn/")) return
 
 	if (url.pathname.startsWith("/api/")) {
 		event.respondWith(networkFirst(request, CACHE_API))

@@ -63,7 +63,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 	beforeLoad: async () => {
 		const [theme, session] = await Promise.all([
 			getThemeServerFn().then(t => (t ?? "auto") as "light" | "dark" | "auto"),
-			getSession(),
+			getSession().catch(() => null),
 		])
 		return { theme, session }
 	},

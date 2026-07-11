@@ -118,7 +118,13 @@ export async function savePagosByPeriodoToCache(
 ): Promise<void> {
 	const db = await openRagazziDB()
 	const tx = db.transaction("pagos-cache", "readwrite")
-	await tx.store.delete(IDBKeyRange.bound(start, end, false, true))
+	const index = tx.store.index("by-periodo")
+	const keys = await index.getAllKeys(
+		IDBKeyRange.bound(start, end, false, true)
+	)
+	for (const key of keys) {
+		await tx.store.delete(key)
+	}
 	for (const pago of pagos) {
 		await tx.store.put(pago)
 	}
@@ -128,23 +134,7 @@ export async function savePagosByPeriodoToCache(
 /** Upsert de un pago en el cache (para create/update offline). */
 export async function putPagoInCache(pago: PagoType): Promise<void> {
 	const db = await openRagazziDB()
-	console.log(
-		"[offline-debug] putPagoInCache | id:",
-		pago.id,
-		"periodo:",
-		pago.periodo,
-		"rubro:",
-		pago.rubro
-	)
 	await db.put("pagos-cache", pago)
-	// Verify
-	const saved = await db.get("pagos-cache", pago.id)
-	console.log(
-		"[offline-debug] putPagoInCache verified | exists:",
-		!!saved,
-		"saved.periodo:",
-		saved?.periodo
-	)
 }
 
 /** Elimina un pago del cache (para delete offline). */

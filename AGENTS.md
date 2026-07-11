@@ -166,6 +166,23 @@ const router = createRouter({
 setupRouterSsrQueryIntegration({ router, queryClient: rqContext.queryClient })
 ```
 
+### Auth redirect en ruta protegida
+⚠️ `throw redirect()` funciona en **`beforeLoad`** pero **NO** en `loader`. Usar `beforeLoad` para auth guards.
+
+```ts
+export const Route = createFileRoute("/_protected")({
+  beforeLoad: async ({ context }) => {
+    if (!context.session) {
+      throw redirect({ to: "/login" })
+    }
+  },
+  loader: async ({ context }) => {
+    // redirect aquí NO funcionaría
+    context.queryClient.prefetchQuery(dataQueryOptions)
+  },
+})
+```
+
 ## TanStack React Query v5.66+
 
 ```ts
@@ -364,6 +381,60 @@ Conexión: `drizzle(process.env.DATABASE_URL as string, { schema })`.
 - Drizzle: `db.update()` con `$onUpdate()` auto-maneja `updatedAt`.
 - Tailwind v4: usar `@import "tailwindcss"` en CSS, no config file.
 - Las rutas TanStack Router son lazy-load por defecto.
+
+## Offline-first con IndexedDB + React Query
+
+### queryOptions (lectura offline)
+```ts
+export const entitiesQueryOptions = queryOptions({
+  queryKey: ["entities"],
+  queryFn: async () => {
+    if (typeof window !== "undefined") {
+      // Server-first online: datos frescos, sin flicker post-SSR
+      if (navigator.onLine) {
+        try {
+          const data = await getEntitiesServer()
+          await saveListToCache(data)
+          return sortEntities(data)
+        } catch {}
+      }
+      // Cache-fallback offline: salta red, usa IDB directo
+      const cached = await getCachedList()
+      if (cached.length > 0) return sortEntities(cached)
+      if (!navigator.onLine) throw new OfflineNoCacheError()
+    }
+    const data = await getEntitiesServer()
+    return data
+  },
+  refetchOnMount: "always",
+  refetchOnFocus: false,
+  refetchOnReconnect: false,
+  networkMode: "always",
+})
+```
+
+### useMutation (escritura offline)
+```ts
+mutationFn: async ({ data }) => {
+  try { return await createServer({ data }) }
+  catch {
+    const entity = { ...data, id: crypto.randomUUID() }
+    await addMutationToQueue("create", entity)
+    await putEntityInCache(entity) // ⚠️ OBLIGATORIO — si no, el dato offline se pierde al refrescar
+    return entity
+  }
+}
+```
+
+### Reglas clave
+1. **queryFn**: server-first cuando `navigator.onLine` (sin cache intermedio, sin bg sync). Cache-fallback solo cuando offline o si el server falla estando online.
+2. **`refetchOnFocus: false`** y **`refetchOnReconnect: false`** — evitar refetches automáticos que causan flicker. Solo se refetchea en montaje (`refetchOnMount: "always"`) o por invalidación de mutations.
+3. **`saveEntityListToCache` con rango**: usar índice secundario con `cursor.delete()`, NO `store.delete(range)` — la primary key suele ser UUID y el rango numérico no matchea.
+4. **Sin staleTime/refetchInterval** para usuario único — los datos solo mutan por él. `refetchOnMount: "always"` fuerza queryFn post-SSR hydration.
+5. **Formularios inline** con try/catch propio deben incluir `putEntityInCache(entity)` en el catch, igual que los hooks centralizados.
+6. **`removeEntityFromCache`** en catch de delete mutation — el `onSuccess` solo actualiza React Query, no IDB.
+7. **SW `/_serverFn/` network-only** — las server functions deben saltar el SW (`return;` en fetch handler). El cache offline ya lo maneja IndexedDB en el queryFn, no necesita cache del SW.
+8. **Orden consistente**: tanto server como cache deben ordenar igual. Usar helper `sortEntities()` y aplicar el mismo `ORDER BY` en la DB query.
 
 ## graphify
 

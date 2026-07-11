@@ -3,72 +3,58 @@ import { queryKeys } from "queries/query-keys"
 import { getRubroByIdServer } from "server/rubros/get-rubro-by-id-server"
 import { getRubrosServer } from "server/rubros/get-rubros-server"
 import { saveRubrosToCache, getCachedRubros } from "@/lib/offline/db"
-import { OfflineNoCacheError } from "@/lib/offline/errors"
 
 const isClient = typeof window !== "undefined"
 
 export const rubrosQueryOptions = queryOptions({
 	queryKey: queryKeys.rubros.all,
-	queryFn: async ({ queryKey, client }) => {
+	queryFn: async () => {
 		if (isClient) {
-			const cached = await getCachedRubros()
-			if (cached.length > 0) {
-				getRubrosServer()
-					.then(async (data) => {
-						await saveRubrosToCache(data)
-						client.setQueryData(queryKey, data)
-					})
-					.catch(() => {})
-				return cached
+			if (navigator.onLine) {
+				try {
+					const data = await getRubrosServer()
+					await saveRubrosToCache(data)
+					return data
+				} catch {}
 			}
+			const cached = await getCachedRubros()
+			if (cached.length > 0) return cached
+			// Sin cache offline: retornar [] en vez de error — rubros son datos
+			// de referencia para dropdowns, no bloquean la pantalla.
+			return []
 		}
-		try {
-			const data = await getRubrosServer()
-			if (isClient) await saveRubrosToCache(data)
-			return data
-		} catch {
-			throw new OfflineNoCacheError()
-		}
+		const data = await getRubrosServer()
+		return data
 	},
-	staleTime: 60 * 1000,
-	refetchInterval: 60 * 1000,
+	refetchOnMount: "always",
+	refetchOnFocus: false,
+	refetchOnReconnect: false,
 	networkMode: "always",
 })
 
 export const rubroQueryOptions = (itemId: string) =>
 	queryOptions({
 		queryKey: queryKeys.rubros.byId(itemId),
-		queryFn: async ({ queryKey, client }) => {
+		queryFn: async () => {
 			if (isClient) {
+				if (navigator.onLine) {
+					try {
+						const data = await getRubroByIdServer({ data: { id: itemId } })
+						if (data) {
+							const all = await getCachedRubros()
+							await saveRubrosToCache([...all, data])
+						}
+						return data
+					} catch {}
+				}
 				const rubros = await getCachedRubros()
-				const cached = rubros.find((r) => r.id === itemId)
-				if (cached) {
-					getRubroByIdServer({ data: { id: itemId } })
-						.then(async (data) => {
-							if (data) {
-								const updated = rubros.map((r) =>
-									r.id === itemId ? data : r
-								)
-								await saveRubrosToCache(updated)
-								client.setQueryData(queryKey, data)
-							}
-						})
-						.catch(() => {})
-					return cached
-				}
+				return rubros.find((r) => r.id === itemId)
 			}
-			try {
-				const data = await getRubroByIdServer({
-					data: { id: itemId },
-				})
-				if (isClient && data) {
-					const all = await getCachedRubros()
-					await saveRubrosToCache([...all, data])
-				}
-				return data
-			} catch {
-				throw new OfflineNoCacheError()
-			}
+			const data = await getRubroByIdServer({ data: { id: itemId } })
+			return data
 		},
+		refetchOnMount: "always",
+		refetchOnFocus: false,
+		refetchOnReconnect: false,
 		networkMode: "always",
 	})

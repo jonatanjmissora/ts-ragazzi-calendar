@@ -1,7 +1,7 @@
 import { dbOp } from "db/db-error-handler"
 import { db } from "db/drizzle"
 import { pagos } from "db/schema"
-import { desc, and, gte, lt } from "drizzle-orm"
+import { desc, asc, and, gte, lt } from "drizzle-orm"
 
 export async function getPagosByPeriodoDB(start: number, end: number) {
 	return dbOp(
@@ -10,7 +10,7 @@ export async function getPagosByPeriodoDB(start: number, end: number) {
 				.select()
 				.from(pagos)
 				.where(and(gte(pagos.periodo, start), lt(pagos.periodo, end)))
-				.orderBy(desc(pagos.periodo)),
+				.orderBy(desc(pagos.periodo), asc(pagos.rubro), asc(pagos.sector)),
 		"getPagosByPeriodoDB"
 	)
 }

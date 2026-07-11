@@ -1,5 +1,5 @@
 import { Suspense, useState } from "react"
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
+import { useQueryClient, useSuspenseQuery, useQuery } from "@tanstack/react-query"
 import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 import {
 	Select,
@@ -81,7 +81,7 @@ export default function DashboardCreatePago() {
 const UnusedSectoresFromRubroComponent = ({ rubro }: { rubro: string }) => {
 	const { mes: mesUrl, anio: anioUrl } = useSearch({ from: "/_protected" })
 	const [start, end] = getPeriodo(mesUrl, anioUrl)
-	const { data: rubros } = useSuspenseQuery(rubrosQueryOptions)
+	const { data: rubros } = useQuery(rubrosQueryOptions)
 	const { data: pagosFromPeriodo } = useSuspenseQuery(
 		pagosByPeriodoQueryOptions(start, end)
 	)
@@ -107,7 +107,7 @@ const PagosCreate = ({
 }) => {
 	const { mes: mesUrl, anio: anioUrl } = useSearch({ from: "/_protected" })
 	const [start, end] = getPeriodo(mesUrl, anioUrl)
-	const { data: rubros } = useSuspenseQuery(rubrosQueryOptions)
+	const { data: rubros } = useQuery(rubrosQueryOptions)
 	const { data: pagosFromPeriodo } = useSuspenseQuery(
 		pagosByPeriodoQueryOptions(start, end)
 	)

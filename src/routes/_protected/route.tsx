@@ -1,6 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, redirect } from "@tanstack/react-router"
 import { lazy, Suspense } from "react"
-import { protectedRoute } from "@/lib/protected-route"
 import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 import { pagosQueryOptions } from "queries/pagos/pagos-query"
 import { AppLayout } from "@/components/shared/app-layout"
@@ -13,8 +12,15 @@ export const Route = createFileRoute("/_protected")({
 		mes: z.coerce.number().int().min(0).max(11).optional(),
 		anio: z.coerce.number().int().optional(),
 	}),
+	beforeLoad: async ({ context }) => {
+		if (!context.session) {
+			if (typeof navigator !== "undefined" && !navigator.onLine) {
+				return
+			}
+			throw redirect({ to: "/login" })
+		}
+	},
 	loader: async ({ context }) => {
-		await protectedRoute()
 		context.queryClient.prefetchQuery(rubrosQueryOptions)
 		context.queryClient.prefetchQuery(pagosQueryOptions)
 	},

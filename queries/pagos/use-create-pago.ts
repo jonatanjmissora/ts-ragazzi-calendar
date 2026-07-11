@@ -18,20 +18,8 @@ export function useCreatePago() {
 					...data,
 					id: crypto.randomUUID(),
 				}
-				console.log(
-					"[offline-debug] useCreatePago catch (offline) | id:",
-					newPago.id,
-					"periodo:",
-					newPago.periodo,
-				)
 				await addMutationToQueue("create", newPago)
 				await putPagoInCache(newPago)
-				const { getPendingCount } = await import("@/lib/offline/db")
-				const count = await getPendingCount()
-				console.log(
-					"[offline-debug] after putPagoInCache + queue | pending:",
-					count,
-				)
 				return newPago
 			}
 		},

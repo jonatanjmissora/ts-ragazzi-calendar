@@ -8,50 +8,43 @@ import { getPagosPageServer } from "server/pagos/get-pagos-page-server"
 import type { PagosFilter } from "db/pagos/get-pagos-db"
 import {
 	savePagosByPeriodoToCache,
-	getPendingCount,
 	getCachedPagosByPeriodo,
 	getCachedPagoById,
 	putPagoInCache,
 	getCachedPagos,
 } from "@/lib/offline/db"
 import { OfflineNoCacheError } from "@/lib/offline/errors"
+import type { PagoType } from "db/pagos/schema"
 
 const isClient = typeof window !== "undefined"
 
+function sortPagos(pagos: PagoType[]) {
+	return pagos.sort(
+		(a, b) =>
+			b.periodo - a.periodo || a.rubro.localeCompare(b.rubro) || a.sector.localeCompare(b.sector)
+	)
+}
+
 export const pagosQueryOptions = queryOptions({
 	queryKey: queryKeys.pagos.all,
-	queryFn: async ({ queryKey, client }) => {
+	queryFn: async () => {
 		if (isClient) {
-			const cached = await getCachedPagos()
-			if (cached.length > 0) {
-				getPagosServer()
-					.then(async (data) => {
-						const pending = await getPendingCount()
-						console.log(
-							"[offline-debug] pagosQueryOptions bg-sync | pending:",
-							pending,
-							"server length:",
-							data.length
-						)
-						if (pending === 0) {
-							client.setQueryData(queryKey, data)
-						}
-					})
-					.catch(() => {})
-				return cached
+			if (navigator.onLine) {
+				try {
+					const data = await getPagosServer()
+					return data
+				} catch {}
 			}
+			const cached = await getCachedPagos()
+			if (cached.length > 0) return cached
+			if (!navigator.onLine) throw new OfflineNoCacheError()
 		}
-		try {
-			const data = await getPagosServer()
-			// No guardar en IndexedDB: las queries especificas
-			// (pagosByPeriodo) se encargan del cache.
-			return data
-		} catch {
-			throw new OfflineNoCacheError()
-		}
+		const data = await getPagosServer()
+		return data
 	},
-	staleTime: 60 * 1000,
-	refetchInterval: 60 * 1000,
+	refetchOnMount: "always",
+	refetchOnFocus: false,
+	refetchOnReconnect: false,
 	networkMode: "always",
 })
 
@@ -71,82 +64,50 @@ export const pagosPageQueryOptions = (
 export const pagoQueryOptions = (itemId: string) =>
 	queryOptions({
 		queryKey: queryKeys.pagos.byId(itemId),
-		queryFn: async ({ queryKey, client }) => {
+		queryFn: async () => {
 			if (isClient) {
-				const cached = await getCachedPagoById(itemId)
-				if (cached) {
-					getPagoByIdServer({ data: { id: itemId } })
-						.then(async (data) => {
-							const pending = await getPendingCount()
-							if (data && pending === 0) {
-								await putPagoInCache(data)
-								client.setQueryData(queryKey, data)
-							}
-						})
-						.catch(() => {})
-					return cached
+				if (navigator.onLine) {
+					try {
+						const data = await getPagoByIdServer({ data: { id: itemId } })
+						if (data) await putPagoInCache(data)
+						return data
+					} catch {}
 				}
+				const cached = await getCachedPagoById(itemId)
+				if (cached) return cached
+				if (!navigator.onLine) throw new OfflineNoCacheError()
 			}
-			try {
-				const data = await getPagoByIdServer({ data: { id: itemId } })
-				if (isClient && data) await putPagoInCache(data)
-				return data
-			} catch {
-				throw new OfflineNoCacheError()
-			}
+			const data = await getPagoByIdServer({ data: { id: itemId } })
+			return data
 		},
+		refetchOnMount: "always",
+		refetchOnFocus: false,
+		refetchOnReconnect: false,
 		networkMode: "always",
 	})
 
 export const pagosByPeriodoQueryOptions = (start: number, end: number) =>
 	queryOptions({
 		queryKey: queryKeys.pagos.byPeriodo(start, end),
-		queryFn: async ({ queryKey, client }) => {
+		queryFn: async () => {
 			if (isClient) {
-				const cached = await getCachedPagosByPeriodo(start, end)
-				if (cached.length > 0) {
-					getPagosByPeriodoServer({ data: { start, end } })
-						.then(async (data) => {
-							const pending = await getPendingCount()
-							console.log(
-								"[offline-debug] pagosByPeriodo bg-sync | pending:",
-								pending,
-								"cached.length:",
-								cached.length,
-								"server.length:",
-								data.length
-							)
-							if (pending === 0) {
-								await savePagosByPeriodoToCache(start, end, data)
-								client.setQueryData(queryKey, data)
-							}
-						})
-						.catch(() => {})
-					console.log(
-						"[offline-debug] pagosByPeriodo RETURNING CACHED | len:",
-						cached.length,
-						"periodos:",
-						cached.map((p) => p.periodo)
-					)
-					return cached
+				if (navigator.onLine) {
+					try {
+						const data = await getPagosByPeriodoServer({ data: { start, end } })
+						await savePagosByPeriodoToCache(start, end, data)
+						return sortPagos(data)
+					} catch {}
 				}
+				const cached = await getCachedPagosByPeriodo(start, end)
+				if (cached.length > 0) return sortPagos(cached)
+				if (!navigator.onLine) throw new OfflineNoCacheError()
 			}
-			console.log("[offline-debug] pagosByPeriodo NO CACHE → falling to server try")
-			try {
-				const data = await getPagosByPeriodoServer({ data: { start, end } })
-				console.log(
-					"[offline-debug] pagosByPeriodo server try OK | len:",
-					data.length
-				)
-				if (isClient) await savePagosByPeriodoToCache(start, end, data)
-				return data
-			} catch {
-				console.log("[offline-debug] pagosByPeriodo server try FAILED")
-				throw new OfflineNoCacheError()
-			}
+			const data = await getPagosByPeriodoServer({ data: { start, end } })
+			return sortPagos(data)
 		},
-		staleTime: 60 * 1000,
-		refetchInterval: 60 * 1000,
+		refetchOnMount: "always",
+		refetchOnFocus: false,
+		refetchOnReconnect: false,
 		networkMode: "always",
 	})
 

@@ -29,7 +29,7 @@ async function checkActualOnline(): Promise<boolean> {
 	try {
 		const ctrl = new AbortController()
 		const id = setTimeout(() => ctrl.abort(), 3000)
-		await fetch("/manifest.webmanifest", {
+		await fetch("/manifest.json", {
 			method: "HEAD",
 			cache: "no-store",
 			signal: ctrl.signal,

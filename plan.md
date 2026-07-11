@@ -10,7 +10,7 @@
 ## ✅ Completado
 
 ### Setup
-- [x] `public/sw.js` con 3 estrategias (network-first API, network-first navigation con fallback offline.html, cache-first assets) + `SKIP_WAITING`
+- [x] `public/sw.js` con 4 estrategias (network-only server functions, network-first API, network-first navigation con fallback offline.html, cache-first assets) + `SKIP_WAITING`
 - [x] `public/manifest.webmanifest` — `display: standalone`, icons 192×192 y 512×512, screenshots
 - [x] `public/offline.html` (HTML puro offline)
 - [x] Iconos /logo192.png, /logo512.png, /favicon.ico
@@ -26,25 +26,27 @@
 
 ### Lectura offline — pagos por periodo (dashboard)
 - [x] `pagosByPeriodoQueryOptions(start, end)` con `networkMode: "always"`
-- [x] Write-through a `pagos-cache` en IDB al recibir datos del server (solo periodos visitados online se cachean)
-- [x] Fallback a `getCachedPagosByPeriodo` si el server falla (offline)
-- [x] Si no hay cache para ese periodo → `OfflineNoCacheError` → `errorComponent` muestra `<OfflineRouteBlock />` con botón Volver a `/`
-- [x] `pagoQueryOptions(itemId)` con `networkMode: "always"` — carga datos del pago a editar con mismo patrón write-through + fallback + `OfflineNoCacheError`
+- [x] **Server-first**: si `navigator.onLine`, fetch al server directo, write-through a IDB. Sin cache intermedio, sin bg sync — sin parpadeo
+- [x] **Cache-fallback offline**: si `!navigator.onLine`, salta el server, lee `getCachedPagosByPeriodo` directo. Rápido, sin timeout de red
+- [x] Si no hay cache para ese periodo y offline → `OfflineNoCacheError` → `OfflineRouteBlock` con botón Volver
+- [x] `savePagosByPeriodoToCache` usa index `by-periodo` con `cursor.delete()`, NO `store.delete(range)` — UUIDs no matchean rangos numéricos
+- [x] `refetchOnMount: "always"`, `refetchOnFocus: false`, `refetchOnReconnect: false` — solo refetch en montaje post-SSR
+- [x] `sortPagos()` helper: `periodo DESC, rubro ASC, sector ASC` — mismo orden en cache y server
+- [x] DB query `getPagosByPeriodoDB` con secondary sort: `asc(pagos.rubro), asc(pagos.sector)`
+- [x] `pagoQueryOptions(itemId)` con mismo patrón server-first/cache-fallback + write-through a IDB
 
 ### Lectura offline — rubros (dashboard edit-pago)
 - [x] `rubros-cache` store en IndexedDB v4
 - [x] `rubrosQueryOptions` con `networkMode: "always"`, write-through a IDB en éxito, fallback a `getCachedRubros`, lanza `OfflineNoCacheError` si vacío
+- [x] Sin `staleTime`/`refetchInterval` — usuario único, datos solo mutan por él
 - [x] `saveRubrosToCache` / `getCachedRubros` en `db.ts`
 
 ### Mutaciones offline — CRUD pagos (dashboard)
-- [x] `useCreatePago` — `useMutation` con try/catch → `addMutationToQueue("create", ...)` + `putPagoInCache`
-- [x] `useUpdatePago` — `useMutation` con try/catch → `addMutationToQueue("update", ...)` + `putPagoInCache`
-- [x] `useDeletePago` — `useMutation` con try/catch → `addMutationToQueue("delete", ...)` + `removePagoFromCache`
-- [x] `create-pago.tsx` — llama `createPagoServer` directo, catch offline → `addMutationToQueue`
-- [x] `check-pago-form.tsx` — llama `updatePagoServer` directo, catch offline → `addMutationToQueue`
-- [x] `pagos-delete.tsx` — llama `deletePagoServer` directo, catch offline → `addMutationToQueue` + `removePagoFromCache`
-- [x] `sync.ts: processMutationQueue` — al vaciar cola actualiza cache React Query con `setQueryData` (sin refetch)
-- [x] `root-provider.tsx` — `refetchOnReconnect: true`
+- [x] `create-pago.tsx` (dashboard) — inline try/catch → `addMutationToQueue("create", ...)` + `putPagoInCache`
+- [x] `check-pago-form.tsx` — inline try/catch → `addMutationToQueue("update", ...)` + `putPagoInCache` (se agregó put faltante)
+- [x] `pagos-delete.tsx` — inline try/catch → `addMutationToQueue("delete", ...)` + `removePagoFromCache`
+- [x] `sync.ts: processMutationQueue` — procesa cola pagos (create/update/delete), mutex isSyncing, fallo individual no bloquea, al vaciarse actualiza cache React Query con `setQueryData` (sin refetch)
+- [x] **Lección**: formularios inline con try/catch propio deben llamar `putEntityInCache` en el catch — si no, el pago offline solo vive en React Query y se pierde al refrescar
 
 ### Theme (offline-compatible)
 - [x] Theme switch con cookie-based persistence via server functions
@@ -54,11 +56,20 @@
 
 ---
 
-## 🚧 Verificación
+## ✅ Verificación
 
-- [ ] Offline → dashboard muestra pagos cacheados del periodo
-- [ ] Offline → periodo no visitado → muestra "Sin conexion" con botón Volver
-- [ ] Offline → crear/editar/eliminar pago → barra muestra pendientes
-- [ ] Reconectar → auto-sync → barra desaparece → UI refleja cambios
-- [ ] DevTools → IndexedDB → mutation-queue entries / vacía tras sync
-- [ ] Actualizar SW → rebuild → preview → toast "Nueva versión disponible"
+- [x] Offline → dashboard muestra pagos cacheados del periodo
+- [x] Offline → periodo no visitado → muestra "Sin conexion" con botón Volver
+- [x] Offline → crear/editar/eliminar pago → barra muestra pendientes
+- [x] Offline → delete → refresh ruta → datos persisten (delete desde IDB)
+- [x] Offline → create → refresh ruta → pago offline persiste (putPagoInCache)
+- [x] Online → F5 reload → sin parpadeo (server-first, SSR y cache coinciden)
+- [x] Online → refocus pestaña → sin parpadeo (refetchOnFocus: false)
+- [x] Offline → reload full → datos cacheados se muestran sin parpadeo
+- [x] Offline → create → refresh → pago persiste (putPagoInCache)
+- [x] Offline → update → refresh → cambio persiste (putPagoInCache)
+- [x] Offline → delete → refresh → pago eliminado persiste (removePagoFromCache)
+- [x] Offline → periodo no visitado → "Sin conexion" con botón Volver
+- [x] Reconectar → auto-sync → barra desaparece → UI refleja cambios
+- [x] DevTools → IndexedDB → mutation-queue entries / vacía tras sync
+- [x] Actualizar SW → rebuild → preview → toast "Nueva versión disponible"

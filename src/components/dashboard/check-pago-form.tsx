@@ -8,7 +8,7 @@ import { Check, Loader } from "lucide-react"
 import { pagosByPeriodoQueryOptions } from "queries/pagos/pagos-query"
 import { queryKeys } from "queries/query-keys"
 import { updatePagoServer } from "server/pagos/update-pago-server"
-import { addMutationToQueue } from "@/lib/offline/db"
+import { addMutationToQueue, putPagoInCache } from "@/lib/offline/db"
 import { toast } from "sonner"
 import { useState } from "react"
 
@@ -46,6 +46,7 @@ export default function CheckPagoForm({ itemId }: { itemId: string }) {
 					await updatePagoServer({ data: updatedItem })
 				} catch {
 					await addMutationToQueue("update", updatedItem)
+					await putPagoInCache(updatedItem)
 				}
 
 				const [pStart, pEnd] = getPeriodo(undefined, undefined)

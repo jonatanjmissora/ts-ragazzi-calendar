@@ -83,16 +83,6 @@ function PagosPendientesList({
 		pagosByPeriodoQueryOptions(start, end)
 	)
 
-	console.log(
-		"[offline-debug] PagosPendientesList render | start:end",
-		start,
-		end,
-		"pagosFromPeriodo.length:",
-		pagosFromPeriodo?.length,
-		"ids:",
-		pagosFromPeriodo?.map((p) => ({ id: p.id, periodo: p.periodo }))
-	)
-
 	const pagosPendientes = filteredItems(
 		pagosFromPeriodo || [],
 		undefined,
