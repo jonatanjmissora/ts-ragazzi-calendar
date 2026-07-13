@@ -5,7 +5,9 @@ import { pagosQueryOptions } from "queries/pagos/pagos-query"
 import { AppLayout } from "@/components/shared/app-layout"
 import { z } from "zod"
 
-const DashboardCreatePago = lazy(() => import("@/components/dashboard/create-pago"))
+const DashboardCreatePago = lazy(
+	() => import("@/components/dashboard/create-pago")
+)
 
 export const Route = createFileRoute("/_protected")({
 	validateSearch: z.object({
@@ -14,7 +16,7 @@ export const Route = createFileRoute("/_protected")({
 	}),
 	beforeLoad: async ({ context }) => {
 		if (!context.session) {
-			if (typeof navigator !== "undefined" && !navigator.onLine) {
+			if (typeof document !== "undefined" && !navigator.onLine) {
 				return
 			}
 			throw redirect({ to: "/login" })
@@ -31,7 +33,13 @@ function RouteComponent() {
 	return (
 		<AppLayout
 			asideContent={
-				<Suspense fallback={<div className="p-4 text-center text-sm text-foreground/50">Cargando...</div>}>
+				<Suspense
+					fallback={
+						<div className="p-4 text-center text-sm text-foreground/50">
+							Cargando...
+						</div>
+					}
+				>
 					<DashboardCreatePago />
 				</Suspense>
 			}

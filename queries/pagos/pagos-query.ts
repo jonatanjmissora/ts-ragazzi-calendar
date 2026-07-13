@@ -18,7 +18,7 @@ import type { PagoType } from "db/pagos/schema"
 
 const isClient = typeof window !== "undefined"
 
-function sortPagos(pagos: PagoType[]) {
+export function sortPagos(pagos: PagoType[]) {
 	return pagos.sort(
 		(a, b) =>
 			b.periodo - a.periodo || a.rubro.localeCompare(b.rubro) || a.sector.localeCompare(b.sector)

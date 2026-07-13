@@ -5,6 +5,7 @@ import { PagoFormType } from "db/pagos/pago-validator"
 import type { PagoType } from "db/pagos/schema"
 import { createPagoServer } from "server/pagos/create-pago-server"
 import { addMutationToQueue, putPagoInCache } from "@/lib/offline/db"
+import { sortPagos } from "./pagos-query"
 
 export function useCreatePago() {
 	const queryClient = useQueryClient()
@@ -27,7 +28,7 @@ export function useCreatePago() {
 			const [start, end] = getPeriodo(undefined, undefined)
 			queryClient.setQueryData<PagoType[]>(queryKeys.pagos.byPeriodo(start, end), oldPagos => {
 				if (!oldPagos) return [data]
-				return [data, ...oldPagos]
+				return sortPagos([data, ...oldPagos])
 			})
 			queryClient.invalidateQueries({ queryKey: queryKeys.pagos.all, refetchType: "active" })
 		},

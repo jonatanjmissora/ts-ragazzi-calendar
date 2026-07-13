@@ -5,6 +5,7 @@ import {
 	getPendingCount,
 	clearPagosCache,
 } from "./db"
+import { sortPagos } from "queries/pagos/pagos-query"
 import { createPagoServer } from "server/pagos/create-pago-server"
 import { updatePagoServer } from "server/pagos/update-pago-server"
 import { deletePagoServer } from "server/pagos/delete-pago-server"
@@ -30,6 +31,7 @@ function updatePagosCache(
 	queryClient: QueryClient,
 	type: "create" | "update" | "delete",
 	result: any,
+	payload?: any,
 ) {
 	const queryCache = queryClient.getQueryCache()
 	const pagosQueries = queryCache.getAll().filter(q => {
@@ -60,11 +62,12 @@ function updatePagosCache(
 		if (key.length === 1 && key[0] === "pagos") {
 			// ["pagos"] — flat list of all pagos
 			if (type === "create") {
-				queryClient.setQueryData(key, [...data, result])
+				const filtered = payload ? data.filter((p: any) => p.id !== payload.id) : data
+				queryClient.setQueryData(key, sortPagos([...filtered, result]))
 			} else if (type === "update") {
 				queryClient.setQueryData(
 					key,
-					data.map((p: any) => (p.id === result.id ? result : p)),
+					sortPagos(data.map((p: any) => (p.id === result.id ? result : p))),
 				)
 			} else if (type === "delete") {
 				queryClient.setQueryData(
@@ -79,11 +82,12 @@ function updatePagosCache(
 			// ["pagos-by-periodo", start, end]
 			// ["pagos-by-sector", sector, rubro]
 			if (type === "create") {
-				queryClient.setQueryData(key, [result, ...data])
+				const filtered = payload ? data.filter((p: any) => p.id !== payload.id) : data
+				queryClient.setQueryData(key, sortPagos([result, ...filtered]))
 			} else if (type === "update") {
 				queryClient.setQueryData(
 					key,
-					data.map((p: any) => (p.id === result.id ? result : p)),
+					sortPagos(data.map((p: any) => (p.id === result.id ? result : p))),
 				)
 			} else if (type === "delete") {
 				queryClient.setQueryData(
@@ -97,11 +101,12 @@ function updatePagosCache(
 		// ["pagos", "page", page, pageSize, filter]
 		if (key.length >= 3 && key[0] === "pagos" && key[1] === "page") {
 			if (type === "create") {
-				queryClient.setQueryData(key, [result, ...data])
+				const filtered = payload ? data.filter((p: any) => p.id !== payload.id) : data
+				queryClient.setQueryData(key, sortPagos([result, ...filtered]))
 			} else if (type === "update") {
 				queryClient.setQueryData(
 					key,
-					data.map((p: any) => (p.id === result.id ? result : p)),
+					sortPagos(data.map((p: any) => (p.id === result.id ? result : p))),
 				)
 			} else if (type === "delete") {
 				queryClient.setQueryData(
@@ -135,14 +140,14 @@ export async function processMutationQueue(queryClient?: QueryClient): Promise<b
 
 	isSyncing = true
 
-	const results: { type: "create" | "update" | "delete"; result: any }[] = []
+	const results: { type: "create" | "update" | "delete"; result: any; payload: any }[] = []
 
 	try {
 		const queue = await getMutationQueue()
 		for (const entry of queue) {
 			try {
 				const result = await processOneMutation(entry)
-				results.push({ type: entry.type, result })
+				results.push({ type: entry.type, result, payload: entry.payload })
 				if (entry.id != null) {
 					await removeMutationFromQueue(entry.id)
 				}
@@ -162,8 +167,8 @@ export async function processMutationQueue(queryClient?: QueryClient): Promise<b
 		// Sincroniza el cache de React Query sin refetchear al servidor,
 		// ya que somos la unica fuente de verdad.
 		if (queryClient) {
-			for (const { type, result } of results) {
-				updatePagosCache(queryClient, type, result)
+			for (const { type, result, payload } of results) {
+				updatePagosCache(queryClient, type, result, payload)
 			}
 		}
 	}
