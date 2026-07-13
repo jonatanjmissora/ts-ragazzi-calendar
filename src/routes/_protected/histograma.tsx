@@ -5,6 +5,9 @@ import { lazy, Suspense } from "react"
 import { z } from "zod"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
+import { OfflineRouteBlock } from "@/components/offline-route-block"
+import { isOfflineNoCacheError } from "@/lib/offline/errors"
 
 const HistogramaChart = lazy(() => import("@/components/charts/histograma-chart"))
 
@@ -14,6 +17,8 @@ export const Route = createFileRoute("/_protected/histograma")({
 		rubro: z.string(),
 	}),
 	component: RouteComponent,
+	errorComponent: ({ error }) =>
+		isOfflineNoCacheError(error) ? <OfflineRouteBlock /> : <DefaultCatchBoundary error={error} />,
 })
 
 function RouteComponent() {

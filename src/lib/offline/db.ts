@@ -164,6 +164,15 @@ export async function getCachedPagoById(id: string): Promise<PagoType | undefine
 	return db.get("pagos-cache", id)
 }
 
+/** Lee pagos cacheados filtrados por sector y rubro. */
+export async function getCachedPagosBySector(
+	sector: string,
+	rubro: string
+): Promise<PagoType[]> {
+	const all = await getCachedPagos()
+	return all.filter(p => p.sector === sector && p.rubro === rubro)
+}
+
 /** Reemplaza todo el cache de pagos (para sync del listado completo). */
 export async function saveAllPagosToCache(pagos: PagoType[]): Promise<void> {
 	const db = await openRagazziDB()

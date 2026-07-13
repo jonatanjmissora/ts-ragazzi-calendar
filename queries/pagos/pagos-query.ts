@@ -12,6 +12,8 @@ import {
 	getCachedPagoById,
 	putPagoInCache,
 	getCachedPagos,
+	getCachedPagosBySector,
+	saveAllPagosToCache,
 } from "@/lib/offline/db"
 import { OfflineNoCacheError } from "@/lib/offline/errors"
 import type { PagoType } from "db/pagos/schema"
@@ -32,15 +34,22 @@ export const pagosQueryOptions = queryOptions({
 			if (navigator.onLine) {
 				try {
 					const data = await getPagosServer()
+					await saveAllPagosToCache(data)
 					return data
 				} catch {}
 			}
 			const cached = await getCachedPagos()
-			if (cached.length > 0) return cached
+			if (cached.length > 0) return sortPagos(cached)
 			if (!navigator.onLine) throw new OfflineNoCacheError()
+			try {
+				return await getPagosServer()
+			} catch {
+				const cached2 = await getCachedPagos()
+				if (cached2.length > 0) return sortPagos(cached2)
+				throw new OfflineNoCacheError()
+			}
 		}
-		const data = await getPagosServer()
-		return data
+		return await getPagosServer()
 	},
 	refetchOnMount: "always",
 	refetchOnFocus: false,
@@ -76,9 +85,15 @@ export const pagoQueryOptions = (itemId: string) =>
 				const cached = await getCachedPagoById(itemId)
 				if (cached) return cached
 				if (!navigator.onLine) throw new OfflineNoCacheError()
+				try {
+					return await getPagoByIdServer({ data: { id: itemId } })
+				} catch {
+					const cached2 = await getCachedPagoById(itemId)
+					if (cached2) return cached2
+					throw new OfflineNoCacheError()
+				}
 			}
-			const data = await getPagoByIdServer({ data: { id: itemId } })
-			return data
+			return await getPagoByIdServer({ data: { id: itemId } })
 		},
 		refetchOnMount: "always",
 		refetchOnFocus: false,
@@ -101,6 +116,14 @@ export const pagosByPeriodoQueryOptions = (start: number, end: number) =>
 				const cached = await getCachedPagosByPeriodo(start, end)
 				if (cached.length > 0) return sortPagos(cached)
 				if (!navigator.onLine) throw new OfflineNoCacheError()
+				try {
+					const data = await getPagosByPeriodoServer({ data: { start, end } })
+					return sortPagos(data)
+				} catch {
+					const cached2 = await getCachedPagosByPeriodo(start, end)
+					if (cached2.length > 0) return sortPagos(cached2)
+					throw new OfflineNoCacheError()
+				}
 			}
 			const data = await getPagosByPeriodoServer({ data: { start, end } })
 			return sortPagos(data)
@@ -114,5 +137,29 @@ export const pagosByPeriodoQueryOptions = (start: number, end: number) =>
 export const pagosBySectorQueryOptions = (sector: string, rubro: string) =>
 	queryOptions({
 		queryKey: queryKeys.pagos.bySector(sector, rubro),
-		queryFn: () => getPagosBySectorServer({ data: { sector, rubro } }),
+		queryFn: async () => {
+			if (isClient) {
+				if (navigator.onLine) {
+					try {
+						const data = await getPagosBySectorServer({ data: { sector, rubro } })
+						return data
+					} catch {}
+				}
+				const cached = await getCachedPagosBySector(sector, rubro)
+				if (cached.length > 0) return cached
+				if (!navigator.onLine) throw new OfflineNoCacheError()
+				try {
+					return await getPagosBySectorServer({ data: { sector, rubro } })
+				} catch {
+					const cached2 = await getCachedPagosBySector(sector, rubro)
+					if (cached2.length > 0) return cached2
+					throw new OfflineNoCacheError()
+				}
+			}
+			return await getPagosBySectorServer({ data: { sector, rubro } })
+		},
+		refetchOnMount: "always",
+		refetchOnFocus: false,
+		refetchOnReconnect: false,
+		networkMode: "always",
 	})

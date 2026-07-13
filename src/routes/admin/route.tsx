@@ -1,12 +1,15 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute, Link, redirect } from "@tanstack/react-router"
 import { adminRoute } from "@/lib/admin-route"
 import { rubrosQueryOptions } from "queries/rubros/rubros-query"
 import { linksQueryOptions } from "queries/links/links-query"
 import { AppLayout } from "@/components/shared/app-layout"
 
 export const Route = createFileRoute("/admin")({
-	beforeLoad: async () => {
-		await adminRoute()
+	beforeLoad: async ({ context }) => {
+		if (typeof document !== "undefined" && !navigator.onLine && !context.session) {
+			throw redirect({ to: "/" })
+		}
+		adminRoute(context.session)
 	},
 	loader: async ({ context }) => {
 		context.queryClient.prefetchQuery(rubrosQueryOptions)

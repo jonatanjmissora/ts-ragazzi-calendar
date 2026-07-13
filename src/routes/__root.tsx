@@ -11,7 +11,9 @@ import { Toaster } from "sonner"
 import { Session } from "better-auth"
 import { lazy, Suspense } from "react"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
+import { OfflineRouteBlock } from "@/components/offline-route-block"
 import { NotFound } from "@/components/NotFound"
+import { isOfflineNoCacheError } from "@/lib/offline/errors"
 
 const DevtoolsPanel = lazy(() => import("@/components/devtools-panel"))
 import { PWARegister } from "@/components/pwa-register"
@@ -62,13 +64,16 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 	}),
 	beforeLoad: async () => {
 		const [theme, session] = await Promise.all([
-			getThemeServerFn().then(t => (t ?? "auto") as "light" | "dark" | "auto"),
+			getThemeServerFn()
+				.then(t => (t ?? "auto") as "light" | "dark" | "auto")
+				.catch(() => "auto" as "light" | "dark" | "auto"),
 			getSession().catch(() => null),
 		])
 		return { theme, session }
 	},
 	shellComponent: RootDocument,
-	errorComponent: DefaultCatchBoundary,
+	errorComponent: ({ error }) =>
+		isOfflineNoCacheError(error) ? <OfflineRouteBlock /> : <DefaultCatchBoundary error={error} />,
 	notFoundComponent: () => <NotFound />,
 })
 
