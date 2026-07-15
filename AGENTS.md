@@ -436,6 +436,85 @@ mutationFn: async ({ data }) => {
 7. **SW `/_serverFn/` network-only** — las server functions deben saltar el SW (`return;` en fetch handler). El cache offline ya lo maneja IndexedDB en el queryFn, no necesita cache del SW.
 8. **Orden consistente**: tanto server como cache deben ordenar igual. Usar helper `sortEntities()` y aplicar el mismo `ORDER BY` en la DB query.
 
+### OfflineNoCacheError (error boundary)
+
+```ts
+export class OfflineNoCacheError extends Error {
+  constructor() { super("No hay datos en caché ni conexión"); this.name = "OfflineNoCacheError" }
+}
+
+export function isOfflineNoCacheError(error: unknown): boolean {
+  if (error instanceof OfflineNoCacheError) return true
+  if (error && typeof error === "object" && "name" in error) {
+    return (error as { name: string }).name === "OfflineNoCacheError"
+  }
+  return false
+}
+```
+
+### ErrorComponent raíz con offline check
+
+En `__root.tsx`:
+```tsx
+errorComponent: ({ error }) => {
+  if (isOfflineNoCacheError(error)) {
+    return <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-8 text-center">
+      <WifiOff className="w-16 h-16 text-muted-foreground" />
+      <h2 className="text-2xl font-bold">Sin conexión</h2>
+      <p className="text-muted-foreground max-w-md">... y no hay datos guardados.</p>
+    </div>
+  }
+  return <DefaultCatchBoundary /> // fall through para otros errores
+}
+```
+
+### Sync: evitar duplicados offline→online
+
+`updatePagosCache` debe recibir el `payload` original (con UUID offline) y filtrarlo antes de agregar el resultado del server:
+
+```ts
+function updatePagosCache(key: string[], payload?: { id: string }) {
+  queryClient.setQueryData(key, (old: unknown) => {
+    if (!Array.isArray(old)) return old
+    let list = [...old]
+    // filtrar UUID offline en create type
+    if (payload?.id?.startsWith?.("offline-")) {
+      list = list.filter((p: Pago) => p.id !== payload.id)
+    }
+    list.push(serverResult)
+    return sortPagos(list)
+  })
+}
+```
+
+### beforeLoad: preservar sesión offline
+
+```ts
+beforeLoad: async ({ context }) => {
+  const [theme, session] = await Promise.all([
+    getThemeServerFn().then(t => t ?? "auto").catch(() => "auto"),
+    getSession().catch(() => null),
+  ])
+  return {
+    theme,
+    session: session ?? (typeof document !== "undefined" && !navigator.onLine ? context.session : null),
+  }
+}
+```
+
+### Admin route: offline guard con redirect + session de context
+
+```ts
+export const Route = createFileRoute("/admin")({
+  beforeLoad: async ({ context }) => {
+    if (typeof document !== "undefined" && !navigator.onLine) {
+      throw redirect({ to: "/" })
+    }
+    if (!context.session) throw redirect({ to: "/" })
+  },
+})
+```
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.

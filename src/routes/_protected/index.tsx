@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import DashboardPagosPendientes from "@/components/dashboard/pagos-pendientes"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { OfflineRouteBlock } from "@/components/offline-route-block"
-import { SessionDebug } from "@/components/session-debug"
+// import { SessionDebug } from "@/components/session-debug"
 import { isOfflineNoCacheError } from "@/lib/offline/errors"
 import { z } from "zod"
 
@@ -13,13 +13,17 @@ export const Route = createFileRoute("/_protected/")({
 	}),
 	component: App,
 	errorComponent: ({ error }) =>
-		isOfflineNoCacheError(error) ? <OfflineRouteBlock /> : <DefaultCatchBoundary error={error} />,
+		isOfflineNoCacheError(error) ? (
+			<OfflineRouteBlock />
+		) : (
+			<DefaultCatchBoundary error={error} />
+		),
 })
 
 function App() {
 	return (
 		<>
-			<SessionDebug />
+			{/* <SessionDebug /> */}
 			<DashboardPagosPendientes />
 		</>
 	)

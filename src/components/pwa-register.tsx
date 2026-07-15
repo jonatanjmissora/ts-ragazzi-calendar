@@ -9,13 +9,16 @@ export function PWARegister() {
 	useEffect(() => {
 		if (import.meta.env.DEV || !("serviceWorker" in navigator)) return
 
-		navigator.serviceWorker.register("/sw.js").then((reg) => {
+		navigator.serviceWorker.register("/sw.js").then(reg => {
 			reg.addEventListener("updatefound", () => {
 				const newWorker = reg.installing
 				if (!newWorker) return
 
 				newWorker.addEventListener("statechange", () => {
-					if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+					if (
+						newWorker.state === "installed" &&
+						navigator.serviceWorker.controller
+					) {
 						setNeedRefresh(true)
 					}
 				})
@@ -24,7 +27,7 @@ export function PWARegister() {
 
 		navigator.serviceWorker.ready.then(() => {
 			setOfflineReady(true)
-			setTimeout(() => setOfflineReady(false), 5000)
+			setTimeout(() => setOfflineReady(false), 3000)
 		})
 	}, [])
 
@@ -38,11 +41,11 @@ export function PWARegister() {
 
 	return (
 		<>
-			{offlineReady && (
+			{/* {offlineReady && (
 				<div className="fixed bottom-4 right-4 z-50 rounded-lg bg-zinc-800 px-4 py-3 text-sm text-white shadow-lg">
 					App lista para uso offline
 				</div>
-			)}
+			)} */}
 			{needRefresh && (
 				<div className="fixed bottom-4 right-4 z-50 flex items-center gap-3 rounded-lg bg-zinc-800 px-4 py-3 text-sm text-white shadow-lg">
 					<span>Nueva versión disponible</span>
