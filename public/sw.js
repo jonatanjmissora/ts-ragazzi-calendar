@@ -1,4 +1,4 @@
-const CACHE_STATIC = "ragazzi-static-v3"
+const CACHE_STATIC = "ragazzi-static"
 const CACHE_PAGES = "ragazzi-pages-v1"
 const CACHE_API = "ragazzi-api-v1"
 
@@ -22,7 +22,7 @@ self.addEventListener("activate", (event) => {
 		caches.keys().then((keys) =>
 			Promise.all(
 				keys
-					.filter((key) => key !== CACHE_STATIC && key !== CACHE_PAGES && key !== CACHE_API)
+					.filter((key) => !key.startsWith("ragazzi-"))
 					.map((key) => caches.delete(key))
 			)
 		)
@@ -60,7 +60,7 @@ self.addEventListener("fetch", (event) => {
 		return
 	}
 
-	event.respondWith(cacheFirst(request, CACHE_STATIC))
+	event.respondWith(networkFirst(request, CACHE_STATIC))
 })
 
 async function cacheFirst(request, cacheName) {

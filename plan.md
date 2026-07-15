@@ -10,7 +10,7 @@
 ## ✅ Completado
 
 ### Setup
-- [x] `public/sw.js` con 4 estrategias (network-only server functions, network-first API, network-first navigation con fallback offline.html, cache-first assets) + `SKIP_WAITING`
+- [x] `public/sw.js` con 4 estrategias (network-only server functions, network-first API, network-first navigation con fallback offline.html, network-first assets) + `SKIP_WAITING`
 - [x] `public/manifest.webmanifest` — `display: standalone`, icons 192×192 y 512×512, screenshots
 - [x] `public/offline.html` (HTML puro offline)
 - [x] Iconos /logo192.png, /logo512.png, /favicon.ico

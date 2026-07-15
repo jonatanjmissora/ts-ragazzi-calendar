@@ -62,14 +62,17 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			},
 		],
 	}),
-	beforeLoad: async () => {
+	beforeLoad: async ({ context }) => {
 		const [theme, session] = await Promise.all([
 			getThemeServerFn()
 				.then(t => (t ?? "auto") as "light" | "dark" | "auto")
 				.catch(() => "auto" as "light" | "dark" | "auto"),
 			getSession().catch(() => null),
 		])
-		return { theme, session }
+		return {
+			theme,
+			session: session ?? (typeof document !== "undefined" && !navigator.onLine ? context.session : null),
+		}
 	},
 	shellComponent: RootDocument,
 	errorComponent: ({ error }) =>
